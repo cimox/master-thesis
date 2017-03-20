@@ -13,14 +13,17 @@ import java.io.PrintWriter;
 
 
 public class App {
+    private final static int NUM_INSTANCES = 1000000;
+    private final static boolean IS_TESTING = true;
+
     public static void main(String[] args) {
         System.out.println("Running experiment");
 
-//        Experiment exp = new Experiment();
         ExperimentConceptDetection exp = new ExperimentConceptDetection();
-        exp.run(150001, true);
+        exp.run(NUM_INSTANCES, IS_TESTING);
     }
 
+    /*
     private static class Experiment {
         private FileWriter file;
         private BufferedWriter bw;
@@ -52,6 +55,7 @@ public class App {
             int numberSamples = 0;
             boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
             long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+
             while (stream.hasMoreInstances() && numberSamples < numInstances) {
                 Instance trainInst = stream.nextInstance().getData();
                 if (isTesting) {
@@ -65,6 +69,7 @@ public class App {
                 }
                 learner.trainOnInstance(trainInst);
             }
+
             this.fileWriter.println("]");
             this.fileWriter.close();
             double accuracy = 100.0 * (double) numberSamplesCorrect / (double) numberSamples;
@@ -76,6 +81,7 @@ public class App {
             System.out.println(out.toString());
         }
     }
+    */
 
     private static class ExperimentConceptDetection {
         private FileWriter file;
@@ -94,16 +100,14 @@ public class App {
         }
 
         public void run(int numInstances, boolean isTesting) {
-//            Classifier learner = new EnhancedHoeffdingTree(this.conceptFileWriter, numInstances/1000);
             Classifier learner = new ConceptDetectionTree(this.conceptFileWriter);
-//            RandomRBFGeneratorDrift stream = new RandomRBFGeneratorDrift();
-//            stream.numClassesOption = new IntOption("numClasses", 'c',
-//                    "The number of classes to generate.", 10, 3, Integer.MAX_VALUE);
-//            stream.speedChangeOption = new FloatOption("speedChange", 's',
-//                    "Speed of change of centroids in the model.", 100, 10, Float.MAX_VALUE);
-            LEDGeneratorDrift stream = new LEDGeneratorDrift();
-            stream.numberAttributesDriftOption = new IntOption("numberAttributesDrift",
-                    'd', "Number of attributes with drift.", 1, 0, 17);
+            HyperplaneGenerator stream = new HyperplaneGenerator();
+            stream.numClassesOption = new IntOption("numClasses", 'c',
+                    "The number of classes to generate.", 4, 2, Integer.MAX_VALUE);
+            stream.numDriftAttsOption = new IntOption("numDriftAtts", 'k',
+                    "The number of attributes with drift.", 5, 0, Integer.MAX_VALUE);
+            stream.magChangeOption = new FloatOption("magChange", 't',
+                    "Magnitude of the change for every example", 0.10, 0.0, 1.0);
             stream.prepareForUse();
 
             learner.setModelContext(stream.getHeader());
@@ -111,35 +115,33 @@ public class App {
 
             int numberSamplesCorrect = 0;
             int numberSamples = 0;
-            boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
+            TimingUtils.enablePreciseTiming();
             long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+
+            this.conceptFileWriter.println("current node, alt tree, hoeffding bound, old tree error, alt tree error, diff, status");
             while (stream.hasMoreInstances() && numberSamples < numInstances) {
                 Instance trainInst = stream.nextInstance().getData();
+
                 if (isTesting) {
                     if (learner.correctlyClassifies(trainInst)) {
                         numberSamplesCorrect++;
                     }
                 }
-                numberSamples++;
-                if (numberSamples % 100000 == 0) {
-                    System.out.println(numberSamples + " samples processed");
+
+                // Debug output
+                if (++numberSamples % 100000 == 0) {
+                    System.out.println(numberSamples + " samples processed. Correct samples: " + numberSamplesCorrect);
                 }
-                this.conceptFileWriter.print("\"" + numberSamples + "\", ");
+
                 learner.trainOnInstance(trainInst);
-                this.conceptFileWriter.print("\n");
             }
             // Close files
             this.conceptFileWriter.close();
 
-
+            // Print accuracy and processing time
             double accuracy = 100.0 * (double) numberSamplesCorrect / (double) numberSamples;
             double time = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread() - evaluateStartTime);
             System.out.println(numberSamples + " instances processed with " + accuracy + "% accuracy in " + time + " seconds.");
-
-//            Print resulting tree to console
-//            StringBuilder out = new StringBuilder();
-//            learner.getDescription(out, 4);
-//            System.out.println(out.toString());
         }
     }
 }

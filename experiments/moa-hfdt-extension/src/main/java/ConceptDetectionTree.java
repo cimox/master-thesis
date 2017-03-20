@@ -1,4 +1,3 @@
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +51,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
 
         private static final long serialVersionUID = 1L;
 
-        private PrintWriter conceptPrintWriter;
+        private PrintWriter conceptFileWriter;
 
         protected Node alternateTree;
 
@@ -65,9 +64,6 @@ public class ConceptDetectionTree extends HoeffdingTree {
 
         protected Random classifierRandom;
 
-        //public boolean getErrorChange() {
-        //		return ErrorChange;
-        //}
         @Override
         public int calcByteSizeIncludingSubtree() {
             int byteSize = calcByteSize();
@@ -89,14 +85,13 @@ public class ConceptDetectionTree extends HoeffdingTree {
                             double[] classObservations, int size, PrintWriter pw) {
             super(splitTest, classObservations, size);
             this.classifierRandom = new Random(this.randomSeed);
-            this.conceptPrintWriter = pw;
+            this.conceptFileWriter = pw;
         }
 
-        public AdaSplitNode(InstanceConditionalTest splitTest,
-                            double[] classObservations, PrintWriter pw) {
+        public AdaSplitNode(InstanceConditionalTest splitTest, double[] classObservations, PrintWriter pw) {
             super(splitTest, classObservations);
             this.classifierRandom = new Random(this.randomSeed);
-            this.conceptPrintWriter = pw;
+            this.conceptFileWriter = pw;
         }
 
         @Override
@@ -118,7 +113,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
         @Override
         public double getErrorWidth() {
             double w = 0.0;
-            if (isNullError() == false) {
+            if (!isNullError()) {
                 w = this.estimationErrorWeight.getWidth();
             }
             return w;
@@ -135,14 +130,10 @@ public class ConceptDetectionTree extends HoeffdingTree {
         @Override
         public void learnFromInstance(Instance inst, ConceptDetectionTree ht, SplitNode parent, int parentBranch) {
             int trueClass = (int) inst.classValue();
-            //New option vore
-            int k = MiscUtils.poisson(1.0, this.classifierRandom);
-            Instance weightedInst = (Instance) inst.copy();
-            if (k > 0) {
-                //weightedInst.setWeight(inst.weight() * k);
-            }
-            //Compute ClassPrediction using filterInstanceToLeaf
-            //int ClassPrediction = Utils.maxIndex(filterInstanceToLeaf(inst, null, -1).node.getClassVotes(inst, ht));
+            // New option core
+            Instance weightedInst = inst.copy();
+
+            // Compute ClassPrediction using filterInstanceToLeaf
             int ClassPrediction = 0;
             if (filterInstanceToLeaf(inst, parent, parentBranch).node != null) {
                 ClassPrediction = Utils.maxIndex(filterInstanceToLeaf(inst, parent, parentBranch).node.getClassVotes(inst, ht));
@@ -154,69 +145,66 @@ public class ConceptDetectionTree extends HoeffdingTree {
                 this.estimationErrorWeight = new ADWIN();
             }
             double oldError = this.getErrorEstimation();
-            this.ErrorChange = this.estimationErrorWeight.setInput(blCorrect == true ? 0.0 : 1.0);
-            if (this.ErrorChange == true && oldError > this.getErrorEstimation()) {
-                //if error is decreasing, don't do anything
+            this.ErrorChange = this.estimationErrorWeight.setInput(blCorrect ? 0.0 : 1.0);
+            if (this.ErrorChange && oldError > this.getErrorEstimation()) {
+                // If error is decreasing, don't do anything
                 this.ErrorChange = false;
             }
 
             // Check condition to build a new alternate tree
-            //if (this.isAlternateTree == false) {
-            if (this.ErrorChange == true) {//&& this.alternateTree == null) {
-                //Start a new alternative tree : learning node
+            if (this.ErrorChange) {
+                System.out.println("Creating new alternating tree");
+                // Start a new alternative tree : learning node
                 this.alternateTree = ht.newLearningNode();
-
-                //this.alternateTree.isAlternateTree = true;
                 ht.alternateTrees++;
-
-//                this.conceptPrintWriter.print("\"" + ht.alternateTrees + "\", \"" + inst + "\", ");
-            } // Check condition to replace tree
-            else if (this.alternateTree != null && ((NewNode) this.alternateTree).isNullError() == false) {
+            } else if (this.alternateTree != null && !((NewNode) this.alternateTree).isNullError()) { // Check condition to replace tree
                 if (this.getErrorWidth() > 300 && ((NewNode) this.alternateTree).getErrorWidth() > 300) {
                     double oldErrorRate = this.getErrorEstimation();
                     double altErrorRate = ((NewNode) this.alternateTree).getErrorEstimation();
                     double fDelta = .05;
-                    //if (gNumAlts>0) fDelta=fDelta/gNumAlts;
-                    double fN = 1.0 / ((double) ((NewNode) this.alternateTree).getErrorWidth()) + 1.0 / ((double) this.getErrorWidth());
-                    double Bound = (double) Math.sqrt((double) 2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
+
+                    double fN = 1.0 / ((NewNode) this.alternateTree).getErrorWidth() + 1.0 / this.getErrorWidth();
+                    double hoeffdingBound = Math.sqrt(2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
 
                     // Print progress to file
-                    this.conceptPrintWriter.print("\"" + ht.alternateTrees + "\", \"" + inst + "\", ");
-                    this.conceptPrintWriter.println("\"" + Bound + "\", \"" + oldErrorRate + "\", \""
-                            + altErrorRate + "\", \"" + "aa" + "\"");
+                    this.conceptFileWriter.print(this.hashCode() + ", " + this.alternateTree.hashCode() + ", "
+                            + hoeffdingBound + ", " + oldErrorRate + ", " + altErrorRate + ", "
+                            + (oldErrorRate - altErrorRate) + ", ");
 
-                    if (Bound < oldErrorRate - altErrorRate) {
+                    if (hoeffdingBound < oldErrorRate - altErrorRate) {
                         // Switch alternate tree
-                        this.conceptPrintWriter.println("Old tree replaced with alternating tree. Instance: "
-                                + inst + ", bound: " + Bound);
+                        System.out.println("Old tree replaced with alternating tree. Instance: "
+                                + inst + ", bound: " + hoeffdingBound);
+                        this.conceptFileWriter.println("replaced");
 
                         ht.activeLeafNodeCount -= this.numberLeaves();
                         ht.activeLeafNodeCount += ((NewNode) this.alternateTree).numberLeaves();
                         killTreeChilds(ht);
                         if (parent != null) {
                             parent.setChild(parentBranch, this.alternateTree);
-                            //((AdaSplitNode) parent.getChild(parentBranch)).alternateTree = null;
                         } else {
                             // Switch root tree
                             ht.treeRoot = ((AdaSplitNode) ht.treeRoot).alternateTree;
                         }
                         ht.switchedAlternateTrees++;
-                    } else if (Bound < altErrorRate - oldErrorRate) {
+                    } else if (hoeffdingBound < altErrorRate - oldErrorRate) {
+                        this.conceptFileWriter.println("erased");
+
                         // Erase alternate tree
                         if (this.alternateTree instanceof ActiveLearningNode) {
                             this.alternateTree = null;
-                            //ht.activeLeafNodeCount--;
                         } else if (this.alternateTree instanceof InactiveLearningNode) {
                             this.alternateTree = null;
-                            //ht.inactiveLeafNodeCount--;
                         } else {
                             ((AdaSplitNode) this.alternateTree).killTreeChilds(ht);
                         }
                         ht.prunedAlternateTrees++;
                     }
+                    else {
+                        this.conceptFileWriter.println("none");
+                    }
                 }
             }
-            //}
             //learnFromInstance alternate Tree and Child nodes
             if (this.alternateTree != null) {
                 ((NewNode) this.alternateTree).learnFromInstance(weightedInst, ht, parent, parentBranch);
@@ -334,6 +322,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
         @Override
         public void learnFromInstance(Instance inst, ConceptDetectionTree ht, SplitNode parent, int parentBranch) {
             int trueClass = (int) inst.classValue();
+
             //New option vore
             int k = MiscUtils.poisson(1.0, this.classifierRandom);
             Instance weightedInst = (Instance) inst.copy();
@@ -355,7 +344,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
             }
 
             //Update statistics
-            learnFromInstance(weightedInst, ht);	//inst
+            learnFromInstance(weightedInst, ht);
 
             //Check for Split condition
             double weightSeen = this.getWeightSeen();
@@ -365,17 +354,6 @@ public class ConceptDetectionTree extends HoeffdingTree {
                         parentBranch);
                 this.setWeightSeenAtLastSplitEvaluation(weightSeen);
             }
-
-
-            //learnFromInstance alternate Tree and Child nodes
-			/*if (this.alternateTree != null)  {
-            this.alternateTree.learnFromInstance(inst,ht);
-            }
-            for (Node child : this.children) {
-            if (child != null) {
-            child.learnFromInstance(inst,ht);
-            }
-            }*/
         }
 
         @Override
@@ -425,14 +403,12 @@ public class ConceptDetectionTree extends HoeffdingTree {
     }
 
     @Override
-    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
-                                     double[] classObservations, int size) {
+    protected SplitNode newSplitNode(InstanceConditionalTest splitTest, double[] classObservations, int size) {
         return new AdaSplitNode(splitTest, classObservations, size, this.conceptFileWriter);
     }
 
     @Override
-    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
-                                     double[] classObservations) {
+    protected SplitNode newSplitNode(InstanceConditionalTest splitTest, double[] classObservations) {
         return new AdaSplitNode(splitTest, classObservations, this.conceptFileWriter);
     }
 
@@ -449,8 +425,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
     public FoundNode[] filterInstanceToLeaves(Instance inst,
                                               SplitNode parent, int parentBranch, boolean updateSplitterCounts) {
         List<FoundNode> nodes = new LinkedList<FoundNode>();
-        ((NewNode) this.treeRoot).filterInstanceToLeaves(inst, parent, parentBranch, nodes,
-                updateSplitterCounts);
+        ((NewNode) this.treeRoot).filterInstanceToLeaves(inst, parent, parentBranch, nodes, updateSplitterCounts);
         return nodes.toArray(new FoundNode[nodes.size()]);
     }
 
@@ -468,18 +443,9 @@ public class ConceptDetectionTree extends HoeffdingTree {
                         leafNode = foundNode.parent;
                     }
                     double[] dist = leafNode.getClassVotes(inst, this);
-                    //Albert: changed for weights
-                    //double distSum = Utils.sum(dist);
-                    //if (distSum > 0.0) {
-                    //	Utils.normalize(dist, distSum);
-                    //}
                     result.addValues(dist);
-                    //predictionPaths++;
                 }
             }
-            //if (predictionPaths > this.maxPredictionPaths) {
-            //	this.maxPredictionPaths++;
-            //}
             return result.getArrayRef();
         }
         return new double[0];
