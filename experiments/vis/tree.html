@@ -13,19 +13,20 @@
     <style type="text/css">
         .node circle {
             cursor: pointer;
-            fill: #fff;
+            fill: #008bff;
             stroke: steelblue;
             stroke-width: 2.5px;
         }
 
         .node text {
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 600;
         }
 
         path.link {
             fill: none;
-            stroke: #ccc;
-            stroke-width: 3.5px;
+            stroke: #000;
+            stroke-width: 4px;
         }
     </style>
 </head>
@@ -73,7 +74,7 @@
 
             _diagonal = d3.svg.diagonal()
                     .projection(function (d) {
-                        return [d.y, d.x];
+                        return [d.x, d.y];
                     });
 
             _nodes.x0 = (_height - _margins.top - _margins.bottom) / 2;
@@ -104,8 +105,8 @@
             var nodeEnter = node.enter().append("svg:g")
                     .attr("class", "node")
                     .attr("transform", function (d) {
-                        return "translate(" + source.y0
-                                + "," + source.x0 + ")";
+                        return "translate(" + source.x0
+                                + "," + source.y0 + ")";
                     })
                     .on("click", function (d) {
                         toggle(d);
@@ -120,13 +121,13 @@
 
             var nodeUpdate = node.transition()
                     .attr("transform", function (d) {
-                        return "translate(" + d.y + "," + d.x + ")";
+                        return "translate(" + d.x + "," + d.y + ")";
                     });
 
             nodeUpdate.select("circle")
                     .attr("r", function (d) {
-                        if (d.split) return d.split.operand * 10;
-                        return 4.5;
+                        if (d.split) return d.split.operand * 15;
+                        return 7.5;
                     })
                     .style("fill", function (d) {
                         return d.leaf ? "black" : "#fff";
@@ -134,8 +135,8 @@
 
             var nodeExit = node.exit().transition()
                     .attr("transform", function (d) {
-                        return "translate(" + source.y
-                                + "," + source.x + ")";
+                        return "translate(" + source.x
+                                + "," + source.y + ")";
                     })
                     .remove();
 
@@ -145,8 +146,8 @@
             renderLabels(nodeEnter, nodeUpdate, nodeExit);
 
             nodes.forEach(function (d) {
-                d.x0 = d.x;
-                d.y0 = d.y;
+                d.x0 = d.y;
+                d.y0 = d.x;
             });
         }
 
@@ -162,7 +163,7 @@
                     .text(function (d) {
                         if (d.split) {
                             return d.split.attribute + " " + d.split.operator + " " +
-                                    d.split.operand;
+                                    d.split.operand.toFixed(2);
                         }
                         return d.className;
                     })
@@ -184,7 +185,7 @@
             link.enter().insert("svg:path", "g")
                     .attr("class", "link")
                     .attr("d", function (d) {
-                        var o = {x: source.x0, y: source.y0};
+                        var o = {y: source.x0, x: source.y0};
                         return _diagonal({source: o, target: o});
                     });
 
@@ -193,7 +194,7 @@
 
             link.exit().transition()
                     .attr("d", function (d) {
-                        var o = {x: source.x, y: source.y};
+                        var o = {y: source.x, x: source.y};
                         return _diagonal({source: o, target: o});
                     })
                     .remove();
@@ -251,7 +252,7 @@
             for(var i = 0; i < trees.length; i++) {
                 (function(i){
                     setTimeout(function(){
-                        console.log("Tree " + i);
+//                        console.log("Tree " + i);
                         chart.nodes(trees[i]).render();
                     }, timeout * i);
                 }(i));
@@ -261,6 +262,7 @@
     };
 
     function hfdt_simple() {
+        console.log('Fok jea');
         training($("input").val());
     }
 
@@ -284,7 +286,7 @@
 </script>
 
 <div class="control-group">
-    Reaload in ms: <input type="number" name="timeout" value="250"/>
+    Reaload in ms: <input type="number" name="timeout" value="0"/>
     <button onclick="hfdt_simple()">HFDT sample</button>
     <button onclick="hfdt_large_simple()">HFDT large sample</button>
     <button onclick="hfdt_huge_simple()">HFDT huge sample</button>
