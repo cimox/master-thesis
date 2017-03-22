@@ -153,7 +153,6 @@ public class ConceptDetectionTree extends HoeffdingTree {
 
             // Check condition to build a new alternate tree
             if (this.ErrorChange) {
-                System.out.println("Creating new alternating tree");
                 // Start a new alternative tree : learning node
                 this.alternateTree = ht.newLearningNode();
                 ht.alternateTrees++;
@@ -205,6 +204,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
                     }
                 }
             }
+
             //learnFromInstance alternate Tree and Child nodes
             if (this.alternateTree != null) {
                 ((NewNode) this.alternateTree).learnFromInstance(weightedInst, ht, parent, parentBranch);
