@@ -243,7 +243,7 @@ class EnhancedHoeffdingTree extends AbstractClassifier {
             node.put("className", getClassName(ht));
             node.put("classNum", this.observedClassDistribution.maxIndex());
             this.observedClassDistribution.getSingleLineDescription(weights, ht.treeRoot.observedClassDistribution.numValues());
-            node.put("weights", weights.toString());  // TODO: change this to list
+//            node.put("weights", weights.toString());  // TODO: change this to list
             node.put("leaf", true);
             children.add(node);
         }
@@ -377,7 +377,7 @@ class EnhancedHoeffdingTree extends AbstractClassifier {
                     node.put("split", parseSplit(ht, branch));
                     StringBuilder weights = new StringBuilder();
                     this.observedClassDistribution.getSingleLineDescription(weights, ht.treeRoot.observedClassDistribution.numValues());
-                    node.put("weights", weights.toString());  // TODO: change this to list
+//                    node.put("weights", weights.toString());  // TODO: change this to list
                     node.put("leaf", false);
 
                     JSONArray newChildren = new JSONArray();

@@ -255,6 +255,7 @@
 
     training = function (timeout) {
         $.getJSON("data/tree-training_wo-weights.json", function (trees) {
+            console.log('Training...');
             var previousTree = undefined, currentTree = undefined;
 
             for (var i = 0; i < trees.length; i++) {
@@ -262,6 +263,8 @@
                 printTrainingTree(timeout * i, currentTree, previousTree);
                 previousTree = _.cloneDeep(trees[i]);
             }
+
+            console.log('Done! Read ' + trees.length + ' instances');
         });
     };
 
