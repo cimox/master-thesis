@@ -1,4 +1,4 @@
-/*
+package trees;/*
  *    HoeffdingTree.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
@@ -90,9 +90,9 @@ import org.json.simple.JSONObject;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-class EnhancedHoeffdingTree extends AbstractClassifier {
+public class EnhancedHoeffdingTree extends AbstractClassifier {
 
-    EnhancedHoeffdingTree(PrintWriter fileWriter, Integer printLimit) {
+    public EnhancedHoeffdingTree(PrintWriter fileWriter, Integer printLimit) {
         this.printLimit = printLimit;
         this.fileWriter = fileWriter;
     }

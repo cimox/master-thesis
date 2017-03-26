@@ -1,3 +1,5 @@
+package trees;
+
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +20,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
     private PrintWriter conceptFileWriter;
     private LearningNode firstAltTree;
 
-    ConceptDetectionTree(PrintWriter conceptFileWriter) {
+    public ConceptDetectionTree(PrintWriter conceptFileWriter) {
         this.conceptFileWriter = conceptFileWriter;
     }
 

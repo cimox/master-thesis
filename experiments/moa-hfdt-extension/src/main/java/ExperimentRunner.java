@@ -3,8 +3,9 @@ import com.github.javacliparser.IntOption;
 import experiments.Experiment;
 import experiments.ExperimentException;
 import moa.classifiers.Classifier;
-import moa.classifiers.trees.HoeffdingAdaptiveTree;
 import moa.streams.generators.*;
+import trees.ConceptDetectionTree;
+import trees.EnhancedHoeffdingTree;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
