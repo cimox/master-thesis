@@ -393,6 +393,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
             splitNode.put("attribute", attribute);
             splitNode.put("operator", operator);
             splitNode.put("operand", operand);
+            splitNode.put("splitId", this.splitTest.hashCode());
 
             return splitNode;
         }

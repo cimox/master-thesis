@@ -14,15 +14,43 @@ import moa.core.Utils;
 import com.yahoo.labs.samoa.instances.Instance;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import utils.MyKafkaProducer;
 
 public class ConceptDetectionTree extends MyHoeffdingTree {
 
     private static final long serialVersionUID = 1L;
 
     private PrintWriter conceptFileWriter;
+    private boolean printToKafka;
+    private String kafkaTopic = "experiment";
+    private MyKafkaProducer producer;
+    private JSONObject previousRoot;
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter) {
         this.conceptFileWriter = conceptFileWriter;
+        this.printToKafka = false;
+        initKafkaProducer();
+    }
+
+    public ConceptDetectionTree(PrintWriter conceptFileWriter, boolean printToKafka) {
+        this.conceptFileWriter = conceptFileWriter;
+        this.printToKafka = printToKafka;
+        initKafkaProducer();
+    }
+
+    public ConceptDetectionTree(PrintWriter conceptFileWriter, boolean printToKafka, String kafkaTopic) {
+        this.conceptFileWriter = conceptFileWriter;
+        this.printToKafka = printToKafka;
+        this.kafkaTopic = kafkaTopic;
+        initKafkaProducer(this.kafkaTopic);
+    }
+
+    private void initKafkaProducer() {
+        this.producer = new MyKafkaProducer();
+    }
+
+    private void initKafkaProducer(String kafkaTopic) {
+        this.producer = new MyKafkaProducer(kafkaTopic);
     }
 
     @Override
@@ -414,25 +442,33 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         return new AdaSplitNode(splitTest, classObservations, this.conceptFileWriter);
     }
 
+    private JSONObject prepareNewTreeRoot() {
+        JSONObject root = new JSONObject();
+        JSONArray rootChildren = new JSONArray();
+        root.put("className", "root");
+        root.put("children", rootChildren);
+        return root;
+    }
+
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         if (this.treeRoot == null) {
             this.treeRoot = newLearningNode();
             this.activeLeafNodeCount = 1;
-        } else {
-            System.out.println("Learning from instance, printing progress: ");
-            StringBuilder sb = new StringBuilder();
-            this.getDescription(sb, 2);
-            System.out.println(sb.toString());
+        } else if (this.printToKafka) {
+            JSONObject root = prepareNewTreeRoot();
+            getModelDescriptionJSON((JSONArray) root.get("children"));
 
-            JSONObject root = new JSONObject();
-            JSONArray rootChildren = new JSONArray();
-            root.put("className", "root");
-            root.put("children", rootChildren);
-            getModelDescriptionJSON(rootChildren);
-            System.out.println(root.toJSONString());
+            try {
+                if (!root.toJSONString().equals(this.previousRoot.toJSONString())) {
+                    this.producer.sendMessage("key", root.toJSONString());
+                }
+            }
+            catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+            this.previousRoot = root;
         }
-
         ((NewNode) this.treeRoot).learnFromInstance(inst, this, null, -1);
     }
 
