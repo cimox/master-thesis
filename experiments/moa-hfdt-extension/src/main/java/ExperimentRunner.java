@@ -1,3 +1,4 @@
+import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import experiments.Experiment;
@@ -13,7 +14,7 @@ import java.io.PrintWriter;
 
 
 public class ExperimentRunner {
-    private final static int NUM_INSTANCES = 25;
+    private final static int NUM_INSTANCES = 7500;
     private final static boolean IS_TESTING = true;
 
     public static void main(String[] args) {

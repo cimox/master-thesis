@@ -4,21 +4,22 @@ import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.driftdetection.ADWIN;
-import moa.classifiers.trees.HoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
 import moa.core.Utils;
 import com.yahoo.labs.samoa.instances.Instance;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
-public class ConceptDetectionTree extends HoeffdingTree {
+public class ConceptDetectionTree extends MyHoeffdingTree {
 
     private static final long serialVersionUID = 1L;
 
     private PrintWriter conceptFileWriter;
-    private LearningNode firstAltTree;
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter) {
         this.conceptFileWriter = conceptFileWriter;
@@ -200,8 +201,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
                             ((AdaSplitNode) this.alternateTree).killTreeChilds(ht);
                         }
                         ht.prunedAlternateTrees++;
-                    }
-                    else {
+                    } else {
                         this.conceptFileWriter.println("none");
                     }
                 }
@@ -359,7 +359,7 @@ public class ConceptDetectionTree extends HoeffdingTree {
         }
 
         @Override
-        public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
+        public double[] getClassVotes(Instance inst, MyHoeffdingTree ht) {
             double[] dist;
             int predictionOption = ((ConceptDetectionTree) ht).leafpredictionOption.getChosenIndex();
             if (predictionOption == 0) { //MC
@@ -419,7 +419,20 @@ public class ConceptDetectionTree extends HoeffdingTree {
         if (this.treeRoot == null) {
             this.treeRoot = newLearningNode();
             this.activeLeafNodeCount = 1;
+        } else {
+            System.out.println("Learning from instance, printing progress: ");
+            StringBuilder sb = new StringBuilder();
+            this.getDescription(sb, 2);
+            System.out.println(sb.toString());
+
+            JSONObject root = new JSONObject();
+            JSONArray rootChildren = new JSONArray();
+            root.put("className", "root");
+            root.put("children", rootChildren);
+            getModelDescriptionJSON(rootChildren);
+            System.out.println(root.toJSONString());
         }
+
         ((NewNode) this.treeRoot).learnFromInstance(inst, this, null, -1);
     }
 
