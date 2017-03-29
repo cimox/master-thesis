@@ -14,6 +14,7 @@ import moa.core.Utils;
 import com.yahoo.labs.samoa.instances.Instance;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import redis.clients.jedis.Jedis;
 import utils.MyKafkaProducer;
 
 public class ConceptDetectionTree extends MyHoeffdingTree {
@@ -25,17 +26,20 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
     private String kafkaTopic = "experiment";
     private MyKafkaProducer producer;
     private JSONObject previousRoot;
+    private Jedis redis;
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter) {
         this.conceptFileWriter = conceptFileWriter;
         this.printToKafka = false;
         initKafkaProducer();
+        initRedis();
     }
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter, boolean printToKafka) {
         this.conceptFileWriter = conceptFileWriter;
         this.printToKafka = printToKafka;
         initKafkaProducer();
+        initRedis();
     }
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter, boolean printToKafka, String kafkaTopic) {
@@ -43,6 +47,16 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         this.printToKafka = printToKafka;
         this.kafkaTopic = kafkaTopic;
         initKafkaProducer(this.kafkaTopic);
+        initRedis();
+    }
+
+    public ConceptDetectionTree(PrintWriter conceptFileWriter, boolean printToKafka, String kafkaTopic,
+                                String redisHost, int redistPort) {
+        this.conceptFileWriter = conceptFileWriter;
+        this.printToKafka = printToKafka;
+        this.kafkaTopic = kafkaTopic;
+        initKafkaProducer(this.kafkaTopic);
+        initRedis(redisHost, redistPort);
     }
 
     private void initKafkaProducer() {
@@ -51,6 +65,14 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
 
     private void initKafkaProducer(String kafkaTopic) {
         this.producer = new MyKafkaProducer(kafkaTopic);
+    }
+
+    private void initRedis() {
+        this.redis = new Jedis("localhost", 6379);
+    }
+
+    private void initRedis(String host, int port) {
+        this.redis = new Jedis(host, port);
     }
 
     @Override
@@ -83,16 +105,11 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         private static final long serialVersionUID = 1L;
 
         private PrintWriter conceptFileWriter;
-
+        private Jedis redis;
         protected Node alternateTree;
-
         protected ADWIN estimationErrorWeight;
-        //public boolean isAlternateTree = false;
-
         public boolean ErrorChange = false;
-
         protected int randomSeed = 1;
-
         protected Random classifierRandom;
 
         @Override
@@ -112,17 +129,20 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             return byteSize;
         }
 
-        public AdaSplitNode(InstanceConditionalTest splitTest,
-                            double[] classObservations, int size, PrintWriter pw) {
+        public AdaSplitNode(InstanceConditionalTest splitTest, double[] classObservations, int size, PrintWriter pw,
+                            Jedis redis) {
             super(splitTest, classObservations, size);
             this.classifierRandom = new Random(this.randomSeed);
             this.conceptFileWriter = pw;
+            this.redis = redis;
         }
 
-        public AdaSplitNode(InstanceConditionalTest splitTest, double[] classObservations, PrintWriter pw) {
+        public AdaSplitNode(InstanceConditionalTest splitTest, double[] classObservations, PrintWriter pw,
+                            Jedis redis) {
             super(splitTest, classObservations);
             this.classifierRandom = new Random(this.randomSeed);
             this.conceptFileWriter = pw;
+            this.redis = redis;
         }
 
         @Override
@@ -197,15 +217,22 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                     double hoeffdingBound = Math.sqrt(2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
 
                     // Print progress to file
+                    double diffErrorRate = oldErrorRate - altErrorRate;
                     this.conceptFileWriter.print(this.hashCode() + ", " + this.alternateTree.hashCode() + ", "
                             + hoeffdingBound + ", " + oldErrorRate + ", " + altErrorRate + ", "
-                            + (oldErrorRate - altErrorRate) + ", ");
+                            + diffErrorRate + ", ");
 
+                    this.redis.lpush(this.splitTest.hashCode() + "_hoeffdingBound", String.valueOf(hoeffdingBound));
+                    this.redis.lpush(this.splitTest.hashCode() + "_oldErrorRate", String.valueOf(oldErrorRate));
+                    this.redis.lpush(this.splitTest.hashCode() + "_altErrorRate", String.valueOf(altErrorRate));
+                    this.redis.lpush(this.splitTest.hashCode() + "_diff", String.valueOf(diffErrorRate));
+
+                    String replacementStatus = "none";
                     if (hoeffdingBound < oldErrorRate - altErrorRate) {
                         // Switch alternate tree
-                        System.out.println("Old tree replaced with alternating tree. Instance: "
-                                + inst + ", bound: " + hoeffdingBound);
-                        this.conceptFileWriter.println("replaced");
+                        System.out.println("Old tree " + this.splitTest.hashCode()
+                                + " replaced with alternating tree, bound: " + hoeffdingBound);
+                        replacementStatus = "replaced";
 
                         ht.activeLeafNodeCount -= this.numberLeaves();
                         ht.activeLeafNodeCount += ((NewNode) this.alternateTree).numberLeaves();
@@ -218,7 +245,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                         }
                         ht.switchedAlternateTrees++;
                     } else if (hoeffdingBound < altErrorRate - oldErrorRate) {
-                        this.conceptFileWriter.println("erased");
+                        replacementStatus = "erased";
 
                         // Erase alternate tree
                         if (this.alternateTree instanceof ActiveLearningNode) {
@@ -229,9 +256,9 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                             ((AdaSplitNode) this.alternateTree).killTreeChilds(ht);
                         }
                         ht.prunedAlternateTrees++;
-                    } else {
-                        this.conceptFileWriter.println("none");
                     }
+                    this.conceptFileWriter.println(replacementStatus);
+                    this.redis.set(this.splitTest.hashCode() + "_status", replacementStatus);
                 }
             }
 
@@ -434,12 +461,12 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
 
     @Override
     protected SplitNode newSplitNode(InstanceConditionalTest splitTest, double[] classObservations, int size) {
-        return new AdaSplitNode(splitTest, classObservations, size, this.conceptFileWriter);
+        return new AdaSplitNode(splitTest, classObservations, size, this.conceptFileWriter, this.redis);
     }
 
     @Override
     protected SplitNode newSplitNode(InstanceConditionalTest splitTest, double[] classObservations) {
-        return new AdaSplitNode(splitTest, classObservations, this.conceptFileWriter);
+        return new AdaSplitNode(splitTest, classObservations, this.conceptFileWriter, this.redis);
     }
 
     private JSONObject prepareNewTreeRoot() {
