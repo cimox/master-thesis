@@ -61,3 +61,6 @@ fabric.properties
 *.json
 sample.txt
 *.class
+.idea/inspectionProfiles/
+.idea/kotlinc.xml
+tree-concepts.csv
