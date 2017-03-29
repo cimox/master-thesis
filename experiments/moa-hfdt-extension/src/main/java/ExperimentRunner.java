@@ -5,7 +5,6 @@ import experiments.ExperimentException;
 import moa.classifiers.Classifier;
 import moa.streams.generators.*;
 import trees.ConceptDetectionTree;
-import trees.EnhancedHoeffdingTree;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -14,11 +13,11 @@ import java.io.PrintWriter;
 
 
 public class ExperimentRunner {
-    private final static int NUM_INSTANCES = 5000;
+    private final static int NUM_INSTANCES = 25;
     private final static boolean IS_TESTING = true;
 
     public static void main(String[] args) {
-        ExperimentTreeTraining exp = new ExperimentTreeTraining();
+        ExperimentConceptDetection exp = new ExperimentConceptDetection();
         exp.runExperiment(NUM_INSTANCES, IS_TESTING);
     }
 
@@ -34,7 +33,7 @@ public class ExperimentRunner {
                 this.fileWriter = new PrintWriter(this.bw);
                 this.fileWriter.println("[");
 
-                Classifier learner = new EnhancedHoeffdingTree(this.fileWriter, 1);
+                Classifier learner = new ConceptDetectionTree(this.fileWriter);
                 HyperplaneGenerator stream = new HyperplaneGenerator();
                 stream.numClassesOption = new IntOption("numClasses", 'c',
                         "The number of classes to generate.", 4, 2, Integer.MAX_VALUE);
