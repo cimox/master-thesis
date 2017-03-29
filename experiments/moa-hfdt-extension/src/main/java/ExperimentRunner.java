@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 
 
 public class ExperimentRunner {
-    private final static int NUM_INSTANCES = 7500;
+    private final static int NUM_INSTANCES = 50000;
     private final static boolean IS_TESTING = true;
 
     public static void main(String[] args) {
@@ -79,7 +79,7 @@ public class ExperimentRunner {
                 this.accuracyFileWriter = new PrintWriter(this.accuracyBufferedWriter);
 
                 // Create classifier and stream generator.
-                ConceptDetectionTree learner = new ConceptDetectionTree(this.conceptFileWriter);
+                ConceptDetectionTree learner = new ConceptDetectionTree(this.conceptFileWriter, true);
                 HyperplaneGenerator stream = new HyperplaneGenerator();
                 stream.numClassesOption = new IntOption("numClasses", 'c',
                         "The number of classes to generate.", 4, 2, Integer.MAX_VALUE);
