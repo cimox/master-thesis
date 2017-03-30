@@ -7,6 +7,7 @@
     <script type="text/javascript" src="lib/d3_v3.js"></script>
     <script type="text/javascript" src="lib/jquery-3.2.0.min.js"></script>
     <script type="text/javascript" src="lib/lodash.min.js"></script>
+    <script type="text/javascript" src="lib/axios.min.js"></script>
     <script type="javascript" src="tree.js"></script>
     <style type="text/css">
         .node circle {
@@ -89,6 +90,8 @@
             renderLinks(nodes, source);
         }
 
+//        function getNodeStats()
+
         function renderNodes(nodes, source) {
             nodes.forEach(function (d) {
                 d.y = d.depth * 120;
@@ -108,6 +111,18 @@
                 .on("click", function (d) {
                     toggle(d);
                     render(d);
+                })
+                .on("mouseover", function(d) {
+                    var g = d3.select(this); // The node
+                    var info = g.append('text')
+                        .classed('info', true)
+                        .attr('x', 20)
+                        .attr('y', 10)
+                        .text('More info');
+                    console.log('node id: ' + d);
+                })
+                .on("mouseout", function() {
+                    d3.select(this).select('text.info').remove();
                 });
 
             nodeEnter.append("svg:circle")
@@ -268,6 +283,45 @@
         });
     };
 
+    var previousTree = undefined, currentTree = undefined;
+    var stopLoading = false;
+    function loadTreeIncrement() {
+        if (!stopLoading) {
+            axios.get('http://localhost:8080/tree/')
+                .then(function (res) {
+                    if (res.data['success'] == true) {
+                        currentTree = _.cloneDeep(res.data['data']['tree']);
+                        if (!_.isEqual(currentTree, previousTree)) {
+                            chart.nodes(currentTree).render();
+                        }
+                        previousTree = _.cloneDeep(currentTree);
+                    } else {
+                        console.error('Error occurred when fetching data from API');
+                    }
+                })
+                .catch(function (res) {
+                    if (res instanceof Error) {
+                        console.log(res.message);
+                    } else {
+                        console.log(res.data);
+                    }
+                });
+        }
+    }
+
+    function onlineTraining(timeout) {
+        console.log('online training');
+        setInterval(loadTreeIncrement, timeout);
+    }
+
+    function stop_btn() {
+        stopLoading = true;
+    }
+
+    function online_training_btn() {
+        onlineTraining($("input").val());
+    }
+
     function hfdt_training() {
         training($("input").val());
     }
@@ -290,20 +344,16 @@
         });
     }
 
-    function hfdt_huge2_simple() {
-        d3.json("data/sample-huge-2-hfdt.json", function (nodes) {
-            chart.nodes(nodes).render();
-        });
-    }
 </script>
 
 <div class="control-group">
-    Reaload in ms: <input type="number" name="timeout" value="10"/>
+    Reaload in ms: <input type="number" name="timeout" value="500"/>
+    <button onclick="online_training_btn()">Online training</button>
+    <button onclick="stop_btn()">STOP</button>
     <button onclick="hfdt_training()">HFDT training</button>
     <button onclick="hfdt_simple()">HFDT sample</button>
     <button onclick="hfdt_large_simple()">HFDT large sample</button>
     <button onclick="hfdt_huge_simple()">HFDT huge sample</button>
-    <button onclick="hfdt_huge2_simple()">HFDT huge huge sample</button>
 </div>
 
 </body>
