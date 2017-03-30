@@ -18,7 +18,7 @@ public class Experiment {
     }
 
     private long printProgressTraining(long instancesSeen, long trainingInstanceCount) {
-        if (++instancesSeen % Math.floor(trainingInstanceCount / 10) == 0) {
+        if (++instancesSeen % Math.floor(trainingInstanceCount / 100) == 0) {
             System.out.println("[INFO] " + instancesSeen + " samples processed");
         }
         return instancesSeen;

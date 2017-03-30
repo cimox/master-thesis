@@ -69,6 +69,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
 
     private void initRedis() {
         this.redis = new Jedis("localhost", 6379);
+        this.redis.flushAll();
     }
 
     private void initRedis(String host, int port) {
@@ -180,6 +181,8 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         // Parent nodes are allways SplitNodes
         @Override
         public void learnFromInstance(Instance inst, ConceptDetectionTree ht, SplitNode parent, int parentBranch) {
+            String replacementStatus = "none";
+
             int trueClass = (int) inst.classValue();
             // New option core
             Instance weightedInst = inst.copy();
@@ -209,25 +212,18 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                 ht.alternateTrees++;
             } else if (this.alternateTree != null && !((NewNode) this.alternateTree).isNullError()) { // Check condition to replace tree
                 if (this.getErrorWidth() > 300 && ((NewNode) this.alternateTree).getErrorWidth() > 300) {
+                    double fDelta = .05;
+                    double fN = 1.0 / ((NewNode) this.alternateTree).getErrorWidth() + 1.0 / this.getErrorWidth();
                     double oldErrorRate = this.getErrorEstimation();
                     double altErrorRate = ((NewNode) this.alternateTree).getErrorEstimation();
-                    double fDelta = .05;
-
-                    double fN = 1.0 / ((NewNode) this.alternateTree).getErrorWidth() + 1.0 / this.getErrorWidth();
                     double hoeffdingBound = Math.sqrt(2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
-
-                    // Print progress to file
                     double diffErrorRate = oldErrorRate - altErrorRate;
-                    this.conceptFileWriter.print(this.hashCode() + ", " + this.alternateTree.hashCode() + ", "
-                            + hoeffdingBound + ", " + oldErrorRate + ", " + altErrorRate + ", "
-                            + diffErrorRate + ", ");
 
-                    this.redis.lpush(this.splitTest.hashCode() + "_hoeffdingBound", String.valueOf(hoeffdingBound));
-                    this.redis.lpush(this.splitTest.hashCode() + "_oldErrorRate", String.valueOf(oldErrorRate));
-                    this.redis.lpush(this.splitTest.hashCode() + "_altErrorRate", String.valueOf(altErrorRate));
-                    this.redis.lpush(this.splitTest.hashCode() + "_diff", String.valueOf(diffErrorRate));
+                    this.redis.lpush(this.nodeID + "_hoeffdingBound", String.valueOf(hoeffdingBound));
+                    this.redis.lpush(this.nodeID + "_oldErrorRate", String.valueOf(oldErrorRate));
+                    this.redis.lpush(this.nodeID + "_altErrorRate", String.valueOf(altErrorRate));
+                    this.redis.lpush(this.nodeID + "_diff", String.valueOf(diffErrorRate));
 
-                    String replacementStatus = "none";
                     if (hoeffdingBound < oldErrorRate - altErrorRate) {
                         // Switch alternate tree
                         System.out.println("Old tree " + this.splitTest.hashCode()
@@ -258,9 +254,22 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                         ht.prunedAlternateTrees++;
                     }
                     this.conceptFileWriter.println(replacementStatus);
-                    this.redis.set(this.splitTest.hashCode() + "_status", replacementStatus);
+                }
+                else {
+                    double fDelta = .05;
+                    double fN = 1.0 / ((NewNode) this.alternateTree).getErrorWidth() + 1.0 / this.getErrorWidth();
+                    double oldErrorRate = this.getErrorEstimation();
+                    double altErrorRate = ((NewNode) this.alternateTree).getErrorEstimation();
+                    double hoeffdingBound = Math.sqrt(2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
+                    double diffErrorRate = oldErrorRate - altErrorRate;
+
+                    this.redis.lpush(this.nodeID + "_hoeffdingBound", String.valueOf(hoeffdingBound));
+                    this.redis.lpush(this.nodeID + "_oldErrorRate", String.valueOf(oldErrorRate));
+                    this.redis.lpush(this.nodeID + "_altErrorRate", String.valueOf(altErrorRate));
+                    this.redis.lpush(this.nodeID + "_diff", String.valueOf(diffErrorRate));
                 }
             }
+            this.redis.set(this.nodeID + "_status", replacementStatus);
 
             //learnFromInstance alternate Tree and Child nodes
             if (this.alternateTree != null) {
@@ -396,7 +405,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             }
             double oldError = this.getErrorEstimation();
             this.ErrorChange = this.estimationErrorWeight.setInput(blCorrect == true ? 0.0 : 1.0);
-            if (this.ErrorChange == true && oldError > this.getErrorEstimation()) {
+            if (this.ErrorChange && oldError > this.getErrorEstimation()) {
                 this.ErrorChange = false;
             }
 
@@ -407,8 +416,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             double weightSeen = this.getWeightSeen();
             if (weightSeen
                     - this.getWeightSeenAtLastSplitEvaluation() >= ht.gracePeriodOption.getValue()) {
-                ht.attemptToSplit(this, parent,
-                        parentBranch);
+                ht.attemptToSplit(this, parent, parentBranch);
                 this.setWeightSeenAtLastSplitEvaluation(weightSeen);
             }
         }
