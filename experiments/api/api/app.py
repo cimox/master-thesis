@@ -4,13 +4,12 @@ import redis
 from api import app, logger
 from api.consumer import Consumer
 from api.helpers import deserialize_redis_msg
-from flask import jsonify
-
-kafka_previous_msg = None
+from flask import jsonify, Response
 
 
 @app.route('/status/')
 def status():
+    logger.info('Fetching API status')
     return jsonify({
         'status': 'alive',
         'success': True,
@@ -19,14 +18,9 @@ def status():
 
 @app.route('/tree/')
 def get_tree_increment():
-    kafka_msg = kafka_messages.__next__()
+    logger.info('Fetching tree increment')
 
-    return jsonify({
-        'data': {
-            'tree': kafka_msg,
-        },
-        'success': True,
-    })
+    return Response(kafka_consumer.process_messages(), mimetype='text/event-stream')
 
 
 @app.route('/node/<node_id>/stats/', methods=['GET'])
@@ -59,7 +53,7 @@ if __name__ == '__main__':
 
     # Initialize Kafka consumer.
     kafka_consumer = Consumer(topic=args.topic)
-    kafka_messages = kafka_consumer.process_messages()
+    kafka_consumer.start()
 
     # Initialize Redis.
     redis = redis.StrictRedis(host=args.redis_host, port=args.redis_port, db=args.redis_db)
