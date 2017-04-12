@@ -1,44 +1,96 @@
 import argparse
+import signal
 import redis
 
-from api import app, logger
+from api import logger
 from api.consumer import Consumer
-from api.helpers import deserialize_redis_msg
-from flask import jsonify, Response
+from api.helpers import deserialize_redis_msg, DataSource, BaseHandler
+from tornado import gen
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop, PeriodicCallback
+from tornado.iostream import StreamClosedError
+from tornado.web import Application, url
 
 
-@app.route('/status/')
-def status():
-    logger.info('Fetching API status')
-    return jsonify({
-        'status': 'alive',
-        'success': True,
-    })
+class NodeStats(BaseHandler):
+    def data_received(self, chunk):
+        pass
+
+    def get(self, node_id):
+        node_id = node_id.replace('/', '')
+        logger.info('Fetching node_id {} stats'.format(node_id))
+        hoeffding_bound = redis.lrange('{}_hoeffdingBound'.format(node_id), 0, -1)
+        alt_error_rate = redis.lrange('{}_altErrorRate'.format(node_id), 0, -1)
+        old_error_rate = redis.lrange('{}_oldErrorRate'.format(node_id), 0, -1)
+        tree_status = redis.get('{}_status'.format(node_id))
+
+        self.write({
+            'data': {
+                'hoeffdingBound': deserialize_redis_msg(hoeffding_bound),
+                'altErrorRate': deserialize_redis_msg(alt_error_rate),
+                'oldErrorRate': deserialize_redis_msg(old_error_rate),
+                'tree_status': deserialize_redis_msg(tree_status),
+            },
+            'success': True,
+        })
 
 
-@app.route('/tree/')
-def get_tree_increment():
-    logger.info('Fetching tree increment')
+class TreeIncrements(BaseHandler):
+    """Tree increments server-sent events"""
 
-    return Response(kafka_consumer.process_messages(), mimetype='text/event-stream')
+    def data_received(self, chunk):
+        pass
+
+    def initialize(self, topic):
+        """The ``source`` parameter is a string that is updated with
+        new data. The :class:`EventSouce` instance will continuously
+        check if it is updated and publish to clients when it is.
+        """
+        logger.info('Streaming tree increments from topic {}'.format(topic))
+        kafka_consumer = Consumer(topic=topic)
+        kafka_consumer.start()
+        generator = kafka_consumer.process_messages()
+        publisher = DataSource(next(generator))
+
+        def get_next():
+            publisher.data = next(generator)
+
+        checker = PeriodicCallback(lambda: get_next(), 0.1)
+        checker.start()
+        self.source = publisher
+        self._last = None
+        self.set_header('content-type', 'text/event-stream')
+        self.set_header('cache-control', 'no-cache')
+
+    @gen.coroutine
+    def publish(self, data):
+        """Pushes data to a listener."""
+        try:
+            self.write('data: {}\n\n'.format(data))
+            yield self.flush()
+        except StreamClosedError:
+            pass
+
+    @gen.coroutine
+    def get(self):
+        while True:
+            if self.source.data != self._last:
+                yield self.publish(self.source.data)
+                self._last = self.source.data
+            else:
+                yield gen.sleep(0.005)
 
 
-@app.route('/node/<node_id>/stats/', methods=['GET'])
-def node_stats(node_id):
-    hoeffding_bound = redis.lrange('{}_hoeffdingBound'.format(node_id), 0, -1)
-    alt_error_rate = redis.lrange('{}_altErrorRate'.format(node_id), 0, -1)
-    old_error_rate = redis.lrange('{}_oldErrorRate'.format(node_id), 0, -1)
-    tree_status = redis.get('{}_status'.format(node_id))
+class MainHandler(BaseHandler):
+    def data_received(self, chunk):
+        pass
 
-    return jsonify({
-        'data': {
-            'hoeffdingBound': deserialize_redis_msg(hoeffding_bound),
-            'altErrorRate': deserialize_redis_msg(alt_error_rate),
-            'oldErrorRate': deserialize_redis_msg(old_error_rate),
-            'tree_status': deserialize_redis_msg(tree_status),
-        },
-        'success': True,
-    })
+    def get(self):
+        logger.info('Fetching API status')
+        self.write({
+            'status': 'alive',
+            'success': True,
+        })
 
 
 if __name__ == '__main__':
@@ -51,12 +103,17 @@ if __name__ == '__main__':
     parser.add_argument('--redis_db', help='redis database number', default=0, type=int)
     args = parser.parse_args()
 
-    # Initialize Kafka consumer.
-    kafka_consumer = Consumer(topic=args.topic)
-    kafka_consumer.start()
-
     # Initialize Redis.
     redis = redis.StrictRedis(host=args.redis_host, port=args.redis_port, db=args.redis_db)
 
-    # Start rest api.
-    app.run(host=args.host, port=args.port)
+    # Start tornado web app.
+    app = Application([
+        url(r'/', MainHandler),
+        url(r'/status/', MainHandler),
+        url(r'/tree/', TreeIncrements, dict(topic=args.topic)),
+        url(r'/node/(.+)', NodeStats, name='node')
+    ])
+    server = HTTPServer(app)
+    server.listen(8080)
+    signal.signal(signal.SIGINT, lambda x, y: IOLoop.instance().stop())
+    IOLoop.instance().start()
