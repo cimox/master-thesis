@@ -5,9 +5,13 @@
     <title>Streaming tree</title>
     <style>
 
-        .node {
-            stroke: #fff;
-            stroke-width: 2px;
+        .node circle {
+            stroke: black;
+            stroke-width: 2.5px;
+        }
+
+        .node text {
+            color: black;
         }
 
         .link {
@@ -23,8 +27,8 @@
 <body>
 <script>
 
-    var width = 900,
-        height = 900;
+    var width = 800,
+        height = 800;
 
     var tree = d3.layout.tree()
         .size([width - 20, height - 20]);
@@ -58,12 +62,13 @@
             var parentNode = nodes[0];
             addChildren(parentNode, treeIncrement);
         }
-//        else if (getParentNode(treeIncrement.id) && treeIncrement.id != "root") {
-////            TODO: fix this nodes lookup table
-//            console.log('Updating data of existing node ' + treeIncrement.id);
-//            var nodeToUpdate = nodes[nodeIdsLookup[treeIncrement.id]];
-//            updateNodeData(nodeToUpdate, treeIncrement);
-//        }
+        else if (getParentNode(treeIncrement.id) && treeIncrement.id != "root") {
+//            TODO: fix this nodes lookup table
+            console.log('Updating data of existing node ' + treeIncrement.id);
+            var nodeToUpdate = nodes[nodeIdsLookup[treeIncrement.id]];
+            updateNodeData(nodeToUpdate, treeIncrement);
+            updateTree();
+        }
         else if (treeIncrement.id != "root") {
             addChildren(getParentNode(treeIncrement.parent), treeIncrement);
         }
@@ -76,35 +81,48 @@
             return d.source.id + "-" + d.target.id;
         });
 
-        var nodeEnter = node.enter();
+        var nodeEnter = node.enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function (d) {
+                return "translate(" + d.parent.px + "," + d.parent.py + ")";
+            });
 
         // Add entering nodes in the parent’s old position.
-        nodeEnter.append("circle")
-            .attr("class", "node")
+        nodeEnter.append("svg:circle")
             .attr("r", 6.5)
-            .attr("cx", function (d) {
-                return d.parent.px;
-            })
-            .attr("cy", function (d) {
-                return d.parent.py;
-            })
             .style("fill", function (d) {
                 return d.leaf ? "red" : "blue";
             });
 
-//        var nodeUpdate = node.transition()
-//            .attr("transform", function (d) {
-//                return "translate(" + d.x + "," + d.y + ")";
-//            });
-//
-//        nodeUpdate.select("circle")
-//            .style("fill", function (d) {
-//                console.log('Updating style of node ' + d.id);
-//                return d.leaf ? "red" : "blue";
-//            });
+        nodeEnter.append("svg:text")
+            .attr("dy", "0.25em")
+            .attr("dx", "-0.65em")
+            .attr("text-anchor", function (d) {
+                return d.children || d._children ? "end" : "start";
+            })
+            .style("font-family", "arial")
+            .style("color", "black")
+            .style("font-color", "black")
+            .text(function (d) {
+                if (_.isEqual(d.id, "root")) return "root";
+                if (d.split) {
+                    return d.split.attribute + " " + d.split.operator + " " +
+                        d.split.operand.toFixed(2);
+                }
+                return d.weights;
+            });
+
+        // UPDATE
+        // Transition to the proper position for the node
+        node.transition()
+            .duration(duration)
+            .attr("transform", function (d) {
+                d.px = d.x; d.py = d.y;
+                return "translate(" + d.x + "," + d.y + ")";
+            });
 
         // Add entering links in the parent’s old position.
-        link.enter().insert("path", ".node")
+        link.enter().insert("path", "g")
             .attr("class", "link")
             .attr("d", function (d) {
                 var o = {
@@ -115,53 +133,59 @@
             });
 
         // Transition nodes and links to their new positions.
-        var t = svg.transition()
-            .duration(duration);
-
-        t.selectAll(".link")
+        svg.transition()
+            .duration(duration)
+            .selectAll(".link")
             .attr("d", diagonal);
-
-        t.selectAll(".node")
-            .attr("cx", function (d) {
-                return d.px = d.x;
-            })
-            .attr("cy", function (d) {
-                return d.py = d.y;
-            });
     }
 
     function updateTree() {
-        console.log('Updating tree');
-
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
             links = tree.links(nodes);
 
-        var node = svg.selectAll("circle.node")
+        var node = svg.selectAll("g.node")
             .data(nodes, function (d) {
                 return d.id || (d.id = ++i);
             });
-        node.exit().remove();
 
+        // Update nodes
+        node.exit().remove()
+            .transition()
+            .duration(duration)
+            .attr("transform", function (d) {
+                d.px = d.x; d.py = d.y;
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        node.transition()
+            .duration(duration)
+            .attr("transform", function (d) {
+                d.px = d.x; d.py = d.y;
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        node.select("text")
+            .text(function (d) {
+                if (_.isEqual(d.id, "root")) return "root";
+                if (d.split) {
+                    return d.split.attribute + " " + d.split.operator + " " +
+                        d.split.operand.toFixed(2);
+                }
+                return d.weights;
+            });
+
+        // Update links
         var link = svg.selectAll("path.link")
             .data(links, function (d) {
                 return d.target.id;
             });
         link.exit().remove();
 
-        var t = svg.transition()
-            .duration(duration);
-
-        t.selectAll(".link")
+        svg.transition()
+            .duration(duration)
+            .selectAll(".link")
             .attr("d", diagonal);
-
-        t.selectAll(".node")
-            .attr("cx", function (d) {
-                return d.px = d.x;
-            })
-            .attr("cy", function (d) {
-                return d.py = d.y;
-            });
     }
 
     function bft(tree, callback) {
@@ -191,7 +215,7 @@
         }
     }
 
-    d3.json("data/second.json", function (error, treeData) {
+    d3.json("data/a.json", function (error, treeData) {
         if (error) throw error;
 
         bft(treeData, addTreeIncrement);
@@ -213,12 +237,16 @@
         updateTree();
     }
 
+    function updateBtn() {
+        updateTree();
+    }
+
 </script>
 
 <div class="control-group">
-    <button onclick="addTreeIncrement()">Add increment</button>
     <button onclick="addIncrement()">Add increment</button>
     <button onclick="removeNodeBtn()">Remove node</button>
+    <button onclick="updateBtn()">update</button>
 </div>
 
 </body>
