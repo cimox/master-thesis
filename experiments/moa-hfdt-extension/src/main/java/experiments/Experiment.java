@@ -57,6 +57,10 @@ public class Experiment {
         System.out.println(
                 instancesSeen + " instances processed with " + accuracy + "% accuracy in " + totalTime + " seconds."
         );
+
+        StringBuilder sb = new StringBuilder();
+        learner.getDescription(sb, 2);
+        System.out.println(sb.toString());
     }
 
     public void prepareExperiment(InstanceStream stream, Classifier learner) {

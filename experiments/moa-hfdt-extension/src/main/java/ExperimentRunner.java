@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 
 
 public class ExperimentRunner {
-    private final static int NUM_INSTANCES = 50000;
+    private final static int NUM_INSTANCES = 5000;
     private final static boolean IS_TESTING = true;
 
     public static void main(String[] args) {

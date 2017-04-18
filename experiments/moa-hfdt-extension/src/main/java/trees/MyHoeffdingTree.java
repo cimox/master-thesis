@@ -181,8 +181,12 @@ public class MyHoeffdingTree extends AbstractClassifier {
 
         protected DoubleVector observedClassDistribution;
 
+        protected long instancesSeen = 0;
+        protected String nodeID;
+
         public Node(double[] classObservations) {
             this.observedClassDistribution = new DoubleVector(classObservations);
+            this.nodeID = UUID.randomUUID().toString();
         }
 
         public int calcByteSize() {
@@ -226,14 +230,18 @@ public class MyHoeffdingTree extends AbstractClassifier {
             StringUtils.appendNewline(out);
         }
 
-        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray children) {
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray children, String parentID) {
             JSONObject node = new JSONObject();
             StringBuilder weights = new StringBuilder();
 
             node.put("className", getClassName(ht));
             node.put("classNum", this.observedClassDistribution.maxIndex());
-            this.observedClassDistribution.getSingleLineDescription(weights, ht.treeRoot.observedClassDistribution.numValues());
-//            node.put("weights", weights.toString());  // TODO: change this to list
+            this.observedClassDistribution.getSingleLineDescription(
+                    weights, ht.treeRoot.observedClassDistribution.numValues()
+            );
+            node.put("weights", weights.toString());  // TODO: change this to list
+            node.put("id", this.nodeID);
+            node.put("parent", parentID);
             node.put("leaf", true);
             children.add(node);
         }
@@ -260,7 +268,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
         }
 
         public void getDescriptionJSON(JSONArray root) {
-            describeSubtreeJSON(null, root);
+            describeSubtreeJSON(null, root, "root");
         }
     }
 
@@ -270,7 +278,6 @@ public class MyHoeffdingTree extends AbstractClassifier {
 
         protected InstanceConditionalTest splitTest;
         protected AutoExpandVector<Node> children; // = new AutoExpandVector<Node>();
-        protected String nodeID;
 
         @Override
         public int calcByteSize() {
@@ -289,20 +296,16 @@ public class MyHoeffdingTree extends AbstractClassifier {
             return byteSize;
         }
 
-        public SplitNode(InstanceConditionalTest splitTest,
-                         double[] classObservations, int size) {
+        public SplitNode(InstanceConditionalTest splitTest, double[] classObservations, int size) {
             super(classObservations);
             this.splitTest = splitTest;
             this.children = new AutoExpandVector<Node>(size);
-            this.nodeID = UUID.randomUUID().toString();
         }
 
-        public SplitNode(InstanceConditionalTest splitTest,
-                         double[] classObservations) {
+        public SplitNode(InstanceConditionalTest splitTest, double[] classObservations) {
             super(classObservations);
             this.splitTest = splitTest;
             this.children = new AutoExpandVector<Node>();
-            this.nodeID = UUID.randomUUID().toString();
         }
 
 
@@ -360,21 +363,21 @@ public class MyHoeffdingTree extends AbstractClassifier {
         }
 
         @Override
-        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent) {
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID) {
             for (int branch = 0; branch < numChildren(); branch++) {
                 Node child = getChild(branch);
                 JSONObject node = new JSONObject();
                 if (child != null) {
-                    node.put("split", parseSplitToJSON(ht, branch));
-                    StringBuilder weights = new StringBuilder();
-                    this.observedClassDistribution.getSingleLineDescription(weights, ht.treeRoot.observedClassDistribution.numValues());
-//                    node.put("weights", weights.toString());  // TODO: change this to list
+                    String idWithBranchNumber = this.nodeID + "_" + Integer.toString(branch);
+                    node.put("id", idWithBranchNumber);
+                    node.put("parent", parentID);
                     node.put("leaf", false);
+                    node.put("split", parseSplitToJSON(ht, branch));
 
                     JSONArray newChildren = new JSONArray();
                     node.put("children", newChildren);
                     parent.add(node);
-                    child.describeSubtreeJSON(ht, newChildren);
+                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber);
                 }
             }
         }
@@ -389,7 +392,6 @@ public class MyHoeffdingTree extends AbstractClassifier {
             splitNode.put("attribute", attribute);
             splitNode.put("operator", operator);
             splitNode.put("operand", operand);
-            splitNode.put("splitId", this.nodeID);
 
             return splitNode;
         }
@@ -432,6 +434,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
         public void learnFromInstance(Instance inst, MyHoeffdingTree ht) {
             this.observedClassDistribution.addToValue((int) inst.classValue(),
                     inst.weight());
+            super.instancesSeen++;
         }
     }
 
@@ -463,8 +466,8 @@ public class MyHoeffdingTree extends AbstractClassifier {
                 this.attributeObservers = new AutoExpandVector<AttributeClassObserver>(inst.numAttributes());
                 this.isInitialized = true;
             }
-            this.observedClassDistribution.addToValue((int) inst.classValue(),
-                    inst.weight());
+            this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
+            super.instancesSeen++;
             for (int i = 0; i < inst.numAttributes() - 1; i++) {
                 int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
                 AttributeClassObserver obs = this.attributeObservers.get(i);
@@ -643,7 +646,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
     }
 
     public void getModelDescriptionJSON(JSONArray root) {
-        this.treeRoot.describeSubtreeJSON(this, root);
+        this.treeRoot.describeSubtreeJSON(this, root, "root");
     }
 
     @Override

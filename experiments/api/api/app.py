@@ -1,6 +1,7 @@
 import argparse
 import signal
 import redis
+import time
 
 from api import logger
 from api.consumer import Consumer
@@ -20,15 +21,13 @@ class NodeStats(BaseHandler):
         node_id = node_id.replace('/', '')
         logger.info('Fetching node_id {} stats'.format(node_id))
         hoeffding_bound = redis.lrange('{}_hoeffdingBound'.format(node_id), 0, -1)
-        alt_error_rate = redis.lrange('{}_altErrorRate'.format(node_id), 0, -1)
-        old_error_rate = redis.lrange('{}_oldErrorRate'.format(node_id), 0, -1)
+        # alt_error_rate = redis.lrange('{}_altErrorRate'.format(node_id), 0, -1)
+        # old_error_rate = redis.lrange('{}_oldErrorRate'.format(node_id), 0, -1)
         tree_status = redis.get('{}_status'.format(node_id))
 
         self.write({
             'data': {
                 'hoeffdingBound': deserialize_redis_msg(hoeffding_bound),
-                'altErrorRate': deserialize_redis_msg(alt_error_rate),
-                'oldErrorRate': deserialize_redis_msg(old_error_rate),
                 'tree_status': deserialize_redis_msg(tree_status),
             },
             'success': True,
@@ -47,26 +46,37 @@ class TreeIncrements(BaseHandler):
         check if it is updated and publish to clients when it is.
         """
         logger.info('Streaming tree increments from topic {}'.format(topic))
-        kafka_consumer = Consumer(topic=topic)
-        kafka_consumer.start()
-        generator = kafka_consumer.process_messages()
+        self.kafka_consumer = Consumer(topic=topic)
+        self.kafka_consumer.start()
+        generator = self.kafka_consumer.process_messages()
         publisher = DataSource(next(generator))
 
         def get_next():
             publisher.data = next(generator)
 
-        checker = PeriodicCallback(lambda: get_next(), 0.1)
-        checker.start()
+        self.checker = PeriodicCallback(lambda: get_next(), 0.1)
+        self.checker.start()
         self.source = publisher
         self._last = None
         self.set_header('content-type', 'text/event-stream')
         self.set_header('cache-control', 'no-cache')
+
+    def on_finish(self):
+        logger.info('Closing kafka consumer')
+        self.kafka_consumer.close()
+        self.checker.stop()
+
+    def on_connection_close(self):
+        logger.info('Closing kafka consumer')
+        self.kafka_consumer.close()
+        self.checker.stop()
 
     @gen.coroutine
     def publish(self, data):
         """Pushes data to a listener."""
         try:
             self.write('data: {}\n\n'.format(data))
+            time.sleep(2.5)
             yield self.flush()
         except StreamClosedError:
             pass

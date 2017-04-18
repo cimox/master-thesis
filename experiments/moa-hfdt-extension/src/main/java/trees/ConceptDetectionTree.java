@@ -25,8 +25,8 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
     private boolean printToKafka;
     private String kafkaTopic = "experiment";
     private MyKafkaProducer producer;
-    private JSONObject previousRoot;
     private Jedis redis;
+    private JSONObject previousRoot;
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter) {
         this.conceptFileWriter = conceptFileWriter;
@@ -210,7 +210,8 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                 // Start a new alternative tree : learning node
                 this.alternateTree = ht.newLearningNode();
                 ht.alternateTrees++;
-            } else if (this.alternateTree != null && !((NewNode) this.alternateTree).isNullError()) { // Check condition to replace tree
+            } else if (this.alternateTree != null && !((NewNode) this.alternateTree).isNullError()) {
+                // Check condition to replace tree
                 if (this.getErrorWidth() > 300 && ((NewNode) this.alternateTree).getErrorWidth() > 300) {
                     double fDelta = .05;
                     double fN = 1.0 / ((NewNode) this.alternateTree).getErrorWidth() + 1.0 / this.getErrorWidth();
@@ -480,7 +481,9 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
     private JSONObject prepareNewTreeRoot() {
         JSONObject root = new JSONObject();
         JSONArray rootChildren = new JSONArray();
-        root.put("className", "root");
+        root.put("id", "root");
+        root.put("parent", null);
+        root.put("leaf", false);
         root.put("children", rootChildren);
         return root;
     }
