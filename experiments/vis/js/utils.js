@@ -8,3 +8,33 @@ function hasSameProperties(obj1, obj2 ) {
         }
     });
 }
+
+function addChildren(parentNode, element) {
+    if (parentNode.children) {
+        // console.log('Adding node ' + element.id + " to parent " + parentNode.id);
+        newNode = _.cloneDeep(element);
+        newNode['children'] = [];
+
+        parentNode.children.push(newNode);
+        nodes.push(newNode);
+        nodeIdsLookup[newNode.id] = nodePosition++;
+    }
+    else {
+        parentNode.id = "root";
+        parentNode.children = [];
+        parentNode.leaf = false;
+        nodeIdsLookup["root"] = nodePosition++;
+    }
+}
+
+function getParentNode(nodeID) {
+    return nodes[nodeIdsLookup[nodeID]];
+}
+
+function updateNodeData(oldNode, newNode) {
+    for (var key in newNode) {
+        if (oldNode[key]) {
+            oldNode[key] = newNode[key];
+        }
+    }
+}

@@ -17,6 +17,8 @@
     </style>
     <script type="text/javascript" src="lib/d3_v3.js"></script>
     <script type="text/javascript" src="lib/lodash.min.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/tree.js"></script>
 </head>
 <body>
 <script>
@@ -33,11 +35,11 @@
     var nodeIdsLookup = {}, nodePosition = 0;
 
     root.parent = root;
-    root.px = height / 2;
-    root.py = 0;
+    root.px = root.x;
+    root.py = root.y;
 
-    var diagonal = d3.svg.diagonal()
-        .projection(function (d) { return [d.y, d.x] });
+    var diagonal = d3.svg.diagonal();
+    //        .projection(function (d) { return [d.y, d.x] });
 
     var svg = d3.select("body").append("svg")
         .attr("width", width)
@@ -50,36 +52,19 @@
 
     var duration = 750;
 
-    function update(treeIncrement) {
-        function addChildren(parentNode, element) {
-            if (parentNode.children) {
-                console.log('Adding node ' + element.id + " to parent " + parentNode.id);
-                newNode = _.cloneDeep(element);
-                newNode['children'] = [];
-
-                parentNode.children.push(newNode);
-                nodes.push(newNode);
-                nodeIdsLookup[newNode.id] = nodePosition++;
-            }
-            else {
-                parentNode.id = "root";
-                parentNode.children = [];
-                parentNode.leaf = false;
-                nodeIdsLookup["root"] = nodePosition++;
-            }
-        }
-
-        function getParentNode(nodeID) {
-            return nodes[nodeIdsLookup[nodeID]];
-        }
-
+    function addTreeIncrement(treeIncrement) {
         // Add a new node to its parent if exists.
         if (nodes.length == 1) {
             var parentNode = nodes[0];
             addChildren(parentNode, treeIncrement);
         }
-        else {
-            console.log('Adding ' + treeIncrement.id + ' to parent ' + treeIncrement.parent);
+//        else if (getParentNode(treeIncrement.id) && treeIncrement.id != "root") {
+////            TODO: fix this nodes lookup table
+//            console.log('Updating data of existing node ' + treeIncrement.id);
+//            var nodeToUpdate = nodes[nodeIdsLookup[treeIncrement.id]];
+//            updateNodeData(nodeToUpdate, treeIncrement);
+//        }
+        else if (treeIncrement.id != "root") {
             addChildren(getParentNode(treeIncrement.parent), treeIncrement);
         }
 
@@ -91,16 +76,32 @@
             return d.source.id + "-" + d.target.id;
         });
 
+        var nodeEnter = node.enter();
+
         // Add entering nodes in the parent’s old position.
-        node.enter().append("circle")
+        nodeEnter.append("circle")
             .attr("class", "node")
             .attr("r", 6.5)
             .attr("cx", function (d) {
-                return d.parent.py;
+                return d.parent.px;
             })
             .attr("cy", function (d) {
-                return d.parent.px;
+                return d.parent.py;
+            })
+            .style("fill", function (d) {
+                return d.leaf ? "red" : "blue";
             });
+
+//        var nodeUpdate = node.transition()
+//            .attr("transform", function (d) {
+//                return "translate(" + d.x + "," + d.y + ")";
+//            });
+//
+//        nodeUpdate.select("circle")
+//            .style("fill", function (d) {
+//                console.log('Updating style of node ' + d.id);
+//                return d.leaf ? "red" : "blue";
+//            });
 
         // Add entering links in the parent’s old position.
         link.enter().insert("path", ".node")
@@ -112,9 +113,6 @@
                 };
                 return diagonal({source: o, target: o});
             });
-//            .attr("stroke-width", function () {
-//                return Math.random() * 5
-//            });
 
         // Transition nodes and links to their new positions.
         var t = svg.transition()
@@ -125,20 +123,55 @@
 
         t.selectAll(".node")
             .attr("cx", function (d) {
-                return d.py = d.y;
+                return d.px = d.x;
             })
             .attr("cy", function (d) {
-                return d.px = d.x;
+                return d.py = d.y;
             });
     }
 
-    var timeout = 1000;
+    function updateTree() {
+        console.log('Updating tree');
+
+        // Compute the new tree layout.
+        var nodes = tree.nodes(root).reverse(),
+            links = tree.links(nodes);
+
+        var node = svg.selectAll("circle.node")
+            .data(nodes, function (d) {
+                return d.id || (d.id = ++i);
+            });
+        node.exit().remove();
+
+        var link = svg.selectAll("path.link")
+            .data(links, function (d) {
+                return d.target.id;
+            });
+        link.exit().remove();
+
+        var t = svg.transition()
+            .duration(duration);
+
+        t.selectAll(".link")
+            .attr("d", diagonal);
+
+        t.selectAll(".node")
+            .attr("cx", function (d) {
+                return d.px = d.x;
+            })
+            .attr("cy", function (d) {
+                return d.py = d.y;
+            });
+    }
+
     function bft(tree, callback) {
+        var timeout = 750;
         var queue = [];
 
         queue.push(tree);
         while (queue.length !== 0) {
             var element = queue.shift();
+//            console.log('Processing element ' + element.id);
             function renderElement(element, timeout) {
                 (function () {
                     setTimeout(function () {
@@ -146,8 +179,9 @@
                     }, timeout);
                 })();
             }
+
             renderElement(element, timeout);
-            timeout += 1000;
+            timeout += 750;
 
             if (element.children !== undefined) {
                 for (var i = 0; i < element.children.length; i++) {
@@ -157,24 +191,34 @@
         }
     }
 
-    d3.json("data/first.json", function (error, treeData) {
+    d3.json("data/second.json", function (error, treeData) {
         if (error) throw error;
 
-        bft(treeData, update);
+        bft(treeData, addTreeIncrement);
     });
 
-    function addTreeIncrement() {
-        d3.json("data/second.json", function (error, treeData) {
+    function addIncrement() {
+        d3.json("data/b.json", function (error, treeData) {
             if (error) throw error;
 
-            update(treeData);
+            bft(treeData, addTreeIncrement);
         });
+    }
+
+    function removeNodeBtn() {
+        console.log('Removing node');
+
+        root.children.splice(1, 1);
+
+        updateTree();
     }
 
 </script>
 
 <div class="control-group">
     <button onclick="addTreeIncrement()">Add increment</button>
+    <button onclick="addIncrement()">Add increment</button>
+    <button onclick="removeNodeBtn()">Remove node</button>
 </div>
 
 </body>
