@@ -59,18 +59,17 @@
     function addTreeIncrement(treeIncrement) {
         // Add a new node to its parent if exists.
         if (nodes.length == 1) {
-            var parentNode = nodes[0];
-            addChildren(parentNode, treeIncrement);
+            addChildren(root, treeIncrement);
         }
-        else if (getParentNode(treeIncrement.id) && treeIncrement.id != "root") {
-//            TODO: fix this nodes lookup table
-            console.log('Updating data of existing node ' + treeIncrement.id);
-            var nodeToUpdate = nodes[nodeIdsLookup[treeIncrement.id]];
-            updateNodeData(nodeToUpdate, treeIncrement);
-            updateTree();
-        }
+//        else if (getParentNode(treeIncrement.id) && treeIncrement.id != "root") {
+////            TODO: fix this nodes lookup table
+//            console.log('Updating data of existing node ' + treeIncrement.id);
+//            var nodeToUpdate = nodes[nodeIdsLookup[treeIncrement.id]];
+//            updateNodeData(nodeToUpdate, treeIncrement);
+//            updateTree();
+//        }
         else if (treeIncrement.id != "root") {
-            addChildren(getParentNode(treeIncrement.parent), treeIncrement);
+            addChildren(getParentNode(root, treeIncrement.parent), treeIncrement);
         }
 
         // Recompute the layout and data join.
@@ -80,46 +79,7 @@
         link = link.data(tree.links(nodes), function (d) {
             return d.source.id + "-" + d.target.id;
         });
-
-        var nodeEnter = node.enter().append("g")
-            .attr("class", "node")
-            .attr("transform", function (d) {
-                return "translate(" + d.parent.px + "," + d.parent.py + ")";
-            });
-
-        // Add entering nodes in the parent’s old position.
-        nodeEnter.append("svg:circle")
-            .attr("r", 6.5)
-            .style("fill", function (d) {
-                return d.leaf ? "red" : "blue";
-            });
-
-        nodeEnter.append("svg:text")
-            .attr("dy", "0.25em")
-            .attr("dx", "-0.65em")
-            .attr("text-anchor", function (d) {
-                return d.children || d._children ? "end" : "start";
-            })
-            .style("font-family", "arial")
-            .style("color", "black")
-            .style("font-color", "black")
-            .text(function (d) {
-                if (_.isEqual(d.id, "root")) return "root";
-                if (d.split) {
-                    return d.split.attribute + " " + d.split.operator + " " +
-                        d.split.operand.toFixed(2);
-                }
-                return d.weights;
-            });
-
-        // UPDATE
-        // Transition to the proper position for the node
-        node.transition()
-            .duration(duration)
-            .attr("transform", function (d) {
-                d.px = d.x; d.py = d.y;
-                return "translate(" + d.x + "," + d.y + ")";
-            });
+        renderLabels(node);
 
         // Add entering links in the parent’s old position.
         link.enter().insert("path", "g")
@@ -188,8 +148,8 @@
             .attr("d", diagonal);
     }
 
+    var timeout = 750;
     function bft(tree, callback) {
-        var timeout = 750;
         var queue = [];
 
         queue.push(tree);
@@ -215,10 +175,13 @@
         }
     }
 
-    d3.json("data/a.json", function (error, treeData) {
+    d3.json("data/c.json", function (error, treeData) {
         if (error) throw error;
 
-        bft(treeData, addTreeIncrement);
+        for (var i in treeData) {
+            console.log(treeData[i]);
+            bft(treeData[i], addTreeIncrement);
+        }
     });
 
     function addIncrement() {
