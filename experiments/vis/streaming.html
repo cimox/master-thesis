@@ -58,7 +58,7 @@
 
     function addTreeIncrement(treeIncrement) {
         // Add a new node to its parent if exists.
-        if (nodes.length == 1) {
+        if (!root.children || root.children.length <= 0) {
             addChildren(root, treeIncrement);
         }
 //        else if (getParentNode(treeIncrement.id) && treeIncrement.id != "root") {
@@ -72,25 +72,36 @@
             addChildren(getParentNode(root, treeIncrement.parent), treeIncrement);
         }
 
-        // Recompute the layout and data join.
-        node = node.data(tree.nodes(root), function (d) {
-            return d.id;
-        });
-        link = link.data(tree.links(nodes), function (d) {
-            return d.source.id + "-" + d.target.id;
-        });
-        renderLabels(node);
-        renderLinks(link, svg);
-    }
-
-    function updateTree() {
-        // Compute the new tree layout.
+        // Get node and link values.
         var nodes = tree.nodes(root).reverse(),
             links = tree.links(nodes);
 
         var node = svg.selectAll("g.node")
             .data(nodes, function (d) {
-                return d.id || (d.id = ++i);
+                return d.id;
+            });
+        var link = svg.selectAll(".link")
+            .data(links, function (d) {
+                return d.source.id + "-" + d.target.id;
+            });
+
+        // Render node labels and links between them.
+        renderLabels(node);
+        renderLinks(link, svg);
+    }
+
+    function updateTree() {
+        // Get node and link values.
+        var nodes = tree.nodes(root).reverse(),
+            links = tree.links(nodes);
+
+        var node = svg.selectAll("g.node")
+            .data(nodes, function (d) {
+                return d.id;
+            });
+        var link = svg.selectAll(".link")
+            .data(links, function (d) {
+                return d.source.id + "-" + d.target.id;
             });
 
         // Update nodes
@@ -120,10 +131,6 @@
             });
 
         // Update links
-        var link = svg.selectAll("path.link")
-            .data(links, function (d) {
-                return d.target.id;
-            });
         link.exit().remove();
 
         svg.transition()
