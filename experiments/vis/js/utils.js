@@ -55,7 +55,7 @@ function resolveCallback(callback, element) {
     return new Promise(resolve => {
         setTimeout(() => {
             return resolve(callback(element));
-        }, 750)
+        }, 750);
     });
 }
 
@@ -65,6 +65,8 @@ async function BFT(treeData, callback) {
     queue.push(treeData);
     while (queue.length !== 0) {
         let element = queue.shift();
+        log.debug('BFT processing ' + element.id);
+
         await resolveCallback(callback, element);
 
         if (element.children !== undefined) {
@@ -77,6 +79,49 @@ async function BFT(treeData, callback) {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve("success");
-        }, 500);
+        }, 50);
     });
+}
+
+function checkToRemoveChildrenOfNode(tree, actualNode) {
+    /**
+     * @param tree: current tree
+     * @param actualNode: actual correct node
+     */
+
+    let treeNode = getTreeNode(tree, actualNode.id);
+    if (actualNode.children.length < treeNode.children.length) {
+        let actualNodeChildrenIds = new Set();
+
+        // Get set of actual node children ids
+        _.forEach(actualNode.children, function (child) {actualNodeChildrenIds.add(child.id)});
+
+        // Remove old nodes from current tree
+        for (let i = 0; i < treeNode.children.length; i++) {
+            let child = treeNode.children[i];
+            if (!actualNodeChildrenIds.has(child.id)) {
+                log.debug('Removing child ' + child.id);
+
+                treeNode.children.splice(i, 1); // Remove old child
+
+                updateTree();
+            }
+        }
+    }
+}
+
+function removeOldNodes(treeData, tree) {
+    log.debug('Trying to remove old nodes');
+    let queue = [];
+
+    queue.push(treeData);
+    while (queue.length !== 0) {
+        let element = queue.shift();
+        if (element.children !== undefined) checkToRemoveChildrenOfNode(tree, element);
+        if (element.children !== undefined) {
+            for (let i = 0; i < element.children.length; i++) {
+                queue.push(element.children[i]);
+            }
+        }
+    }
 }

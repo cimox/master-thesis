@@ -20,9 +20,12 @@
             stroke-width: 2.5px;
         }
     </style>
+    <!--Libraries imports-->
     <script type="text/javascript" src="lib/d3_v3.js"></script>
     <script type="text/javascript" src="lib/lodash.min.js"></script>
     <script type="text/javascript" src="lib/async.min.js"></script>
+    <script type="text/javascript" src="lib/loglevel.min.js"></script>
+    <!--My scripts imports-->
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/tree.js"></script>
 </head>
@@ -51,21 +54,24 @@
         .attr("transform", "translate(10,10)");
 
     var duration = 750;
+    log.setLevel("debug");
     /* Initialization - END */
 
     function addTreeIncrement(treeIncrement) {
-        console.log('trying to add incremenet ' + treeIncrement.id);
+        log.debug('Trying to add increment ' + treeIncrement.id + ' to tree');
 
         // Add a new node to its parent if exists.
         if (!root.children || root.children.length <= 0) {
             addChildren(root, treeIncrement);
         }
         else if (getTreeNode(root, treeIncrement.id).id == treeIncrement.id && treeIncrement.id != "root") {
+            log.debug('UPDATE node ' + treeIncrement.id);
             var nodeToUpdate = getTreeNode(root, treeIncrement.id);
             updateNodeData(nodeToUpdate, treeIncrement);
             updateTree();
         }
         else if (treeIncrement.id != "root") {
+            log.debug('ADD increment ' + treeIncrement.id + ' -> ' + treeIncrement.parent);
             addChildren(getTreeNode(root, treeIncrement.parent), treeIncrement);
         }
 
@@ -87,20 +93,25 @@
         renderLinks(link, svg);
     }
 
-    d3.json("data/second.json", function (error, treeData) {
+    d3.json("data/first.json", function (error, treeData) {
         if (error) throw error;
 
         BFT(treeData, addTreeIncrement).then((complete) => {
-            console.log('Result: ' + complete);
+            log.info('Result: ' + complete);
         });
     });
 
-    function addIncrement() {
-        d3.json("data/b.json", function (error, treeData) {
+    function addIncrement(filename) {
+        d3.json(filename, function (error, treeData) {
             if (error) throw error;
 
-            timeout = 750;
-            BFT(treeData, addTreeIncrement, 750);
+            BFT(treeData, addTreeIncrement).then((complete) => {
+                log.info('Add increment result: ' + complete);
+
+                setTimeout(() => {
+                    removeOldNodes(treeData, root);
+                }, 1000);
+            });
         });
     }
 
@@ -119,7 +130,11 @@
 </script>
 
 <div class="control-group">
-    <button onclick="addIncrement()">Add increment</button>
+    <button onclick="addIncrement('data/first-simple.json')">Add simple increment</button>
+    <button onclick="addIncrement('data/second.json')">Add second increment</button>
+    <button onclick="addIncrement('data/third.json')">Add third increment</button>
+    <button onclick="addIncrement('data/fourth.json')">Add fourth increment</button>
+
     <button onclick="removeNodeBtn()">Remove node</button>
     <button onclick="updateBtn()">update</button>
 </div>
