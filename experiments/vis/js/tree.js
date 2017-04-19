@@ -1,58 +1,50 @@
-function printTrainingTree(chart, timeout, currentTree, previousTree) {
-    (function () {
-        setTimeout(function () {
-            root = currentTree;
-            root.x0 = height / 2;
-            root.y0 = 0;
-            update(root);
-        }, timeout);
-    })();
-}
+function updateTree() {
+    // Get node and link values.
+    var nodes = tree.nodes(root).reverse(),
+        links = tree.links(nodes);
 
-function training(chart, timeout) {
-    $.getJSON("data/tree-training_mini.json", function (trees) {
-        console.log('Training...');
-        var previousTree = undefined, currentTree = undefined;
-
-        for (var i = 0; i < trees.length; i++) {
-            currentTree = _.cloneDeep(trees[i]);
-            printTrainingTree(chart, timeout * i, currentTree, previousTree);
-            previousTree = _.cloneDeep(trees[i]);
-        }
-
-        console.log('Done! Read ' + trees.length + ' instances');
-    });
-}
-
-function enterNodeText(nodeUpdate) {
-    // Add node information text
-    nodeUpdate.append("svg:text")
-        // .attr("dx", function (d) {
-        //     return d.x + 15;
-        // })
-        // .attr("dy", function (d) {
-        //     return d.y + 5;
-        // })
-        .text(function (d) {
-            if (d.leaf) return d.className + ' | ' + d.weights;
-            return "WOW";
+    var node = svg.selectAll("g.node")
+        .data(nodes, function (d) {
+            return d.id;
         });
-}
+    var link = svg.selectAll(".link")
+        .data(links, function (d) {
+            return d.source.id + "-" + d.target.id;
+        });
 
-function updateNodeText(node) {
-    console.log('Updating node text...');
+    // Update nodes
+    node.exit().remove()
+        .transition()
+        .duration(duration)
+        .attr("transform", function (d) {
+            d.px = d.x; d.py = d.y;
+            return "translate(" + d.x + "," + d.y + ")";
+        });
+
+    node.transition()
+        .duration(duration)
+        .attr("transform", function (d) {
+            d.px = d.x; d.py = d.y;
+            return "translate(" + d.x + "," + d.y + ")";
+        });
+
     node.select("text")
-        .attr("dx", function (d) {
-            return d.x + 15;
-        })
-        .attr("dy", function (d) {
-            return d.y + 5;
-        })
         .text(function (d) {
-            return "WOW";
-            // if (d.leaf) return d.className + ' | ' + d.weights;
-            // return d.className | d.id;
+            if (_.isEqual(d.id, "root")) return "root";
+            if (d.split) {
+                return d.split.attribute + " " + d.split.operator + " " +
+                    d.split.operand.toFixed(2);
+            }
+            return d.weights;
         });
+
+    // Update links
+    link.exit().remove();
+
+    svg.transition()
+        .duration(duration)
+        .selectAll(".link")
+        .attr("d", diagonal);
 }
 
 function renderLabels(node) {

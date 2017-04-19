@@ -11,23 +11,19 @@ function hasSameProperties(obj1, obj2) {
 
 function addChildren(parentNode, element) {
     if (parentNode.children) {
-        // console.log('Adding node ' + element.id + " to parent " + parentNode.id);
-        newNode = _.cloneDeep(element);
+        var newNode = _.cloneDeep(element);
         newNode['children'] = [];
 
         parentNode.children.push(newNode);
-        nodes.push(newNode);
-        nodeIdsLookup[newNode.id] = nodePosition++;
     }
     else {
         parentNode.id = "root";
         parentNode.children = [];
         parentNode.leaf = false;
-        nodeIdsLookup["root"] = nodePosition++;
     }
 }
 
-function getParentNode(tree, nodeID) {
+function getTreeNode(tree, nodeID) {
     /*
      * BFT search tree for a given node ID
      */
@@ -51,6 +47,32 @@ function updateNodeData(oldNode, newNode) {
     for (var key in newNode) {
         if (oldNode[key]) {
             oldNode[key] = newNode[key];
+        }
+    }
+}
+
+var timeout;
+function bft(tree, callback, timeoutIncrement) {
+    var queue = [];
+
+    queue.push(tree);
+    while (queue.length !== 0) {
+        var element = queue.shift();
+        function renderElement(element, timeout) {
+            (function () {
+                setTimeout(function () {
+                    callback(element);
+                }, timeout);
+            })();
+        }
+
+        renderElement(element, timeout);
+        timeout += timeoutIncrement;
+
+        if (element.children !== undefined) {
+            for (var i = 0; i < element.children.length; i++) {
+                queue.push(element.children[i]);
+            }
         }
     }
 }
