@@ -22,6 +22,7 @@
     </style>
     <script type="text/javascript" src="lib/d3_v3.js"></script>
     <script type="text/javascript" src="lib/lodash.min.js"></script>
+    <script type="text/javascript" src="lib/async.min.js"></script>
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/tree.js"></script>
 </head>
@@ -65,7 +66,6 @@
             updateTree();
         }
         else if (treeIncrement.id != "root") {
-            console.log('');
             addChildren(getTreeNode(root, treeIncrement.parent), treeIncrement);
         }
 
@@ -87,14 +87,12 @@
         renderLinks(link, svg);
     }
 
-    d3.json("data/c.json", function (error, treeData) {
+    d3.json("data/second.json", function (error, treeData) {
         if (error) throw error;
 
-        timeout = 750;
-        for (var i in treeData) {
-            console.log(treeData[i]);
-            bft(treeData[i], addTreeIncrement, 750);
-        }
+        BFT(treeData, addTreeIncrement).then((complete) => {
+            console.log('Result: ' + complete);
+        });
     });
 
     function addIncrement() {
@@ -102,7 +100,7 @@
             if (error) throw error;
 
             timeout = 750;
-            bft(treeData, addTreeIncrement, 750);
+            BFT(treeData, addTreeIncrement, 750);
         });
     }
 
