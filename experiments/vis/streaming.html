@@ -80,23 +80,7 @@
             return d.source.id + "-" + d.target.id;
         });
         renderLabels(node);
-
-        // Add entering links in the parent’s old position.
-        link.enter().insert("path", "g")
-            .attr("class", "link")
-            .attr("d", function (d) {
-                var o = {
-                    x: d.source.px,
-                    y: d.source.py
-                };
-                return diagonal({source: o, target: o});
-            });
-
-        // Transition nodes and links to their new positions.
-        svg.transition()
-            .duration(duration)
-            .selectAll(".link")
-            .attr("d", diagonal);
+        renderLinks(link, svg);
     }
 
     function updateTree() {
