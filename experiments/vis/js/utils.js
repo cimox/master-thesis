@@ -27,23 +27,24 @@ function getTreeNode(tree, nodeID) {
     /*
      * BFT search tree for a given node ID
      */
-    var queue = [];
+    let queue = [];
 
     queue.push(tree);
     while (queue.length !== 0) {
-        var element = queue.shift();
+        let element = queue.shift();
         if (_.isEqual(element.id, nodeID)) return element;
 
         if (element.children !== undefined) {
-            for (var i = 0; i < element.children.length; i++) {
+            for (let i = 0; i < element.children.length; i++) {
                 queue.push(element.children[i]);
             }
         }
     }
-    return tree;
+    return undefined;
 }
 
 function updateNodeData(oldNode, newNode) {
+    // TODO: this should be refactored
     for (var key in newNode) {
         if (oldNode[key]) {
             oldNode[key] = newNode[key];
@@ -55,7 +56,7 @@ function resolveCallback(callback, element) {
     return new Promise(resolve => {
         setTimeout(() => {
             return resolve(callback(element));
-        }, 750);
+        }, 600);
     });
 }
 
@@ -90,21 +91,23 @@ function checkToRemoveChildrenOfNode(tree, actualNode) {
      */
 
     let treeNode = getTreeNode(tree, actualNode.id);
-    if (actualNode.children.length < treeNode.children.length) {
+    if (treeNode !== undefined && actualNode.children.length < treeNode.children.length) {
         let actualNodeChildrenIds = new Set();
 
         // Get set of actual node children ids
-        _.forEach(actualNode.children, function (child) {actualNodeChildrenIds.add(child.id)});
+        _.forEach(actualNode.children, function (child) {
+            actualNodeChildrenIds.add(child.id)
+        });
 
         // Remove old nodes from current tree
-        for (let i = 0; i < treeNode.children.length; i++) {
-            let child = treeNode.children[i];
+        for (let pos = 0; pos < treeNode.children.length; pos++) {
+            let child = treeNode.children[pos];
             if (!actualNodeChildrenIds.has(child.id)) {
-                log.debug('Removing child ' + child.id);
+                // removeNodeLink(treeNode.children, child);
+                // Remove old child once it's fade out
+                log.debug('Removing ' + child.id);
 
-                treeNode.children.splice(i, 1); // Remove old child
-
-                updateTree();
+                treeNode.children.splice(treeNode.children.indexOf(child), 1);
             }
         }
     }
@@ -124,4 +127,81 @@ function removeOldNodes(treeData, tree) {
             }
         }
     }
+}
+
+function getAllNodeIdsSet(tree) {
+    let queue = [],
+        result = new Set();
+
+    queue.push(tree);
+    while (queue.length !== 0) {
+        let element = queue.shift();
+        result.add(element.id);
+
+        if (element.children !== undefined) {
+            for (let i = 0; i < element.children.length; i++) {
+                queue.push(element.children[i]);
+            }
+        }
+    }
+    return result;
+}
+
+function fadeOutAndRemove(nodeIdsToRemove, treeData, treeRoot) {
+    log.debug('List of nodes & links ids to remove: ' + nodeIdsToRemove);
+    if (nodeIdsToRemove.length > 1) {
+        log.info('here, length ' + nodeIdsToRemove.length);
+        $('.node#' + nodeIdsToRemove.join(',.node#') + ',.link#' + nodeIdsToRemove.join(',.link#'))
+            .fadeOut(1600, 'linear', function () {
+                log.debug('Fading out node and link with:');
+                log.debug($(this));
+
+                // Remove nodes from tree data model
+                removeOldNodes(treeData, treeRoot);
+
+                // Remove nodes and links from SVG DOM
+                $(this).remove();
+
+                updateTree();
+            });
+    }
+    else {
+        $('#' + nodeIdsToRemove[0] + '.node' + ',#' + nodeIdsToRemove[0] + '.link')
+            .fadeOut(1600, 'linear', function () {
+                log.debug('Fading out node and link:');
+                log.debug($(this));
+
+                // Remove nodes from tree data model
+                removeOldNodes(treeData, treeRoot);
+
+                // Remove nodes and links from SVG DOM
+                $(this).remove();
+
+                updateTree();
+            });
+    }
+}
+
+function removeAndFadeOutOldNodes(treeData, treeRoot) {
+    // Get correct node ids from tree data
+    let correctIds = getAllNodeIdsSet(treeData);
+    let stack = [], nodeIdsToRemove = [];
+
+    // Get stack of visited nodes by DFS
+    stack.push(treeRoot);
+    while (stack.length !== 0) {
+        let element = stack.pop();
+
+        if (!correctIds.has(element.id)) {
+            nodeIdsToRemove.push(element.id);
+        }
+
+        if (element.children !== undefined) {
+            for (let i = 0; i < element.children.length; i++) {
+                stack.push(element.children[i]);
+            }
+        }
+    }
+
+    fadeOutAndRemove(nodeIdsToRemove, treeData, treeRoot);
 }

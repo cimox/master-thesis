@@ -6,8 +6,8 @@
     <style>
 
         .node circle {
-            stroke: black;
-            stroke-width: 3.5px;
+            stroke: white;
+            stroke-width: 2px;
         }
 
         .node text {
@@ -16,7 +16,7 @@
 
         .link {
             fill: none;
-            stroke: red;
+            stroke: gray;
             stroke-width: 2.5px;
         }
     </style>
@@ -25,6 +25,8 @@
     <script type="text/javascript" src="lib/lodash.min.js"></script>
     <script type="text/javascript" src="lib/async.min.js"></script>
     <script type="text/javascript" src="lib/loglevel.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-3.2.0.min.js"></script>
+
     <!--My scripts imports-->
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/tree.js"></script>
@@ -61,14 +63,16 @@
         log.debug('Trying to add increment ' + treeIncrement.id + ' to tree');
 
         // Add a new node to its parent if exists.
+        let treeNode = getTreeNode(root, treeIncrement.id);
         if (!root.children || root.children.length <= 0) {
             addChildren(root, treeIncrement);
         }
-        else if (getTreeNode(root, treeIncrement.id).id == treeIncrement.id && treeIncrement.id != "root") {
-            log.debug('UPDATE node ' + treeIncrement.id);
-            var nodeToUpdate = getTreeNode(root, treeIncrement.id);
-            updateNodeData(nodeToUpdate, treeIncrement);
-            updateTree();
+        else if (treeNode !== undefined && treeNode.id == treeIncrement.id && treeIncrement.id != "root") {
+//            TODO: enable this method
+//            log.debug('UPDATE node ' + treeIncrement.id);
+//            var nodeToUpdate = getTreeNode(root, treeIncrement.id);
+//            updateNodeData(nodeToUpdate, treeIncrement);
+//            updateTree();
         }
         else if (treeIncrement.id != "root") {
             log.debug('ADD increment ' + treeIncrement.id + ' -> ' + treeIncrement.parent);
@@ -89,7 +93,7 @@
             });
 
         // Render node labels and links between them.
-        renderLabels(node);
+        renderNodes(node);
         renderLinks(link, svg);
     }
 
@@ -109,7 +113,7 @@
                 log.info('Add increment result: ' + complete);
 
                 setTimeout(() => {
-                    removeOldNodes(treeData, root);
+                    removeAndFadeOutOldNodes(treeData, root);
                 }, 1000);
             });
         });

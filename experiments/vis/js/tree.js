@@ -47,18 +47,23 @@ function updateTree() {
         .attr("d", diagonal);
 }
 
-function renderLabels(node) {
-    var nodeEnter = node.enter().append("g")
+function renderNodes(node) {
+    let nodeEnter = node.enter().append("g")
         .attr("class", "node")
         .attr("transform", function (d) {
             return "translate(" + d.parent.px + "," + d.parent.py + ")";
+        })
+        .attr("id", function (d) {
+            return d.id;
         });
 
     // Add entering nodes in the parent’s old position.
     nodeEnter.append("svg:circle")
-        .attr("r", 6.5)
+        .attr("r", function (d) {
+            return d.r | 10;
+        })
         .style("fill", function (d) {
-            return d.leaf ? "red" : "blue";
+            return d.leaf ? "green" : "black";
         });
 
     nodeEnter.append("svg:text")
@@ -93,7 +98,7 @@ function renderLinks(link, svg) {
     link.enter().insert("path", "g")
         .attr("class", "link")
         .attr("d", function (d) {
-            var o = {
+            let o = {
                 x: d.source.px,
                 y: d.source.py
             };
@@ -104,5 +109,11 @@ function renderLinks(link, svg) {
     svg.transition()
         .duration(duration)
         .selectAll(".link")
-        .attr("d", diagonal);
+        .attr("id", function (d) {
+            return d.target.id;
+        })
+        .attr("d", diagonal)
+        .style("stroke-width", function (d) {
+            return d.target.width;
+        });
 }
