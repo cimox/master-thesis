@@ -6,8 +6,8 @@
     <style>
 
         .node circle {
-            stroke: white;
-            stroke-width: 2px;
+            stroke: black;
+            stroke-width: 2.5px;
         }
 
         .node text {
@@ -23,7 +23,6 @@
     <!--Libraries imports-->
     <script type="text/javascript" src="lib/d3_v3.js"></script>
     <script type="text/javascript" src="lib/lodash.min.js"></script>
-    <script type="text/javascript" src="lib/async.min.js"></script>
     <script type="text/javascript" src="lib/loglevel.min.js"></script>
     <script type="text/javascript" src="lib/jquery-3.2.0.min.js"></script>
 
@@ -34,8 +33,10 @@
 <body>
 <script>
     /* Initialization - START */
-    var width = 800,
-        height = 800;
+    let API_TREE_STREAM = 'http://localhost:8080/tree/';
+
+    var width = 900,
+        height = 900;
 
     var tree = d3.layout.tree()
         .size([width - 20, height - 20]);
@@ -55,7 +56,9 @@
         .append("g")
         .attr("transform", "translate(10,10)");
 
-    var duration = 750;
+    var duration = 850, fadeDuration = 1600;
+    let animationsFinished = true, processNextMessage = true, removalFinished = true;
+
     log.setLevel("debug");
     /* Initialization - END */
 
@@ -68,26 +71,27 @@
             addChildren(root, treeIncrement);
         }
         else if (treeNode !== undefined && treeNode.id == treeIncrement.id && treeIncrement.id != "root") {
-//            TODO: enable this method
-//            log.debug('UPDATE node ' + treeIncrement.id);
-//            var nodeToUpdate = getTreeNode(root, treeIncrement.id);
-//            updateNodeData(nodeToUpdate, treeIncrement);
-//            updateTree();
+            log.debug('UPDATE node ' + treeIncrement.id);
+
+            let nodeToUpdate = getTreeNode(root, treeIncrement.id);
+            updateNodeData(nodeToUpdate, treeIncrement);
+
+            updateTreeNodeLabels();
         }
         else if (treeIncrement.id != "root") {
-            log.debug('ADD increment ' + treeIncrement.id + ' -> ' + treeIncrement.parent);
-            addChildren(getTreeNode(root, treeIncrement.parent), treeIncrement);
+            log.debug('ADD increment ' + treeIncrement.id + ' -> ' + treeIncrement.parentID);
+            addChildren(getTreeNode(root, treeIncrement.parentID), treeIncrement);
         }
 
         // Get node and link values.
-        var nodes = tree.nodes(root).reverse(),
+        let nodes = tree.nodes(root).reverse(),
             links = tree.links(nodes);
 
-        var node = svg.selectAll("g.node")
+        let node = svg.selectAll("g.node")
             .data(nodes, function (d) {
                 return d.id;
             });
-        var link = svg.selectAll(".link")
+        let link = svg.selectAll(".link")
             .data(links, function (d) {
                 return d.source.id + "-" + d.target.id;
             });
@@ -97,25 +101,20 @@
         renderLinks(link, svg);
     }
 
-    d3.json("data/first.json", function (error, treeData) {
-        if (error) throw error;
-
-        BFT(treeData, addTreeIncrement).then((complete) => {
-            log.info('Result: ' + complete);
-        });
-    });
-
     function addIncrement(filename) {
         d3.json(filename, function (error, treeData) {
             if (error) throw error;
 
-            BFT(treeData, addTreeIncrement).then((complete) => {
-                log.info('Add increment result: ' + complete);
+            if (animationsFinished) {
+                log.info('Adding ' + filename + ', increment.');
+                BFT(treeData, addTreeIncrement).then((complete) => {
+                    log.info('Add increment result: ' + complete);
 
-                setTimeout(() => {
-                    removeAndFadeOutOldNodes(treeData, root);
-                }, 1000);
-            });
+                    setTimeout(() => {
+                        removeAndFadeOutOldNodes(treeData, root);
+                    }, 1000);
+                });
+            }
         });
     }
 
@@ -127,20 +126,65 @@
         updateTree();
     }
 
-    function updateBtn() {
-        updateTree();
+    let treeStream;
+    function readTreeStream() {
+        if (treeStream === undefined) {
+            treeStream = new EventSource(API_TREE_STREAM);
+        }
+        else {
+            log.warn('EventStream was already opened!');
+        }
+
+        treeStream.onmessage = function (response) {
+            let treeData = JSON.parse(response.data);
+
+            if (animationsFinished && processNextMessage && removalFinished) {
+                log.debug('Processing message ' + treeData + ' from stream ');
+                animationsFinished = false;
+                processNextMessage = false;
+                removalFinished = false;
+
+                BFT(treeData, addTreeIncrement).then((complete) => {
+                    if (_.isEqual(complete, "success")) {
+                        log.info('Tree successfully processed');
+                        processNextMessage = true;
+                    }
+
+                    setTimeout(() => {
+                        removeAndFadeOutOldNodes(treeData, root);
+                    }, 250);
+                });
+            }
+        }
+    }
+
+    function onlineBtn() {
+        log.info('EventStream opened');
+        readTreeStream();
+    }
+
+    function stopBtn() {
+        if (treeStream !== undefined) {
+            treeStream.close();
+            treeStream = undefined;
+            log.info('EventStream closed');
+        }
     }
 
 </script>
 
 <div class="control-group">
     <button onclick="addIncrement('data/first-simple.json')">Add simple increment</button>
+    <button onclick="addIncrement('data/first.json')">Add first increment</button>
     <button onclick="addIncrement('data/second.json')">Add second increment</button>
     <button onclick="addIncrement('data/third.json')">Add third increment</button>
     <button onclick="addIncrement('data/fourth.json')">Add fourth increment</button>
 
     <button onclick="removeNodeBtn()">Remove node</button>
     <button onclick="updateBtn()">update</button>
+
+    <button onclick="onlineBtn()">Online</button>
+    <button onclick="stopBtn()">STOP</button>
 </div>
 
 </body>

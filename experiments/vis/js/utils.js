@@ -19,7 +19,7 @@ function addChildren(parentNode, element) {
     else {
         parentNode.id = "root";
         parentNode.children = [];
-        parentNode.leaf = false;
+        parentNode.isLeaf = false;
     }
 }
 
@@ -45,11 +45,14 @@ function getTreeNode(tree, nodeID) {
 
 function updateNodeData(oldNode, newNode) {
     // TODO: this should be refactored
-    for (var key in newNode) {
-        if (oldNode[key]) {
-            oldNode[key] = newNode[key];
-        }
-    }
+    // for (var key in newNode) {
+    //     if (oldNode[key]) {
+    //         oldNode[key] = newNode[key];
+    //     }
+    // }
+    oldNode['weights'] = newNode['weights'];
+    oldNode['hoeffdingBound'] = newNode['hoeffdingBound'];
+    oldNode['nodeColor'] = newNode['nodeColor'];
 }
 
 function resolveCallback(callback, element) {
@@ -61,6 +64,9 @@ function resolveCallback(callback, element) {
 }
 
 async function BFT(treeData, callback) {
+    log.debug('Breadth-first search treeData');
+    log.debug(treeData);
+
     let queue = [];
 
     queue.push(treeData);
@@ -78,9 +84,7 @@ async function BFT(treeData, callback) {
     }
 
     return new Promise(resolve => {
-        setTimeout(() => {
-            resolve("success");
-        }, 50);
+        resolve("success");
     });
 }
 
@@ -148,13 +152,11 @@ function getAllNodeIdsSet(tree) {
 }
 
 function fadeOutAndRemove(nodeIdsToRemove, treeData, treeRoot) {
-    log.debug('List of nodes & links ids to remove: ' + nodeIdsToRemove);
     if (nodeIdsToRemove.length > 1) {
-        log.info('here, length ' + nodeIdsToRemove.length);
+        log.debug('List of nodes & links ids to remove: ' + nodeIdsToRemove);
         $('.node#' + nodeIdsToRemove.join(',.node#') + ',.link#' + nodeIdsToRemove.join(',.link#'))
-            .fadeOut(1600, 'linear', function () {
-                log.debug('Fading out node and link with:');
-                log.debug($(this));
+            .css({"stroke": "red"})
+            .fadeOut(fadeDuration, 'linear', function () {
 
                 // Remove nodes from tree data model
                 removeOldNodes(treeData, treeRoot);
@@ -163,22 +165,30 @@ function fadeOutAndRemove(nodeIdsToRemove, treeData, treeRoot) {
                 $(this).remove();
 
                 updateTree();
+
+                removalFinished = true;
+            });
+    }
+    else if (nodeIdsToRemove.length == 1) {
+        log.debug('Removing node and link: ' + nodeIdsToRemove);
+        $('#' + nodeIdsToRemove[0] + '.node' + ',#' + nodeIdsToRemove[0] + '.link')
+            .css({"stroke": "red"})
+            .fadeOut(fadeDuration, 'linear', function () {
+
+                // Remove nodes from tree data model
+                removeOldNodes(treeData, treeRoot);
+
+                // Remove nodes and links from SVG DOM
+                $(this).remove();
+
+                updateTree();
+
+                removalFinished = true;
             });
     }
     else {
-        $('#' + nodeIdsToRemove[0] + '.node' + ',#' + nodeIdsToRemove[0] + '.link')
-            .fadeOut(1600, 'linear', function () {
-                log.debug('Fading out node and link:');
-                log.debug($(this));
-
-                // Remove nodes from tree data model
-                removeOldNodes(treeData, treeRoot);
-
-                // Remove nodes and links from SVG DOM
-                $(this).remove();
-
-                updateTree();
-            });
+        log.debug('Nothing to remove!');
+        removalFinished = true;
     }
 }
 
@@ -204,4 +214,13 @@ function removeAndFadeOutOldNodes(treeData, treeRoot) {
     }
 
     fadeOutAndRemove(nodeIdsToRemove, treeData, treeRoot);
+}
+
+function endall(transition, callback) {
+    if (typeof callback !== "function") throw new Error("Wrong callback in endall");
+    if (transition.size() === 0) { callback() }
+    var n = 0;
+    transition
+        .each(function() { ++n; })
+        .each("end", function() { if (!--n) callback.apply(this, arguments); });
 }

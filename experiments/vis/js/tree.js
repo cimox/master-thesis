@@ -28,14 +28,36 @@ function updateTree() {
             return "translate(" + d.x + "," + d.y + ")";
         });
 
+    node.select("circle")
+        .style("fill", function (d) {
+            return d.nodeColor ? d.nodeColor : "white";
+        });
+
     node.select("text")
+        .attr("dy", "0.25em")
+        .attr("dx", "-0.65em")
+        .attr("text-anchor", function (d) {
+            return d.children || d._children ? "end" : "start";
+        })
+        .style("font-family", "arial")
+        .style("color", "black")
         .text(function (d) {
-            if (_.isEqual(d.id, "root")) return "root";
-            if (d.split) {
-                return d.split.attribute + " " + d.split.operator + " " +
-                    d.split.operand.toFixed(2);
+            if (_.isEqual(d.id, "root")) {
+                return "root";
             }
-            return d.weights;
+            if (d.split) {
+                return d.split.attribute + " " + d.split.operator + " " + d.split.operand.toFixed(2);
+            }
+            if (d.hoeffdingBound && d.className) {
+                return d.className;
+            }
+            else if (d.className) {
+                return d.className;
+            }
+            else if (d.hoeffdingBound) {
+                return d.hoeffdingBound;
+            }
+            return "unknown";
         });
 
     // Update links
@@ -44,7 +66,56 @@ function updateTree() {
     svg.transition()
         .duration(duration)
         .selectAll(".link")
-        .attr("d", diagonal);
+        .attr("d", diagonal)
+        .style("stroke-width", function (d) {
+            return d.target.instancesSeen;
+        })
+        .call(endall, function () {
+            log.debug('Update animations finished.');
+            animationsFinished = true;
+        });
+}
+
+function updateTreeNodeLabels() {
+    // Get node and link values.
+    let nodes = tree.nodes(root).reverse();
+
+    let node = svg.selectAll("g.node")
+        .data(nodes, function (d) {
+            return d.id;
+        });
+
+    node.select("circle")
+        .style("fill", function (d) {
+            return d.nodeColor ? d.nodeColor : "white";
+        });
+
+    node.select("text")
+        .attr("dy", "0.25em")
+        .attr("dx", "-0.65em")
+        .attr("text-anchor", function (d) {
+            return d.children || d._children ? "end" : "start";
+        })
+        .style("font-family", "arial")
+        .style("color", "black")
+        .text(function (d) {
+            if (_.isEqual(d.id, "root")) {
+                return "root";
+            }
+            if (d.split) {
+                return d.split.attribute + " " + d.split.operator + " " + d.split.operand.toFixed(2);
+            }
+            if (d.hoeffdingBound && d.className) {
+                return d.className;
+            }
+            else if (d.className) {
+                return d.className;
+            }
+            else if (d.hoeffdingBound) {
+                return d.hoeffdingBound;
+            }
+            return "unknown";
+        });
 }
 
 function renderNodes(node) {
@@ -60,10 +131,10 @@ function renderNodes(node) {
     // Add entering nodes in the parent’s old position.
     nodeEnter.append("svg:circle")
         .attr("r", function (d) {
-            return d.r | 10;
+            return d.r | 8;
         })
         .style("fill", function (d) {
-            return d.leaf ? "green" : "black";
+            return d.nodeColor ? d.nodeColor : "white";
         });
 
     nodeEnter.append("svg:text")
@@ -74,14 +145,23 @@ function renderNodes(node) {
         })
         .style("font-family", "arial")
         .style("color", "black")
-        .style("font-color", "black")
         .text(function (d) {
-            if (_.isEqual(d.id, "root")) return "root";
-            if (d.split) {
-                return d.split.attribute + " " + d.split.operator + " " +
-                    d.split.operand.toFixed(2);
+            if (_.isEqual(d.id, "root")) {
+                return "root";
             }
-            return d.weights;
+            if (d.split) {
+                return d.split.attribute + " " + d.split.operator + " " + d.split.operand.toFixed(2);
+            }
+            if (d.hoeffdingBound && d.className) {
+                return d.className;
+            }
+            else if (d.className) {
+                return d.className;
+            }
+            else if (d.hoeffdingBound) {
+                return d.hoeffdingBound;
+            }
+            return "unknown";
         });
 
     // Transition to the proper position for the node
@@ -114,6 +194,10 @@ function renderLinks(link, svg) {
         })
         .attr("d", diagonal)
         .style("stroke-width", function (d) {
-            return d.target.width;
+            return d.target.instancesSeen;
+        })
+        .call(endall, function () {
+            log.debug('Enter animations finished.');
+            animationsFinished = true;
         });
 }
