@@ -76,7 +76,6 @@ class TreeIncrements(BaseHandler):
         """Pushes data to a listener."""
         try:
             self.write('data: {}\n\n'.format(data))
-            time.sleep(2.5)
             yield self.flush()
         except StreamClosedError:
             pass
