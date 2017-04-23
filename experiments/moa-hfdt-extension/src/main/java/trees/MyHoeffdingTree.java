@@ -35,6 +35,7 @@ import moa.classifiers.core.attributeclassobservers.NullAttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
+import moa.classifiers.trees.HoeffdingTree;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -183,10 +184,13 @@ public class MyHoeffdingTree extends AbstractClassifier {
 
         protected long instancesSeen = 0;
         protected String nodeID;
+        protected Double hoeffdingBound;
+        protected Vector<Double> nodeSplitProbabilities;
 
         public Node(double[] classObservations) {
             this.observedClassDistribution = new DoubleVector(classObservations);
             this.nodeID = UUID.randomUUID().toString();
+            this.nodeSplitProbabilities = new Vector<Double>();
         }
 
         public int calcByteSize() {
@@ -218,8 +222,38 @@ public class MyHoeffdingTree extends AbstractClassifier {
             return this.observedClassDistribution.numNonZeroEntries() < 2;
         }
 
-        public void describeSubtree(MyHoeffdingTree ht, StringBuilder out,
-                                    int indent) {
+        private String numberToColor(double number) {
+            if (number <= 0.8) {
+                return "#E5FFCC";
+            }
+            else if (number <= 0.85) {
+                return "#FFFFCC";
+            }
+            else if (number <= 0.9) {
+                return "#FFE5CC";
+            }
+            else if (number <= 0.95) {
+                return "#FFCCCC";
+            }
+            return "red";
+//            This approach would work with better probability distribution
+//            int red, green = 255, blue;
+//            red = new Double(255 * number).intValue();
+//            green = new Double(255 * (1 - number)).intValue();
+//            blue = 0;
+//
+//            return String.format("#%02x%02x%02x", red, green, blue);
+        }
+
+        private String getNodeColor() {
+            if (this.hoeffdingBound == null) {
+                return "white";
+            }
+
+            return numberToColor(this.nodeSplitProbabilities.lastElement());
+        }
+
+        public void describeSubtree(MyHoeffdingTree ht, StringBuilder out, int indent) {
             StringUtils.appendIndented(out, indent, "Leaf ");
             out.append(ht.getClassNameString());
             out.append(" = ");
@@ -230,22 +264,26 @@ public class MyHoeffdingTree extends AbstractClassifier {
             StringUtils.appendNewline(out);
         }
 
-        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray children, String parentID) {
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray children, String parentID, boolean isAlternate) {
             JSONObject node = new JSONObject();
             StringBuilder weights = new StringBuilder();
 
             node.put("className", getClassName(ht));
-            node.put("classNum", this.observedClassDistribution.maxIndex());
+            node.put("classIndex", this.observedClassDistribution.maxIndex());
             this.observedClassDistribution.getSingleLineDescription(
                     weights, ht.treeRoot.observedClassDistribution.numValues()
             );
             node.put("weights", weights.toString());  // TODO: change this to list
             node.put("id", this.nodeID);
-            node.put("parent", parentID);
-            node.put("leaf", true);
+            node.put("hoeffdingBound", this.hoeffdingBound);
+            node.put("nodeColor", getNodeColor());
+            node.put("parentID", parentID);
+            node.put("isLeaf", isLeaf());
+            node.put("isAlternate", isAlternate);
             children.add(node);
         }
 
+        @org.jetbrains.annotations.NotNull
         private String getClassName(MyHoeffdingTree ht) {
 //            TODO: better solution
             String classString = ht.getClassLabelString(this.observedClassDistribution.maxIndex());
@@ -268,7 +306,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
         }
 
         public void getDescriptionJSON(JSONArray root) {
-            describeSubtreeJSON(null, root, "root");
+            describeSubtreeJSON(null, root, "root", false);
         }
     }
 
@@ -353,8 +391,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
                 Node child = getChild(branch);
                 if (child != null) {
                     StringUtils.appendIndented(out, indent, "if ");
-                    out.append(this.splitTest.describeConditionForBranch(branch,
-                            ht.getModelContext()));
+                    out.append(this.splitTest.describeConditionForBranch(branch, ht.getModelContext()));
                     out.append(": ");
                     StringUtils.appendNewline(out);
                     child.describeSubtree(ht, out, indent + 2);
@@ -363,26 +400,26 @@ public class MyHoeffdingTree extends AbstractClassifier {
         }
 
         @Override
-        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID) {
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID, boolean isAlternate) {
             for (int branch = 0; branch < numChildren(); branch++) {
                 Node child = getChild(branch);
                 JSONObject node = new JSONObject();
                 if (child != null) {
                     String idWithBranchNumber = this.nodeID + "_" + Integer.toString(branch);
                     node.put("id", idWithBranchNumber);
-                    node.put("parent", parentID);
-                    node.put("leaf", false);
+                    node.put("parentID", parentID);
+                    node.put("leaf", isLeaf());
                     node.put("split", parseSplitToJSON(ht, branch));
 
                     JSONArray newChildren = new JSONArray();
                     node.put("children", newChildren);
                     parent.add(node);
-                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber);
+                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false);
                 }
             }
         }
 
-        private JSONObject parseSplitToJSON(MyHoeffdingTree ht, int branch) {
+        public JSONObject parseSplitToJSON(MyHoeffdingTree ht, int branch) {
             JSONObject splitNode = new JSONObject();
             String[] splitString = this.splitTest.describeConditionForBranch(branch, ht.getModelContext()).split(" ");
             String attribute = splitString[1].substring(splitString[1].indexOf(":") + 1, splitString[1].indexOf("]"));
@@ -491,8 +528,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
             this.weightSeenAtLastSplitEvaluation = weight;
         }
 
-        public AttributeSplitSuggestion[] getBestSplitSuggestions(
-                SplitCriterion criterion, MyHoeffdingTree ht) {
+        public AttributeSplitSuggestion[] getBestSplitSuggestions(SplitCriterion criterion, MyHoeffdingTree ht) {
             List<AttributeSplitSuggestion> bestSuggestions = new LinkedList<AttributeSplitSuggestion>();
             double[] preSplitDist = this.observedClassDistribution.getArrayCopy();
             if (!ht.noPrePruneOption.isSet()) {
@@ -571,6 +607,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
             this.treeRoot = newLearningNode();
             this.activeLeafNodeCount = 1;
         }
+
         FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
         Node leafNode = foundNode.node;
         if (leafNode == null) {
@@ -581,20 +618,17 @@ public class MyHoeffdingTree extends AbstractClassifier {
         if (leafNode instanceof LearningNode) {
             LearningNode learningNode = (LearningNode) leafNode;
             learningNode.learnFromInstance(inst, this);
-            if (this.growthAllowed
-                    && (learningNode instanceof ActiveLearningNode)) {
+            if (this.growthAllowed && (learningNode instanceof ActiveLearningNode)) {
                 ActiveLearningNode activeLearningNode = (ActiveLearningNode) learningNode;
                 double weightSeen = activeLearningNode.getWeightSeen();
-                if (weightSeen
-                        - activeLearningNode.getWeightSeenAtLastSplitEvaluation() >= this.gracePeriodOption.getValue()) {
-                    attemptToSplit(activeLearningNode, foundNode.parent,
-                            foundNode.parentBranch);
+                if (weightSeen - activeLearningNode.getWeightSeenAtLastSplitEvaluation()
+                        >= this.gracePeriodOption.getValue()) {
+                    attemptToSplit(activeLearningNode, foundNode.parent, foundNode.parentBranch);
                     activeLearningNode.setWeightSeenAtLastSplitEvaluation(weightSeen);
                 }
             }
         }
-        if (this.trainingWeightSeenByModel
-                % this.memoryEstimatePeriodOption.getValue() == 0) {
+        if (this.trainingWeightSeenByModel % this.memoryEstimatePeriodOption.getValue() == 0) {
             estimateModelByteSizes();
         }
     }
@@ -646,7 +680,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
     }
 
     public void getModelDescriptionJSON(JSONArray root) {
-        this.treeRoot.describeSubtreeJSON(this, root, "root");
+        this.treeRoot.describeSubtreeJSON(this, root, "root", false);
     }
 
     @Override
@@ -654,10 +688,8 @@ public class MyHoeffdingTree extends AbstractClassifier {
         return false;
     }
 
-    public static double computeHoeffdingBound(double range, double confidence,
-                                               double n) {
-        return Math.sqrt(((range * range) * Math.log(1.0 / confidence))
-                / (2.0 * n));
+    public static double computeHoeffdingBound(double range, double confidence, double n) {
+        return Math.sqrt(((range * range) * Math.log(1.0 / confidence)) / (2.0 * n));
     }
 
     //Procedure added for Hoeffding Adaptive Trees (ADWIN)
@@ -682,27 +714,51 @@ public class MyHoeffdingTree extends AbstractClassifier {
         return (AttributeClassObserver) numericClassObserver.copy();
     }
 
-    protected void attemptToSplit(ActiveLearningNode node, SplitNode parent,
-                                  int parentIndex) {
+    private double min(double v1, double v2) {
+        return (v1 < v2) ? v1 : v2;
+    }
+
+    private double clampToOne(double value) {
+        if (value > 1.0) return 1.0;
+        return value;
+    }
+
+    private double getSplitProbability(double hoeffdingBound, double diffBestSecondBestMerits) {
+        double probability = 1 - min(
+                hoeffdingBound - diffBestSecondBestMerits,
+                hoeffdingBound - this.tieThresholdOption.getValue()
+        );
+        return clampToOne(probability);
+    }
+
+    protected void attemptToSplit(ActiveLearningNode node, SplitNode parent, int parentIndex) {
         if (!node.observedClassDistributionIsPure()) {
             SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
             AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion, this);
             Arrays.sort(bestSplitSuggestions);
             boolean shouldSplit = false;
+
             if (bestSplitSuggestions.length < 2) {
                 shouldSplit = bestSplitSuggestions.length > 0;
-            } else {
-                double hoeffdingBound = computeHoeffdingBound(splitCriterion.getRangeOfMerit(node.getObservedClassDistribution()),
-                        this.splitConfidenceOption.getValue(), node.getWeightSeen());
+            }
+            else {
+                double hoeffdingBound = computeHoeffdingBound(
+                        splitCriterion.getRangeOfMerit(node.getObservedClassDistribution()),
+                        this.splitConfidenceOption.getValue(), node.getWeightSeen()
+                );
                 AttributeSplitSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
                 AttributeSplitSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
-                if ((bestSuggestion.merit - secondBestSuggestion.merit > hoeffdingBound)
-                        || (hoeffdingBound < this.tieThresholdOption.getValue())) {
+                Double diffBestSecondBestMerits = bestSuggestion.merit - secondBestSuggestion.merit;
+
+                // Save node HB and split probability
+                node.hoeffdingBound = hoeffdingBound;
+                node.nodeSplitProbabilities.add(getSplitProbability(hoeffdingBound, diffBestSecondBestMerits));
+
+                if (diffBestSecondBestMerits > hoeffdingBound || hoeffdingBound < this.tieThresholdOption.getValue()) {
+                    System.out.println("Splitting learning node!");
                     shouldSplit = true;
                 }
-                // }
-                if ((this.removePoorAttsOption != null)
-                        && this.removePoorAttsOption.isSet()) {
+                if ((this.removePoorAttsOption != null) && this.removePoorAttsOption.isSet()) {
                     Set<Integer> poorAtts = new HashSet<Integer>();
                     // scan 1 - add any poor to set
                     for (int i = 0; i < bestSplitSuggestions.length; i++) {
@@ -721,8 +777,8 @@ public class MyHoeffdingTree extends AbstractClassifier {
                         if (bestSplitSuggestions[i].splitTest != null) {
                             int[] splitAtts = bestSplitSuggestions[i].splitTest.getAttsTestDependsOn();
                             if (splitAtts.length == 1) {
-                                if (bestSuggestion.merit
-                                        - bestSplitSuggestions[i].merit < hoeffdingBound) {
+                                if (bestSuggestion.merit - bestSplitSuggestions[i].merit < hoeffdingBound) {
+                                    System.out.println("Removing poor attributes");
                                     poorAtts.remove(new Integer(splitAtts[0]));
                                 }
                             }

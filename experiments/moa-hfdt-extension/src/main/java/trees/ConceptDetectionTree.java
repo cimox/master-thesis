@@ -24,7 +24,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
     private PrintWriter conceptFileWriter;
     private boolean printToKafka;
     private String kafkaTopic = "experiment";
-    private MyKafkaProducer producer;
+    protected MyKafkaProducer producer;
     private Jedis redis;
     private JSONObject previousRoot;
 
@@ -176,6 +176,31 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             return (this.estimationErrorWeight == null);
         }
 
+        @Override
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID, boolean isAlternate) {
+            for (int branch = 0; branch < numChildren(); branch++) {
+                Node child = getChild(branch);
+                JSONObject node = new JSONObject();
+                if (child != null) {
+                    String idWithBranchNumber = this.nodeID + "_" + Integer.toString(branch);
+                    node.put("id", idWithBranchNumber);
+                    node.put("parentID", parentID);
+                    node.put("leaf", isLeaf());
+                    node.put("split", parseSplitToJSON(ht, branch));
+                    if (this.alternateTree != null) {
+                        JSONArray alternatingTree = new JSONArray();
+                        this.alternateTree.describeSubtreeJSON(ht, alternatingTree, parentID, true);
+                        node.put("alternatingTree", alternatingTree);
+                    }
+
+                    JSONArray newChildren = new JSONArray();
+                    node.put("children", newChildren);
+                    parent.add(node);
+                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false);
+                }
+            }
+        }
+
         // SplitNodes can have alternative trees, but LearningNodes can't
         // LearningNodes can split, but SplitNodes can't
         // Parent nodes are allways SplitNodes
@@ -220,11 +245,6 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                     double hoeffdingBound = Math.sqrt(2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
                     double diffErrorRate = oldErrorRate - altErrorRate;
 
-                    this.redis.lpush(this.nodeID + "_hoeffdingBound", String.valueOf(hoeffdingBound));
-                    this.redis.lpush(this.nodeID + "_oldErrorRate", String.valueOf(oldErrorRate));
-                    this.redis.lpush(this.nodeID + "_altErrorRate", String.valueOf(altErrorRate));
-                    this.redis.lpush(this.nodeID + "_diff", String.valueOf(diffErrorRate));
-
                     if (hoeffdingBound < oldErrorRate - altErrorRate) {
                         // Switch alternate tree
                         System.out.println("Old tree " + this.splitTest.hashCode()
@@ -254,23 +274,15 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                         }
                         ht.prunedAlternateTrees++;
                     }
-                    this.conceptFileWriter.println(replacementStatus);
-                }
-                else {
+                } else {
                     double fDelta = .05;
                     double fN = 1.0 / ((NewNode) this.alternateTree).getErrorWidth() + 1.0 / this.getErrorWidth();
                     double oldErrorRate = this.getErrorEstimation();
                     double altErrorRate = ((NewNode) this.alternateTree).getErrorEstimation();
                     double hoeffdingBound = Math.sqrt(2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
                     double diffErrorRate = oldErrorRate - altErrorRate;
-
-                    this.redis.lpush(this.nodeID + "_hoeffdingBound", String.valueOf(hoeffdingBound));
-                    this.redis.lpush(this.nodeID + "_oldErrorRate", String.valueOf(oldErrorRate));
-                    this.redis.lpush(this.nodeID + "_altErrorRate", String.valueOf(altErrorRate));
-                    this.redis.lpush(this.nodeID + "_diff", String.valueOf(diffErrorRate));
                 }
             }
-            this.redis.set(this.nodeID + "_status", replacementStatus);
 
             //learnFromInstance alternate Tree and Child nodes
             if (this.alternateTree != null) {
@@ -415,8 +427,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
 
             //Check for Split condition
             double weightSeen = this.getWeightSeen();
-            if (weightSeen
-                    - this.getWeightSeenAtLastSplitEvaluation() >= ht.gracePeriodOption.getValue()) {
+            if (weightSeen - this.getWeightSeenAtLastSplitEvaluation() >= ht.gracePeriodOption.getValue()) {
                 ht.attemptToSplit(this, parent, parentBranch);
                 this.setWeightSeenAtLastSplitEvaluation(weightSeen);
             }
@@ -464,7 +475,6 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
 
     @Override
     protected LearningNode newLearningNode(double[] initialClassObservations) {
-        // IDEA: to choose different learning nodes depending on predictionOption
         return new AdaLearningNode(initialClassObservations);
     }
 
@@ -498,11 +508,8 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             getModelDescriptionJSON((JSONArray) root.get("children"));
 
             try {
-                if (!root.toJSONString().equals(this.previousRoot.toJSONString())) {
-                    this.producer.sendMessage("key", root.toJSONString());
-                }
-            }
-            catch (Exception e) {
+                this.producer.sendMessage("key", root.toJSONString());
+            } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
             this.previousRoot = root;

@@ -1,6 +1,7 @@
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import experiments.Experiment;
 import experiments.ExperimentException;
 import moa.classifiers.Classifier;
@@ -80,6 +81,13 @@ public class ExperimentRunner {
 
                 // Create classifier and stream generator.
                 ConceptDetectionTree learner = new ConceptDetectionTree(this.conceptFileWriter, true);
+                learner.leafpredictionOption = new MultiChoiceOption(
+                        "leafprediction", 'l', "Leaf prediction to use.", new String[]{
+                        "MC", "NB", "NBAdaptive"}, new String[]{
+                        "Majority class",
+                        "Naive Bayes",
+                        "Naive Bayes Adaptive"}, 2);
+
                 HyperplaneGenerator stream = new HyperplaneGenerator();
                 stream.numClassesOption = new IntOption("numClasses", 'c',
                         "The number of classes to generate.", 4, 2, Integer.MAX_VALUE);
