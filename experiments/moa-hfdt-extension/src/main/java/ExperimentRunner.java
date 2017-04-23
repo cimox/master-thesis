@@ -80,7 +80,7 @@ public class ExperimentRunner {
                 this.accuracyFileWriter = new PrintWriter(this.accuracyBufferedWriter);
 
                 // Create classifier and stream generator.
-                ConceptDetectionTree learner = new ConceptDetectionTree(this.conceptFileWriter, true);
+                ConceptDetectionTree learner = new ConceptDetectionTree(true);
                 learner.leafpredictionOption = new MultiChoiceOption(
                         "leafprediction", 'l', "Leaf prediction to use.", new String[]{
                         "MC", "NB", "NBAdaptive"}, new String[]{

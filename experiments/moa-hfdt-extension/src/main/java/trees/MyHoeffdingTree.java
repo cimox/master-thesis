@@ -280,6 +280,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
             node.put("parentID", parentID);
             node.put("isLeaf", isLeaf());
             node.put("isAlternate", isAlternate);
+            node.put("instancesSeen", this.instancesSeen);
             children.add(node);
         }
 

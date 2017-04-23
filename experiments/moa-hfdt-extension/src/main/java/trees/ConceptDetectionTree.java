@@ -24,22 +24,24 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
     private PrintWriter conceptFileWriter;
     private boolean printToKafka;
     private String kafkaTopic = "experiment";
-    protected MyKafkaProducer producer;
+    private MyKafkaProducer producer;
     private Jedis redis;
-    private JSONObject previousRoot;
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter) {
         this.conceptFileWriter = conceptFileWriter;
         this.printToKafka = false;
         initKafkaProducer();
-        initRedis();
+    }
+
+    public ConceptDetectionTree(boolean printToKafka) {
+        this.printToKafka = printToKafka;
+        initKafkaProducer();
     }
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter, boolean printToKafka) {
         this.conceptFileWriter = conceptFileWriter;
         this.printToKafka = printToKafka;
         initKafkaProducer();
-        initRedis();
     }
 
     public ConceptDetectionTree(PrintWriter conceptFileWriter, boolean printToKafka, String kafkaTopic) {
@@ -192,6 +194,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                         this.alternateTree.describeSubtreeJSON(ht, alternatingTree, parentID, true);
                         node.put("alternatingTree", alternatingTree);
                     }
+                    node.put("instancesSeen", this.instancesSeen);
 
                     JSONArray newChildren = new JSONArray();
                     node.put("children", newChildren);
@@ -207,6 +210,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         @Override
         public void learnFromInstance(Instance inst, ConceptDetectionTree ht, SplitNode parent, int parentBranch) {
             String replacementStatus = "none";
+            this.instancesSeen++;
 
             int trueClass = (int) inst.classValue();
             // New option core
@@ -247,8 +251,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
 
                     if (hoeffdingBound < oldErrorRate - altErrorRate) {
                         // Switch alternate tree
-                        System.out.println("Old tree " + this.splitTest.hashCode()
-                                + " replaced with alternating tree, bound: " + hoeffdingBound);
+                        System.out.println("Old tree " + this.nodeID + " replaced, bound: " + hoeffdingBound);
                         replacementStatus = "replaced";
 
                         ht.activeLeafNodeCount -= this.numberLeaves();
@@ -401,6 +404,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         @Override
         public void learnFromInstance(Instance inst, ConceptDetectionTree ht, SplitNode parent, int parentBranch) {
             int trueClass = (int) inst.classValue();
+            this.instancesSeen++;
 
             //New option vore
             int k = MiscUtils.poisson(1.0, this.classifierRandom);
@@ -512,7 +516,6 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
-            this.previousRoot = root;
         }
         ((NewNode) this.treeRoot).learnFromInstance(inst, this, null, -1);
     }
