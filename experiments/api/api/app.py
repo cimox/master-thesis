@@ -1,11 +1,11 @@
 import argparse
 import signal
 import redis
-import time
+import ujson
 
 from api import logger
 from api.consumer import Consumer
-from api.helpers import deserialize_redis_msg, DataSource, BaseHandler
+from api.helpers import deserialize_redis_msg, DataSource, BaseHandler, get_max_instances_seen
 from tornado import gen
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop, PeriodicCallback
@@ -34,7 +34,7 @@ class NodeStats(BaseHandler):
         })
 
 
-class TreeIncrements(BaseHandler):
+class StreamProcessor(BaseHandler):
     """Tree increments server-sent events"""
 
     def data_received(self, chunk):
@@ -75,7 +75,20 @@ class TreeIncrements(BaseHandler):
     def publish(self, data):
         """Pushes data to a listener."""
         try:
-            self.write('data: {}\n\n'.format(data))
+            deserialized_data = ujson.loads(data)
+
+            if deserialized_data.get('event') == 'notification':
+                self.write('event: notification\ndata: {}\n\n'.format(data))
+            elif deserialized_data.get('event') == 'tree':
+                instances_seen_min_max = get_max_instances_seen(deserialized_data)
+
+                deserialized_data['maxInstancesSeen'] = instances_seen_min_max.get('max')
+                deserialized_data['minInstancesSeen'] = instances_seen_min_max.get('min')
+
+                self.write('event: tree\ndata: {}\n\n'.format(ujson.dumps(deserialized_data)))
+            else:
+                pass
+
             yield self.flush()
         except StreamClosedError:
             pass
@@ -113,13 +126,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Initialize Redis.
-    redis = redis.StrictRedis(host=args.redis_host, port=args.redis_port, db=args.redis_db)
+    # redis = redis.StrictRedis(host=args.redis_host, port=args.redis_port, db=args.redis_db)
 
     # Start tornado web app.
     app = Application([
         url(r'/', MainHandler),
         url(r'/status/', MainHandler),
-        url(r'/tree/', TreeIncrements, dict(topic=args.topic)),
+        url(r'/stream/', StreamProcessor, dict(topic=args.topic)),
         url(r'/node/(.+)', NodeStats, name='node')
     ])
     server = HTTPServer(app)
