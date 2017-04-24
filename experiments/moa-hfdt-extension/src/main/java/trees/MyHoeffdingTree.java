@@ -222,35 +222,52 @@ public class MyHoeffdingTree extends AbstractClassifier {
             return this.observedClassDistribution.numNonZeroEntries() < 2;
         }
 
-        private String numberToColor(double number) {
-            if (number <= 0.8) {
-                return "#E5FFCC";
+        private String numberToColor(double probability) {
+            if (probability >= 0.99) {
+                return "red";
             }
-            else if (number <= 0.85) {
-                return "#FFFFCC";
-            }
-            else if (number <= 0.9) {
-                return "#FFE5CC";
-            }
-            else if (number <= 0.95) {
+            else if (probability >= 0.95) {
                 return "#FFCCCC";
             }
-            return "red";
-//            This approach would work with better probability distribution
-//            int red, green = 255, blue;
-//            red = new Double(255 * number).intValue();
-//            green = new Double(255 * (1 - number)).intValue();
-//            blue = 0;
-//
-//            return String.format("#%02x%02x%02x", red, green, blue);
+            else if (probability >= 0.90) {
+                return "#FFE5CC";
+            }
+            else if (probability >= 0.85) {
+                return "#FFFFCC";
+            }
+            return "E5FFCC";
         }
 
         private String getNodeColor() {
             if (this.hoeffdingBound == null) {
                 return "white";
             }
-
-            return numberToColor(this.nodeSplitProbabilities.lastElement());
+            else if (this.hoeffdingBound >= 0.4) {
+                return "#FFCCCC";
+            }
+            else if (this.hoeffdingBound >= 0.35) {
+                return "#FFE5CC";
+            }
+            else if (this.hoeffdingBound >= 0.3) {
+                return "#FFFFCC";
+            }
+            else if (this.hoeffdingBound >= 0.1) {
+                return "#E5FFCC";
+            }
+            else if (this.hoeffdingBound >= 0.09) {
+                return "#CCFF99";
+            }
+            else if (this.hoeffdingBound >= 0.085) {
+                return "#B2FF66";
+            }
+            else if (this.hoeffdingBound >= 0.08) {
+                return "#99FF33";
+            }
+            else if (this.hoeffdingBound < 0.08) {
+                return "#80FF00";
+            }
+            return "white";
+//            return numberToColor(this.nodeSplitProbabilities.lastElement());
         }
 
         public void describeSubtree(MyHoeffdingTree ht, StringBuilder out, int indent) {
@@ -264,7 +281,8 @@ public class MyHoeffdingTree extends AbstractClassifier {
             StringUtils.appendNewline(out);
         }
 
-        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray children, String parentID, boolean isAlternate) {
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray children, String parentID, boolean isAlternate,
+                                        JSONObject splitRule) {
             JSONObject node = new JSONObject();
             StringBuilder weights = new StringBuilder();
 
@@ -281,12 +299,12 @@ public class MyHoeffdingTree extends AbstractClassifier {
             node.put("isLeaf", isLeaf());
             node.put("isAlternate", isAlternate);
             node.put("instancesSeen", this.instancesSeen);
+            node.put("split", splitRule);
             children.add(node);
         }
 
         @org.jetbrains.annotations.NotNull
         private String getClassName(MyHoeffdingTree ht) {
-//            TODO: better solution
             String classString = ht.getClassLabelString(this.observedClassDistribution.maxIndex());
             return classString.substring(classString.indexOf(':') + 1, classString.length() - 1);
         }
@@ -307,7 +325,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
         }
 
         public void getDescriptionJSON(JSONArray root) {
-            describeSubtreeJSON(null, root, "root", false);
+            describeSubtreeJSON(null, root, "root", false, null);
         }
     }
 
@@ -401,23 +419,28 @@ public class MyHoeffdingTree extends AbstractClassifier {
         }
 
         @Override
-        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID, boolean isAlternate) {
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID, boolean isAlternate,
+                                        JSONObject splitRule) {
+            JSONObject node = new JSONObject();
+            String idWithBranchNumber = this.nodeID;
+            node.put("id", idWithBranchNumber);
+            node.put("parentID", parentID);
+            node.put("leaf", isLeaf());
+
+            JSONArray newChildren = new JSONArray();
+            node.put("children", newChildren);
+            long instancesSeen = 0;
             for (int branch = 0; branch < numChildren(); branch++) {
                 Node child = getChild(branch);
-                JSONObject node = new JSONObject();
                 if (child != null) {
-                    String idWithBranchNumber = this.nodeID + "_" + Integer.toString(branch);
-                    node.put("id", idWithBranchNumber);
-                    node.put("parentID", parentID);
-                    node.put("leaf", isLeaf());
-                    node.put("split", parseSplitToJSON(ht, branch));
-
-                    JSONArray newChildren = new JSONArray();
-                    node.put("children", newChildren);
-                    parent.add(node);
-                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false);
+                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false,
+                            parseSplitToJSON(ht, branch));
                 }
+                instancesSeen += this.instancesSeen;
             }
+
+            node.put("instancesSeen", instancesSeen);
+            parent.add(node);
         }
 
         public JSONObject parseSplitToJSON(MyHoeffdingTree ht, int branch) {
@@ -681,7 +704,7 @@ public class MyHoeffdingTree extends AbstractClassifier {
     }
 
     public void getModelDescriptionJSON(JSONArray root) {
-        this.treeRoot.describeSubtreeJSON(this, root, "root", false);
+        this.treeRoot.describeSubtreeJSON(this, root, "root", false, null);
     }
 
     @Override

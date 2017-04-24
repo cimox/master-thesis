@@ -1,6 +1,7 @@
 package trees;
 
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -114,6 +115,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         public boolean ErrorChange = false;
         protected int randomSeed = 1;
         protected Random classifierRandom;
+        private MyKafkaProducer producer;
 
         @Override
         public int calcByteSizeIncludingSubtree() {
@@ -138,6 +140,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             this.classifierRandom = new Random(this.randomSeed);
             this.conceptFileWriter = pw;
             this.redis = redis;
+            initKafkaProducer("experiment");
         }
 
         public AdaSplitNode(InstanceConditionalTest splitTest, double[] classObservations, PrintWriter pw,
@@ -146,6 +149,11 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             this.classifierRandom = new Random(this.randomSeed);
             this.conceptFileWriter = pw;
             this.redis = redis;
+            initKafkaProducer("experiment");
+        }
+
+        private void initKafkaProducer(String kafkaTopic) {
+            this.producer = new MyKafkaProducer(kafkaTopic);
         }
 
         @Override
@@ -179,29 +187,37 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
         }
 
         @Override
-        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID, boolean isAlternate) {
+        public void describeSubtreeJSON(MyHoeffdingTree ht, JSONArray parent, String parentID, boolean isAlternate,
+                                        JSONObject splitRule) {
+            JSONObject node = new JSONObject();
+            String idWithBranchNumber = this.nodeID;
+            node.put("id", idWithBranchNumber);
+            node.put("parentID", parentID);
+            node.put("leaf", isLeaf());
+            if (this.alternateTree != null) {
+                JSONArray alternatingTree = new JSONArray();
+                this.alternateTree.describeSubtreeJSON(ht, alternatingTree, parentID, true, null);
+                node.put("alternatingTree", alternatingTree);
+                node.put("nodeColor", "red");
+            }
+
+            JSONArray newChildren = new JSONArray();
+            node.put("children", newChildren);
+            long instancesSeen = 0;
             for (int branch = 0; branch < numChildren(); branch++) {
                 Node child = getChild(branch);
-                JSONObject node = new JSONObject();
                 if (child != null) {
-                    String idWithBranchNumber = this.nodeID + "_" + Integer.toString(branch);
-                    node.put("id", idWithBranchNumber);
-                    node.put("parentID", parentID);
-                    node.put("leaf", isLeaf());
-                    node.put("split", parseSplitToJSON(ht, branch));
-                    if (this.alternateTree != null) {
-                        JSONArray alternatingTree = new JSONArray();
-                        this.alternateTree.describeSubtreeJSON(ht, alternatingTree, parentID, true);
-                        node.put("alternatingTree", alternatingTree);
-                    }
-                    node.put("instancesSeen", this.instancesSeen);
-
-                    JSONArray newChildren = new JSONArray();
-                    node.put("children", newChildren);
-                    parent.add(node);
-                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false);
+                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false,
+                            parseSplitToJSON(ht, branch));
                 }
+                instancesSeen += this.instancesSeen;
             }
+            if (splitRule != null) {
+                node.put("split", splitRule);
+            }
+
+            node.put("instancesSeen", instancesSeen);
+            parent.add(node);
         }
 
         // SplitNodes can have alternative trees, but LearningNodes can't
@@ -252,7 +268,17 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                     if (hoeffdingBound < oldErrorRate - altErrorRate) {
                         // Switch alternate tree
                         System.out.println("Old tree " + this.nodeID + " replaced, bound: " + hoeffdingBound);
-                        replacementStatus = "replaced";
+
+                        JSONObject notification = new JSONObject();
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        notification.put("event", "notification");
+                        notification.put("timestamp", timestamp.getTime());
+                        notification.put("message", "Change occurred!");
+                        try {
+                            producer.sendMessage("key", notification.toJSONString());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         ht.activeLeafNodeCount -= this.numberLeaves();
                         ht.activeLeafNodeCount += ((NewNode) this.alternateTree).numberLeaves();
@@ -265,8 +291,6 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                         }
                         ht.switchedAlternateTrees++;
                     } else if (hoeffdingBound < altErrorRate - oldErrorRate) {
-                        replacementStatus = "erased";
-
                         // Erase alternate tree
                         if (this.alternateTree instanceof ActiveLearningNode) {
                             this.alternateTree = null;
@@ -320,6 +344,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
                     }
                 }
             }
+            this.producer.closeProducer();
         }
 
         //New for option votes
@@ -495,6 +520,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
     private JSONObject prepareNewTreeRoot() {
         JSONObject root = new JSONObject();
         JSONArray rootChildren = new JSONArray();
+        root.put("event", "tree");
         root.put("id", "root");
         root.put("parent", null);
         root.put("leaf", false);

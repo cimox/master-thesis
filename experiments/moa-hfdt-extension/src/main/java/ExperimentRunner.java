@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 
 
 public class ExperimentRunner {
-    private final static int NUM_INSTANCES = 5000;
+    private final static int NUM_INSTANCES = 150000;
     private final static boolean IS_TESTING = true;
 
     public static void main(String[] args) {
@@ -87,6 +87,11 @@ public class ExperimentRunner {
                         "Majority class",
                         "Naive Bayes",
                         "Naive Bayes Adaptive"}, 2);
+                learner.gracePeriodOption = new IntOption(
+                        "gracePeriod",
+                        'g',
+                        "The number of instances a leaf should observe between split attempts.",
+                        500, 0, Integer.MAX_VALUE);
 
                 HyperplaneGenerator stream = new HyperplaneGenerator();
                 stream.numClassesOption = new IntOption("numClasses", 'c',
