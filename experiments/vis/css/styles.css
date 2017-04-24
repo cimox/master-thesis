@@ -218,3 +218,35 @@ button {
     stroke: none;
     fill: steelblue;
 }
+
+.node circle {
+    stroke: black;
+    stroke-width: 2.5px;
+}
+
+.node text {
+    color: black;
+}
+
+.link path {
+    fill: none;
+    stroke: gray;
+    stroke-width: 2.5px;
+}
+
+.link text {
+    color: black;
+    font-size: 12px;
+    font-family: Arial, serif;
+}
+
+.link rect {
+    fill: white;
+    stroke: steelblue;
+    stroke-width: 2.5px;
+    stroke-opacity: 75%;
+}
+
+.control-group {
+    margin-top: 0px;
+}

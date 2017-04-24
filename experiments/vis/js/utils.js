@@ -11,7 +11,7 @@ function hasSameProperties(obj1, obj2) {
 
 function addChildren(parentNode, element) {
     if (parentNode.children) {
-        var newNode = _.cloneDeep(element);
+        let newNode = _.cloneDeep(element);
         newNode['children'] = [];
 
         parentNode.children.push(newNode);
@@ -44,22 +44,17 @@ function getTreeNode(tree, nodeID) {
 }
 
 function updateNodeData(oldNode, newNode) {
-    // TODO: this should be refactored
-    // for (var key in newNode) {
-    //     if (oldNode[key]) {
-    //         oldNode[key] = newNode[key];
-    //     }
-    // }
     oldNode['weights'] = newNode['weights'];
     oldNode['hoeffdingBound'] = newNode['hoeffdingBound'];
     oldNode['nodeColor'] = newNode['nodeColor'];
+    oldNode['instancesSeen'] = newNode['instancesSeen'];
 }
 
 function resolveCallback(callback, element) {
     return new Promise(resolve => {
         setTimeout(() => {
             return resolve(callback(element));
-        }, 600);
+        }, duration + 50);
     });
 }
 
@@ -219,8 +214,43 @@ function removeAndFadeOutOldNodes(treeData, treeRoot) {
 function endall(transition, callback) {
     if (typeof callback !== "function") throw new Error("Wrong callback in endall");
     if (transition.size() === 0) { callback() }
-    var n = 0;
+    let n = 0;
     transition
         .each(function() { ++n; })
         .each("end", function() { if (!--n) callback.apply(this, arguments); });
+}
+
+function getSplitRuleText(d) {
+    let targetSplitRule = d.target.split;
+    if (targetSplitRule) {
+        return targetSplitRule.attribute + " " + targetSplitRule.operator + " " + targetSplitRule.operand.toFixed(2);
+    }
+    return "All data";
+}
+
+function getRectWidth(d) {
+    let splitRuleText = getSplitRuleText(d);
+    return splitRuleText.length * rectWidthMultiplier;
+}
+
+function normalize(value, min, max) {
+    return (value - min)/(max - min);
+}
+
+function clampLinkStrokeWidth(normalized) {
+    if (normalized <= linkMinWidthLimit) return linkMinWidthLimit;
+    else if (normalized >= linkMaxWidthLimit) return linkMaxWidthLimit;
+    return normalized;
+}
+
+function getLinkStrokeWidth(d) {
+    let instancesSeen = d.target.instancesSeen;
+    let normalized = normalize(instancesSeen, linkMinWidth, linkMaxWidth) * linkMaxWidthLimit;
+
+    // if (isNaN(normalized) && instancesSeen < linkMaxWidthLimit) {
+    //     return instancesSeen;
+    // }
+    //
+    // return clampLinkStrokeWidth(normalized);
+    return 3;
 }
