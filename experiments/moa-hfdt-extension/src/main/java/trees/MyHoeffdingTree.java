@@ -222,52 +222,35 @@ public class MyHoeffdingTree extends AbstractClassifier {
             return this.observedClassDistribution.numNonZeroEntries() < 2;
         }
 
-        private String numberToColor(double probability) {
-            if (probability >= 0.99) {
-                return "red";
-            }
-            else if (probability >= 0.95) {
-                return "#FFCCCC";
-            }
-            else if (probability >= 0.90) {
-                return "#FFE5CC";
-            }
-            else if (probability >= 0.85) {
-                return "#FFFFCC";
-            }
-            return "E5FFCC";
-        }
-
         private String getNodeColor() {
             if (this.hoeffdingBound == null) {
                 return "white";
             }
             else if (this.hoeffdingBound >= 0.4) {
-                return "#FFCCCC";
-            }
-            else if (this.hoeffdingBound >= 0.35) {
-                return "#FFE5CC";
+                return "#E0E0E0";
             }
             else if (this.hoeffdingBound >= 0.3) {
-                return "#FFFFCC";
+                return "#C0C0C0";
+            }
+            else if (this.hoeffdingBound >= 0.2) {
+                return "#A0A0A0";
             }
             else if (this.hoeffdingBound >= 0.1) {
-                return "#E5FFCC";
-            }
-            else if (this.hoeffdingBound >= 0.09) {
-                return "#CCFF99";
-            }
-            else if (this.hoeffdingBound >= 0.085) {
-                return "#B2FF66";
+                return "#808080";
             }
             else if (this.hoeffdingBound >= 0.08) {
-                return "#99FF33";
+                return "#606060";
             }
-            else if (this.hoeffdingBound < 0.08) {
-                return "#80FF00";
+            else if (this.hoeffdingBound >= 0.07) {
+                return "#404040";
+            }
+            else if (this.hoeffdingBound >= 0.06) {
+                return "#202020";
+            }
+            else if (this.hoeffdingBound < 0.06) {
+                return "#000000";
             }
             return "white";
-//            return numberToColor(this.nodeSplitProbabilities.lastElement());
         }
 
         public void describeSubtree(MyHoeffdingTree ht, StringBuilder out, int indent) {
@@ -445,14 +428,28 @@ public class MyHoeffdingTree extends AbstractClassifier {
 
         public JSONObject parseSplitToJSON(MyHoeffdingTree ht, int branch) {
             JSONObject splitNode = new JSONObject();
-            String[] splitString = this.splitTest.describeConditionForBranch(branch, ht.getModelContext()).split(" ");
-            String attribute = splitString[1].substring(splitString[1].indexOf(":") + 1, splitString[1].indexOf("]"));
-            String operator = splitString[2];
-            double operand = Double.parseDouble(splitString[3]);
+            String splitString = this.splitTest.describeConditionForBranch(branch, ht.getModelContext());
+            String attribute = splitString.substring(splitString.indexOf("[")).split(":")[1].split("]")[0];
+            String operator = splitString.substring(splitString.indexOf("]") + 1).split(" ")[1];
+
+            String operand = null;
+            try {
+                operand = splitString.substring(splitString.indexOf("{")).split(":")[1];
+                operand = operand.substring(0, operand.length() - 1);
+            }
+            catch (Exception e) {
+                operand = splitString.split(" ")[3];
+            }
+
+            try {
+                splitNode.put("operand", Double.parseDouble(operand));
+            }
+            catch (Exception e) {
+                splitNode.put("operand", operand);
+            }
 
             splitNode.put("attribute", attribute);
             splitNode.put("operator", operator);
-            splitNode.put("operand", operand);
 
             return splitNode;
         }

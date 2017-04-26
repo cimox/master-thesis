@@ -220,6 +220,7 @@ button {
 }
 
 .node circle {
+    fill: white;
     stroke: black;
     stroke-width: 2.5px;
 }
@@ -249,4 +250,12 @@ button {
 
 .control-group {
     margin-top: 0px;
+}
+
+.split-operator {
+    font-weight: bold;
+}
+
+tspan {
+    font-weight: bold;
 }

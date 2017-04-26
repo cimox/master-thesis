@@ -207,8 +207,7 @@ public class ConceptDetectionTree extends MyHoeffdingTree {
             for (int branch = 0; branch < numChildren(); branch++) {
                 Node child = getChild(branch);
                 if (child != null) {
-                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false,
-                            parseSplitToJSON(ht, branch));
+                    child.describeSubtreeJSON(ht, newChildren, idWithBranchNumber, false, parseSplitToJSON(ht, branch));
                 }
                 instancesSeen += this.instancesSeen;
             }

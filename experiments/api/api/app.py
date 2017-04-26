@@ -2,6 +2,7 @@ import argparse
 import signal
 import redis
 import ujson
+import time
 
 from api import logger
 from api.consumer import Consumer

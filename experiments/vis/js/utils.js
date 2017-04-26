@@ -223,7 +223,15 @@ function endall(transition, callback) {
 function getSplitRuleText(d) {
     let targetSplitRule = d.target.split;
     if (targetSplitRule) {
-        return targetSplitRule.attribute + " " + targetSplitRule.operator + " " + targetSplitRule.operand.toFixed(2);
+        let splitOperand;
+        try {
+            splitOperand = targetSplitRule.operand.toFixed(2);
+        }
+        catch (err) {
+            splitOperand = targetSplitRule.operand;
+        }
+
+        return targetSplitRule.attribute + " " + targetSplitRule.operator + " " + splitOperand;
     }
     return "All data";
 }
@@ -253,4 +261,46 @@ function getLinkStrokeWidth(d) {
     //
     // return clampLinkStrokeWidth(normalized);
     return 3;
+}
+
+function isInArray(strings, str) {
+    return strings.indexOf(str.toLowerCase()) > -1;
+}
+
+function wrap(text, width) {
+    let operators = ['=', '<=', '<', '>=', '>'];
+
+    text.each(function() {
+        let text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            dy = parseFloat(text.attr("dy")),
+            tspan = text.text(null).append("tspan").attr("x", 0).attr("dy", dy + "em"),
+            i = 0;
+
+        while (word = words.pop()) {
+            if (isInArray(operators, word) || i++ == 0) {
+                tspan.text(word);
+                tspan = text.append("tspan")
+                    .attr("x", 0).attr("dy", ++lineNumber * lineHeight + dy + "em")
+                    .text(word);
+            }
+            else if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                    .attr("x", 0).attr("dy", ++lineNumber * lineHeight + dy + "em")
+                    .text(word);
+            }
+            else {
+                line.push(word);
+                tspan.text(line.join(" "));
+            }
+            if (lineNumber > 0) lineNumber = 0;
+        }
+    });
 }

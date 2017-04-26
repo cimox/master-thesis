@@ -1,7 +1,7 @@
 let circleRadius = 8;
 
-let rectHeight = 21, rectHeightDivider = 1.5,
-    rectWidthMultiplier = 7, rectWidthDivider = 2;
+let rectHeight = 23, rectHeightDivider = 1.5,
+    rectWidthMultiplier = 5, rectWidthDivider = 2;
 
 let linkMinWidth = 1, linkMinWidthLimit = 1,
     linkMaxWidth = 0, linkMaxWidthLimit = 12;
@@ -133,7 +133,7 @@ function updateTree() {
             else if (d.className) {
                 return d.className;
             }
-            return "[split]";
+            return "";
         });
 
     // Update links
@@ -213,7 +213,7 @@ function updateTreeNodeLabels() {
             else if (d.className) {
                 return d.className;
             }
-            return "[split]";
+            return "";
         });
 
     // Keep root node in front
@@ -225,7 +225,6 @@ function updateTreeNodeLabels() {
         .data(links, function (d) {
             return d.source.id + "-" + d.target.id;
         });
-
     // link.selectAll("path")
     //     .attr("stroke-width", function (d) {
     //         let oldStrokeWidth = parseFloat(this.getAttribute("style").split(' ')[1].split(';')[0]);
@@ -277,7 +276,7 @@ function renderNodes(node) {
             else if (d.className) {
                 return d.className;
             }
-            return "[split]";
+            return "";
         });
 
     // Transition to the proper position for the node
@@ -379,7 +378,7 @@ function renderSplitRules(link) {
         .attr("width", function (d) {
             return getRectWidth(d);
         })
-        .attr("height", rectHeight)
+        .attr("height", rectHeight * 2)
         .attr("rx", 2)
         .attr("ry", 2);
 
@@ -393,8 +392,20 @@ function renderSplitRules(link) {
                 ((d.source.x + d.target.x) / 2) + "," +
                 ((d.source.y + d.target.y) / 2) + ")";
         })
+        .attr("dx", function (d) {
+            return 0;
+        })
+        .attr("dy", function (d) {
+            return 0;
+        })
         .attr("text-anchor", "middle")
         .text(function (d) {
             return getSplitRuleText(d);
+        })
+        .call(wrap, 100)
+        .on("mouseover", function(){
+            // move to front
+            console.log('moving on');
+            this.parentNode.parentNode.appendChild(this.parentNode);
         });
 }

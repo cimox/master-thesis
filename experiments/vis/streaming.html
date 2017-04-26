@@ -22,7 +22,7 @@
     /* Initialization - START */
     let API_STREAM = 'http://localhost:8080/stream/';
 
-    let width = 900,
+    let width = 1500,
         height = 900;
 
     let tree = d3.layout.tree()
@@ -91,7 +91,6 @@
                 animationsFinished = processNextMessage = removalFinished = false;
                 linkMaxWidth = responseData['maxInstancesSeen'];
                 linkMinWidth = responseData['minInstancesSeen'];
-//                alternatingTreeParents = [];
 
                 BFT(responseData, addTreeIncrement).then((complete) => {
                     if (_.isEqual(complete, "success")) {

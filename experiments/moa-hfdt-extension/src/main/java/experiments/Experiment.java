@@ -51,6 +51,7 @@ public class Experiment {
             instancesCorrect = testInstance(trainInstance, instancesCorrect, isTesting);
             instancesSeen = printProgressTraining(instancesSeen, trainingInstancesCount);
             this.learner.trainOnInstance(trainInstance);
+
         }
         double accuracy = 100.0 * (double) instancesCorrect / (double) instancesSeen;
         double totalTime = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread() - startTime);
@@ -59,7 +60,7 @@ public class Experiment {
         );
 
         StringBuilder sb = new StringBuilder();
-        learner.getDescription(sb, 2);
+        this.learner.getDescription(sb, 2);
         System.out.println(sb.toString());
     }
 
