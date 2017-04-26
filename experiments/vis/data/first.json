@@ -1,0 +1,133 @@
+{
+  "parent": null,
+  "children": [
+    {
+      "children": [
+        {
+          "split": {
+            "attribute": "Contract",
+            "operator": "=",
+            "operand": "Month-to-month"
+          },
+          "children": [
+            {
+              "isAlternate": false,
+              "classIndex": 1,
+              "split": {
+                "attribute": "PaymentMethod",
+                "operator": "=",
+                "operand": "Electronic check"
+              },
+              "nodeColor": "#80FF00",
+              "className": "Yes",
+              "instancesSeen": 3340,
+              "id": "1f65cb38-6aa4-41b2-948d-97f7ea1a2d47",
+              "weights": "{1,031|1,266}",
+              "hoeffdingBound": 0.0592326781,
+              "isLeaf": true,
+              "parentID": "cb54c90f-629b-4bd9-9df4-41e3aa3f86aa"
+            },
+            {
+              "isAlternate": false,
+              "classIndex": 0,
+              "split": {
+                "attribute": "PaymentMethod",
+                "operator": "=",
+                "operand": "Mailed check"
+              },
+              "nodeColor": "#B2FF66",
+              "className": "No",
+              "instancesSeen": 1608,
+              "id": "1151102d-5ea8-42ea-9d2e-f6db804e4527",
+              "weights": "{753|356}",
+              "hoeffdingBound": 0.0853619452,
+              "isLeaf": true,
+              "parentID": "cb54c90f-629b-4bd9-9df4-41e3aa3f86aa"
+            },
+            {
+              "isAlternate": false,
+              "classIndex": 0,
+              "split": {
+                "attribute": "PaymentMethod",
+                "operator": "=",
+                "operand": "Bank transfer (automatic)"
+              },
+              "nodeColor": "#E5FFCC",
+              "className": "No",
+              "instancesSeen": 1034,
+              "id": "a4b10338-dd99-45b8-87b6-5de3f5b98435",
+              "weights": "{460|245}",
+              "hoeffdingBound": 0.1069930424,
+              "isLeaf": true,
+              "parentID": "cb54c90f-629b-4bd9-9df4-41e3aa3f86aa"
+            },
+            {
+              "isAlternate": false,
+              "classIndex": 0,
+              "split": {
+                "attribute": "PaymentMethod",
+                "operator": "=",
+                "operand": "Credit card"
+              },
+              "nodeColor": "#E5FFCC",
+              "className": "No",
+              "instancesSeen": 990,
+              "id": "a434035b-d7b8-4503-83d1-0f76d5191915",
+              "weights": "{465|207}",
+              "hoeffdingBound": 0.1097561356,
+              "isLeaf": true,
+              "parentID": "cb54c90f-629b-4bd9-9df4-41e3aa3f86aa"
+            }
+          ],
+          "instancesSeen": 13944,
+          "id": "cb54c90f-629b-4bd9-9df4-41e3aa3f86aa",
+          "leaf": false,
+          "parentID": "c4279233-5281-4a37-b77f-cb7695c03fe4"
+        },
+        {
+          "isAlternate": false,
+          "classIndex": 0,
+          "split": {
+            "attribute": "Contract",
+            "operator": "=",
+            "operand": "One year"
+          },
+          "nodeColor": "#80FF00",
+          "className": "No",
+          "instancesSeen": 2660,
+          "id": "2105a43e-10b3-4ff0-9d84-7726f0bbe6a1",
+          "weights": "{1,790|232}",
+          "hoeffdingBound": 0.0631322534,
+          "isLeaf": true,
+          "parentID": "c4279233-5281-4a37-b77f-cb7695c03fe4"
+        },
+        {
+          "isAlternate": false,
+          "classIndex": 0,
+          "split": {
+            "attribute": "Contract",
+            "operator": "=",
+            "operand": "Two year"
+          },
+          "nodeColor": "#80FF00",
+          "className": "No",
+          "instancesSeen": 3070,
+          "id": "de236331-9a89-40c6-8636-48168272e27b",
+          "weights": "{2,238|63}",
+          "hoeffdingBound": 0.0591811714,
+          "isLeaf": true,
+          "parentID": "c4279233-5281-4a37-b77f-cb7695c03fe4"
+        }
+      ],
+      "instancesSeen": 19083,
+      "id": "c4279233-5281-4a37-b77f-cb7695c03fe4",
+      "leaf": false,
+      "parentID": "root"
+    }
+  ],
+  "id": "root",
+  "event": "tree",
+  "leaf": false,
+  "maxInstancesSeen": 19083,
+  "minInstancesSeen": 990
+}

@@ -1,0 +1,79 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "classIndex": 0,
+          "className": "class1",
+          "hoeffdingBound": 0.08873842157399915,
+          "id": "3520ed92-1c11-4569-b1bf-da7ca50abc90",
+          "instancesSeen": 684,
+          "isAlternate": false,
+          "isLeaf": true,
+          "nodeColor": "red",
+          "parentID": "66a50f0a-f48e-40ce-b93e-9b4f39cfbc45",
+          "split": {
+            "attribute": "att4",
+            "operand": 0.4541770454817054,
+            "operator": "<="
+          },
+          "weights": "{789.93|291.505}"
+        },
+        {
+          "children": [
+            {
+              "classIndex": 0,
+              "className": "class1",
+              "hoeffdingBound": null,
+              "id": "8bb8a9e9-e647-4165-97ca-71930e548dbe",
+              "instancesSeen": 160,
+              "isAlternate": false,
+              "isLeaf": true,
+              "nodeColor": "white",
+              "parentID": "aa39c5b4-bff3-4366-8d37-deb35f1eeb13",
+              "split": {
+                "attribute": "att2",
+                "operand": 0.5452317554590561,
+                "operator": "<="
+              },
+              "weights": "{186.664|161.919}"
+            },
+            {
+              "classIndex": 1,
+              "className": "class2",
+              "hoeffdingBound": null,
+              "id": "8e2f0a83-ade8-48ee-86aa-760d159ebeb4",
+              "instancesSeen": 144,
+              "isAlternate": false,
+              "isLeaf": true,
+              "nodeColor": "white",
+              "parentID": "aa39c5b4-bff3-4366-8d37-deb35f1eeb13",
+              "split": {
+                "attribute": "att2",
+                "operand": 0.5452317554590561,
+                "operator": ">"
+              },
+              "weights": "{36.336|228.081}"
+            }
+          ],
+          "id": "aa39c5b4-bff3-4366-8d37-deb35f1eeb13",
+          "instancesSeen": 304,
+          "leaf": false,
+          "parentID": "66a50f0a-f48e-40ce-b93e-9b4f39cfbc45",
+          "split": {
+            "attribute": "att4",
+            "operand": 0.4541770454817054,
+            "operator": ">"
+          }
+        }
+      ],
+      "id": "66a50f0a-f48e-40ce-b93e-9b4f39cfbc45",
+      "instancesSeen": 1580,
+      "leaf": false,
+      "parentID": "root"
+    }
+  ],
+  "id": "root",
+  "leaf": false,
+  "parent": null
+}
