@@ -13,7 +13,7 @@ Kde každý element je pár $(X_j,T_j)$ kde $X_j$ je d-dimenzionálny vektor $X_
 Takmer každé odvetvie, napríklad telekomunikačné siete alebo predajné reťazce, je dnes zdrojo, masívnych objemov dát. Vzhľadom na ich veľký objem analytyci a doménový experti často strácajú možnosť dolovať v celej sade dát. Zvykom preto býva použiť distribuované paradigmy a umožniť tak dolovanie v celej kolekcii dát, čo je ale náročné na vývoj a čas spracovania. Stáva sa preto častým zvykom, že sa vyberie reprezentatívna vzorka, ktorej spracovanie predstavuje menšiu časovú a pamäťovú výzvu. Pri pamäťovej a výpočtovej náročnosti hovoríme o hardvérových limitoch počítača, pričom ak hovoríme o časovej náročnosti hovoríme o limitovanom čase doménového experta (čakanie na výsledok analýzy) \citep{hulten2001mining}. Predpokladajme, že bude pre doménoveho experta vysokým prínosom možnosť vykonávať analýzy nad prúdom v reálnom čase. Výstupy z takejto analýzy sú na rôznej granularite a úrovni, pričom môžu byť neskôr použité na ďalšie spracovanie alebo na priame prezentovanie výsledkov. \par
 
 % Vyskumne vyzvy v prudoch dat vseobecne
-Analýza a spracovanie prúdov dát pridáva viaceré otvorené výzvy a možnosti pre výskum \citep{krempl2014open}:  %TODO: pridat sem nejake 1-2 citacie este
+Analýza a spracovanie prúdov dát pridáva viaceré otvorené výzvy a možnosti pre výskum \citep{krempl2014open}:
 \begin{itemize}
 	\item \textit{Ochrana súkromia a dôvernosti} pri analýze a dolovaní v prúde dát. Hlavným cieľom je vyvinúť metódy a techniky odhaľujúce informácie a vzory, ktoré by znížili dôveryhodnosť a povinnosti ochrania súkromia. Dve hlavné výzvy pri analýze a dolovaní v prúdoch dát sú: \textit{vysporiadanie sa s neúplnými dátami} a \textit{uchovanie zmien (angl. concept drift) v prúde dát}. Neúplné dáta môžu začať prichádzať zámerne, napríklad po útoku na počítačovú sieť. Zmeny v distribúcií dát môžu opäť podobne nastať po útoku na sieť. Pre vysporiadanie sa s podobnými javmi je často do prúdu dát zámerne pridávaný šum, čo je do istej miery v rozpore s problémom predspracovania dát.
 	\item \textit{Predspracovanie} dát je dôležitou súčasťou každej reálnej aplikácie, najmä tých pre analýzu dát. Zatiaľ čo pri tradičnej analýze dát je predspracovanie vykonané jednorázovo, zvyčajne doménovým expertom. ktorý rozumie dátam. Pri prúde dát toto nie je prijateľné, pretože dáta nepretržite prichádzajú. Okrem niekoľkých štúdií \citep{zliobaite2014adaptive, anagnostopoulos2008deciding} tejto problematike nebola venovaná toľká pozornosť ako pri tradičnom spracovaní a analýze dát. Hlavné výzvy, ktorým treba čeliť pri predspracovaní prúdu dát sú: \textit{šum v dátach}, \textit{hodnoty mimo väčšiny (angl. outliers)} a \textit{adaptívny výber vzorky}.
@@ -28,7 +28,6 @@ Analýza a spracovanie prúdov dát pridáva viaceré otvorené výzvy a možnos
 V modeli časových radov každá vzorka $a_i$ sa rovná $A[i]$ pričom vzorky prichádzajú v vzostupnom poradí. Tento model je vhodný pre prúdy dát, ktoré nesú v sebe časovú postupnosť alebo je ich poradie určované časovou pečiatkou \citep{muthukrishnan2005data}.
 Pri pokladničnom modeli môžme považovať množinu $U = {1, 2, ..., n}$, kde $n$ je počet vzoriek z prúdu, za element z prúdu dát. Ak uvažujeme sekvenciu $2, 1, 2, 5$ ako príklad, potom hovoríme o pokladničnom modeli. Tento model je často používaný v praxi, napríklad v prípadoch kde sled IP adries pristupuje na Web server \citep{ikonomovska2013algorithmic, muthukrishnan2005data}.
 Model turniketu je veľmi podobný pokladničnému modelu. Rozdiel je v tom, že vzorka môže predstavovať aj zápornú hodnotu - analógia z reálneho sveta kedy niektorí ľudia prichádzajú a vychádzajú turniketom, počet ľudi sa mení (napr. na zjazdovke) \citep{ikonomovska2013algorithmic, muthukrishnan2005data}. Špeciálny striktný prípad turniketu je v prípade, ak celková hodnota modelu je $A \geq 0$.
-% TODO: mozno este rozsirit turniket
 
 % Predspracovanie prudu dat
 \paragraph{Predspracovanie prúdu} je neodmysliteľným krokom v aplikáciach reálneho sveta a často časovo najnáročnejšou úlohou pre každého analytika. Nakoľko dáta prichádzajú z nehomogénneho sveta, môžu byť zašumené, nekompletné, duplicitné alebo často obsahovať hodnoty, ktoré sa značne líšia od ostatných. Predspracovanie prúdu údajov je potrebné čo najviac automatizovať. Existuje niekoľko známych metód a techník, ktoré sú používané pri predspracovaní a tiež pri redukcii dimenzionality prúdov dát \citep{krempl2014open, nguyen2015survey}:
@@ -65,7 +64,7 @@ Evaluácia a vyhodnotenie modelov vytvorených nad prúdmi dát je základná a 
 	\item \textit{Väčšina tried v posuvnom okne} môže spôsobiť pozitívne $k$ štatistiky a tiež pozitívne výsledky harmonického priemeru pre niektoré periódy prúdu dát.
 \end{itemize}
 \citet{bifet2015efficient} odporúčajú použitie nasledujúcich metód pre evaluáciu v kontexte prúdov dát: \textit{Najprv testuj-potom-trénuj} (angl. Test-Then-Train alebo tiež Prequential) spočíva v myšlienke, že každá vzorka z prúdu dát je použitá najprv na testovanie a potom na trénovanie modelu. Keďže modely vytvorené nad prúdmi dát by mali byť schopné poskytnúť predikcie okamžite a v reálnom čase, tento prístup by nemal výrazne ovplyvniť výkon metódy. Obmenou tohto prístupu môže byť evaluácia na nejakom posuvnom okne, ktoré môže byť vyberané napríklad algoritmom $ADWIN$.
-%TODO: pridat nejaky test, neviem aky...
+%TODO: pridat nejaky test, neviem aky... -- veduci to chcel
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,7 +83,6 @@ Kontinuálne dopytovanie do prúdu dát nesie so sebou nieľko výziev \citep{ba
 	\item \textit{Dopytovací jazyk} by mal byť podobný štandardu jazyka SQL. Jazyk SQL je známy deklaratívny jazyk, je široko používaný so zavedením štandardom, ktorý poskytuje flexibilitu a optimálnu evaluáciu dopytu a vykonanie nad prúdom, či datasetom. 
 \end{itemize}
 Výskumné práce sa tiež venovali adaptívnym kontinuálnym dopytom nad prúdmi dát. Bolo ukázané, že takýto prístup môže mať značný prínos v oblasti výkonnosti systému vďaka jeho schopnosti adaptácie na zmeny v prúde dát. Tieto vlastnosti sú dosiahnuté aplikovaním zoskupovania indexov filtrov na priebežný výber predikátov \citep{madden2002continuously}. 
-% TODO: tento odsek sa veducemu velmi nepacil
 \par
 Ďalší priestor na zlepšenie výkonnosti kontinuálnych dopytov nad prúdmi dát predstavujú adaptívne filtre. Pri dopytovaní sa takmer vždy vykonáva filtrovanie dát v nejakej podobe. Tento krok filtrovania je obvykle implementovaný v systéme na spracovanie dopytov. Pre zvýšenie výkonnosti dopytov je preto možné tieto filtre presunúť priamo do zdrojov dát. Ukázalo sa, že takýto prístup môže mať pozitívny dopad na výkonnosť \citep{olston2003adaptive}. Tento prístup prinesie najmä redukciu prenášaných dát výmenou za ich nepresnosť. Problémom tejto techniky je, že je aplikovateľná len v prostredí, ktoré máme plne pod kontrolou a vieme zasahovať do všetkých jeho súčastí. Príkladom môže byť organizácia CERN\footnote{Európska organizácia pre jadrový výskum} kde jeden z hlavných experimentov ATLAS produkuje Petabajty dát počas jedného experimentu. Takého množstvo dát by nebolo možné ukladať a následne analyzovať, preto sú aplikované filtre v každom zdroji dát (napr. rôzne fyzikálne senzory).
 
@@ -179,7 +177,7 @@ Jeden z prvých algoritmov, ktoré boli navrhnuté pre prúdy dát je $STREAM$, 
 SSQ(M,C) = \sum_{i=1}^{k} \sum_{x_j\Leftarrow c_i} dist(x_j, c_i)
 \end{align*}
 kde $x$ je dátová vzorka a $c$ reprezentuje zhluk (medián). Funkcia $dist$ je funkcia na meranie vzdialenosti medzi zhlukmi. Algoritmus avšak tiež spracováva dáta v malých dávkach. Na rozhodnutie o veľkosti dávky používa algoritmus $LOCALSEARCH$.
-% TODO: pridat tabulky s pouzitim algoritmov, vid. koment od veduceho
+% TODO: pridat tabulky s pouzitim algoritmov -- veduci to chcel
 \textit{Metódy založené na hustote} vytvárajú profil hustoty dátovej množiny. Tento profil je následne použitý na zhlukovanie. Znamená to teda, že za zhluky považujeme miesta v priestore s vysokou hustotou objektov. Výhodou tejto metódy je, že dokáže objaviť v dátach aj neobvyklé tvary zhlukov. Najznámejšie implementácie sú $DBSCAN$ a $OPTICS$. Toto je všeobecná výhoda metód založených na hustote v porovnaní s rozdeľovacími metódami \citep{han2011data}.
 \par
 Algoritmus $DenStream$ je rozšírením algoritmu $DBSCAN$, ktorý je vhodný pre zhlukovanie prúdov dát. Tento algoritmus podobne ako $CluStream$ algoritmus navrhnutý Aggarwalom \citep{aggarwal2003framework} vytvára mikro zhluky na zachytenie informácie o prúde dát. Mikro zhluky sú kontinálne aktualizované a udržiavané v kolekcii mikro zhlukov. Algoritmus používa oslabujúci model na zníženie váh elementov v čase. Vytvárané sú tri typy mikro zhlukov: základný, potenciálny a vyčnievajúci (angl. outlier). Algoritmus potom aplikuje známy $DBSCAN$ algoritmus na vytvorené mikro zhluky, pričom zhluk vzniká z viacerých mikro zhlukov, ktoré su pokope \citep{nguyen2015survey}.
@@ -197,9 +195,8 @@ Hierarchické metódy zoskupujú dátové objekty do zhlukov hierarchických str
 
 \textit{Metódy založené na mriežke}
 rozdeľujú priestor na multi-dimenzionálnu mriežku. Mriežka môže obsahovať veľa buniek, pričom každá môže obsahuje svoj podpriestor a naviac si udržuje sumárne informácie o dátach v podpriestore bunky. Zhluky sú potom identifikované hustými oblasťami v okolí buniek. Známy algoritmus pre zhlukovanie prúdov dát podľa mriežky je CellTree \citep{han2011data}. Algoritmus je inicializovaný rozdelením priestoru do množiny rovnako veľkých buniek. CellTree bol rozšírený na lepšiu verziu Cell*Tree, ktorý používa algoritmus BTree na ukladanie informácií o zhlukoch. Cell*Tree tiež aplikuje starnúci model na zvýraznenie poslednej zmeny v prúde dát.
-
-% TODO: sumar zhlukovacich algoritmov
-
+\par
+Pre každú z kategórii metód používaných pri úlohe zhlukovania existuje niekoľko algoritmov, ktoré sú použiteľné pre prúdy dát. Väčšina spomenutých metód vznikla z obdobných metód pre dávkové spracovanie.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                Klasifikácia                   %
@@ -217,9 +214,7 @@ Väčšsina inkrementálnych metód používa vzorkovanie s cieľom zvýšiť pr
 \begin{align*}
 P(c|d) = \frac{P(c)\prod _{w \in d} P(w|c)^{n_{wd}}} {P(d)}
 \end{align*}
-Kde $P(d)$ je normalizačný faktor. Aby sme sa vyhli problému kedy sa trieda nevyskytuje v datasete ani jeden krát, je bežné použitie Laplacovej korekcie a nahradenie nulových početností jednotkou, resp. inicializovať početnosť každej triedy na 1 namiesto 0.
-
-% TODO: pridat gaussian naive bayes
+Kde $P(d)$ je normalizačný faktor. Aby sme sa vyhli problému kedy sa trieda nevyskytuje v datasete ani jeden krát, je bežné použitie Laplacovej korekcie a nahradenie nulových početností jednotkou, resp. inicializovať početnosť každej triedy na 1 namiesto 0. Gaussova aproximácia môže byť tiež použitá v klasifikátore naivný Bayes za predpokladu, že distribúcia dát je podobná normálnemu (tiež Gaussovo z angl. Gaussian) rozdeleniu. Dva parametre sú potrebné uloženie normálneho rozdelenia, priemer a štandardná odchýlka. V prúde dát je potrebný jeden parameter naviac, počet pozorovaných vzoriek. Táto metóda je pamäťovo nenáročná no nevýhodou je predpoklad normálneho rozdelenia vstupných dát \citep{salperwyck2015incremental}.
 
 % SGD a SVM
 \textit{Stochastický gradientný zostup a metóda podporných strojov} (angl. Stochastic Gradient Descent, SGD). Bifet a Frank v ich práci použili implementáciu tzv. vanilla stochastický gradientný zostup s pevnou rýchlosťou učenia, optimalizujúc stratu s $L_2$ penalizáciou. $L_2$ penalizácia je často používaná pri podporných vektorových strojoch (angl. Support Vector Machines, ďalej len SVM). Lineárny stroj, ktorý je často aplikovaný na problémy klasifikácie dokumentov, optimalizujeme funkciu straty nasledovne:
@@ -246,23 +241,26 @@ Existuje niekoľko modifikácií HT algoritmu. Tá najzákladnejšia je jeho rý
 \par
 Ďalšou modifikáciou HT je \textit{Adaptívny sa Hoeffdingov strom} (angl. Hoeffding Adaptive Tree) \citep{bifet2009adaptive}. Princíp je veľmi podobný ako CVFDT, ale myšlienka je minimalizovať počet parametrov, ktoré musí používateľ nastaviť (napr. veľkosť okna $W$ je požadovaný parameter CVFDT). Adaptívny HT používa rôzne 	kritéria pre odhad potrebnej veľkosti okna automaticky, napríklad algoritmus \textit{ADWIN}. S použitím tohto kritéria používateľ nemusí zadať parameter veľkosti okna čo je obrovký prínos, pretože potrebná veľkosť sa môže meniť spolu so zmenami v prúde dát. Adaptívny HT s kritériom ADWIN dosahuje v niektorých prípadoch lepšie výsledky ako CVFDT \citep{bifet2009adaptive}.
 \par
-Existujú aj ďalšie odlišné metódy rozhodovacích stromov, ktoré aplikujú súborové (angl. ensemble) metódy, rôzne klasifikátory v listoch ako napríklad naivný Bayes, či stromy založené na fuzzy logike \citep{aggarwal2014survey}.
-% TODO: daju sa pouzit lesy na prudy dat?
+Existujú aj ďalšie odlišné metódy rozhodovacích stromov, ktoré aplikujú súborové (angl. ensemble) metódy, rôzne klasifikátory v listoch ako napríklad naivný Bayes, či stromy založené na fuzzy logike \citep{aggarwal2014survey}. Náhodné lesy sú tiež použiteľné na klasifikáciu prúdov dát \citep{abdulsalam2007streaming, abdulsalam2011classification}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                Zhodnotenie                    %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Zhodnotenie}
 Existuje mnoho problémov analýzy prúdu dát. Väčšina týchto problémov je odvodených od tých z tradičného dávkového spracovania dát. Vďaka tomu tiež väčšina algoritmov na riešenie týchto úloh a problémov rozširuje tradičné algoritmy, ako napríklad algoritmus rozhodovacích stromov pre klasifikáciu, ktorý používa Hoeffdingovu mieru pre určenie istoty výberu najlepšie atribútu pre vytvorenie rozhodovacieho uzla. Niektoré metódy do istej miery riešia problém zmien v prúde dát, avšak často len pomocou staticky nastavených parametrov používateľom. Tento prístup zlyháva, ak sa menia aj samotné zmeny, čo je častý prípad prúdov reálneho sveta.
-% TODO: pridat otvoreny problem, ktory chcem riesit, pomenovat a popisat
+\par
+Pre lepšie pochopenie a interpretáciu modelu analytik, alebo doménový expert, často siahne po vizualizácií. Pri týchto metódách, ktorým sme sa venovali v tejto kapitole, autori takmer vôbec nevenujú pozornosť vizualizácií vzniknutého modelu. Preto považujeme tento krok v procese analýzy a spracovania dát za významný. V ďalšej kapitole analyzujeme výskum v oblasti interpretácie a vysvetlenia analytických úloh a modelov.
 
 
-\chapter{Interpretácia a vysvetlenie výsledkov analytických úloh}
-Vysvetlenie a prezentacia analytických modelov je kritickým komponentom pri procese analýzy dát. Je dôležité aby používateľ nevidel výsledný model len ako čiernu skrinku, ale aby bol schopný pochopiť čo viedlo k vzniku modelu. Lepšie povedané, cieľom je čo možno najjednoduchšie vysvetlenie fungovania modelu bez nutnosti všetkých detailov o fungovaní algoritmu, ktorý tvorí model. Dobrým príkladom môže byť model rozhodovacích stromov. Tento model je jednodudcho a intuitívne interpretovateľný, zatiaľ čo nieje potrebná detailná znalosť rôznych algoritmov rozhodovacích stromov.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                									Kapitola 3 - vysvetlenie modelov									                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Interpretácia a vysvetlenie modelu}
+Vysvetlenie a prezentacia analytických modelov je kritickým komponentom pri procese analýzy dát. Je dôležité aby používateľ nevidel výsledný model len ako čiernu skrinku, ale aby bol schopný pochopiť čo viedlo k vzniku modelu. Lepšie povedané, cieľom je čo možno najjednoduchšie vysvetlenie fungovania modelu bez nutnosti znalosti všetkých detailov o fungovaní algoritmu, ktorý tvorí model. Dobrým príkladom môže byť model rozhodovacích stromov. Tento model je jednoducho a intuitívne interpretovateľný, zatiaľ čo nie je potrebná detailná znalosť rôznych algoritmov rozhodovacích stromov.
 \par
-Ďalšia neoddeliteľná súčasť prezentácie modelu je jeho vizuálna reprezentácia relevantná pre pochopenia používateľom. cieľom podobných vizualizácií je nájsť rovnováhu medzi vnímaním a poznávaním a vyžiť tak všetky možnosti ľudského mozgu. Správne vysvetlenie modelu tiež zvyšuje používateľovú dôveryhodnosť vo vytvorený model \citep{Demsar2014, Barlow2001}. 
+Ďalšia neoddeliteľná súčasť prezentácie modelu je jeho vizuálna reprezentácia relevantná pre pochopenie používateľom. Cieľom podobných vizualizácií je nájsť rovnováhu medzi vnímaním a poznávaním a vyžiť tak všetky možnosti ľudského mozgu. Správne vysvetlenie modelu tiež zvyšuje používateľovú dôveryhodnosť vo vytvorený model \citep{Demsar2014, Barlow2001}. Vizualizácia zmeny modelu je dôležitá pre lepšie pochopenie vývoja, resp. vzniku, daného modelu. Ale tiež na prípadné spätné ladenie modelu a teda pochopenie toho, čo viedlo k zmene.
 \par
-Prúd dát môže byť chápaný ako sekvencia pozorovaní v čase. Výskumy zamerané na techniky vzorkovania zobrazujú dáta ako prechodný alebo dočašný komponent (angl. temporal component). V tomto kontexte vizualizácia predstavuje \textit{sumarizáciu} \citep{Demsar2014}. Výzvou je zobrazovať prechodný komponent v 2D vizualizácií bez animácie. Zobrazovanie zmien (angl. concept drift) je další parameter, ktorý robí vizualízaciu a teda aj prezentáciu a vysvetlenie celého modelu náročnou úlohou. Aj v prípade, ak dokážeme efektívne sumarizovať dáta a zobraziť v objavené vzory, na konci stále máme problém vizualizovať zmeny. Možnosťou je použiť viac paralelných vizualizácií pre každú zmenu. Problém tohto prístupu je, že s narastajúcim počtom zmien začne byť vizualizácia neprehľadná a vediet k fenoménu známeho pod pojmom \textit{neviditeľnosť zmeny} (angl. change blindness) \citep{Demsar2014}.
+Prúd dát môže byť chápaný ako sekvencia pozorovaní v čase. Výskumy zamerané na techniky vzorkovania zobrazujú dáta ako prechodný alebo dočašný komponent (angl. temporal component). V tomto kontexte vizualizácia predstavuje \textit{sumarizáciu} \citep{Demsar2014}. Zobrazovanie zmien (angl. concept drift) je další parameter, ktorý robí vizualízaciu a teda aj prezentáciu a vysvetlenie celého modelu náročnou úlohou. Aj v prípade, ak dokážeme efektívne sumarizovať dáta a zobraziť v objavené vzory, na konci stále máme problém vizualizovať zmeny. Možnosťou je použiť viac paralelných vizualizácií pre každú zmenu. Problém tohto prístupu je, že s narastajúcim počtom zmien začne byť vizualizácia neprehľadná a vediet k fenoménu známeho pod pojmom \textit{neviditeľnosť zmeny} (angl. change blindness) \citep{Demsar2014}.
 \par
 Výzvou preto ostáva jednoduchá interpretácia modelu a vizualizácia jeho zmeny v čase tak aby táto celková prezentácia ostala jednoduchá na pochopenia pre používateľa \citep{Demsar2014, Yao2013}. Na nasledujúcich obrázkoch sú znázornené vizualizácie, ktoré majú snahu vizualizovať zmenu v prúde dát a modeloch vytvorených nad prúdom dát.
 \myFigure{images/vis-concept-distribution}{Distribúcia zmien v prúde dát \citep{Yao2013}.}{vis-concept-distribution}{0.75}{h!}\label{fig:vis-concept-distribution}

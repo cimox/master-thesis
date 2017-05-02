@@ -1,0 +1,240 @@
+\begin{thebibliography}{}
+
+\bibitem[Abdulsalam et~al., 2011]{abdulsalam2011classification}
+Abdulsalam, H., Skillicorn, D.~B., and Martin, P. (2011).
+\newblock Classification using streaming random forests.
+\newblock {\em IEEE Transactions on Knowledge and Data Engineering},
+  23(1):22--36.
+
+\bibitem[Aggarwal, 2014]{aggarwal2014survey}
+Aggarwal, C.~C. (2014).
+\newblock A survey of stream classification algorithms.
+
+\bibitem[Anagnostopoulos et~al., 2008]{anagnostopoulos2008deciding}
+Anagnostopoulos, C., Adams, N.~M., and Hand, D.~J. (2008).
+\newblock Deciding what to observe next: adaptive variable selection for
+  regression in multivariate data streams.
+\newblock In {\em Proceedings of the 2008 ACM symposium on Applied computing},
+  pages 961--965. ACM.
+
+\bibitem[Babcock et~al., 2002]{babcock2002models}
+Babcock, B., Babu, S., Datar, M., Motwani, R., and Widom, J. (2002).
+\newblock Models and issues in data stream systems.
+\newblock In {\em Proceedings of the twenty-first ACM SIGMOD-SIGACT-SIGART
+  symposium on Principles of database systems}, pages 1--16. ACM.
+
+\bibitem[Babu and Widom, 2001]{babu2001continuous}
+Babu, S. and Widom, J. (2001).
+\newblock Continuous queries over data streams.
+\newblock {\em ACM Sigmod Record}, 30(3):109--120.
+
+\bibitem[Barlow and Neville, 2001]{Barlow2001}
+Barlow, T. and Neville, P. (2001).
+\newblock {Case study: visualization for decision tree analysis in data
+  mining}.
+\newblock {\em IEEE Symposium on Information Visualization, 2001. INFOVIS
+  2001.}, 2001:149--152.
+
+\bibitem[Bifet et~al., 2015]{bifet2015efficient}
+Bifet, A., de~Francisci~Morales, G., Read, J., Holmes, G., and Pfahringer, B.
+  (2015).
+\newblock Efficient online evaluation of big data stream classifiers.
+\newblock In {\em Proceedings of the 21th ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, pages 59--68. ACM.
+
+\bibitem[Bifet and Frank, 2010]{bifet2010sentiment}
+Bifet, A. and Frank, E. (2010).
+\newblock Sentiment knowledge discovery in twitter streaming data.
+\newblock In {\em Discovery Science}, pages 1--15. Springer.
+
+\bibitem[Bifet and Gavald{\`a}, 2009]{bifet2009adaptive}
+Bifet, A. and Gavald{\`a}, R. (2009).
+\newblock Adaptive learning from evolving data streams.
+\newblock In {\em International Symposium on Intelligent Data Analysis}, pages
+  249--260. Springer.
+
+\bibitem[Bifet et~al., 2010]{DBLP:journals/jmlr/BifetHKP10}
+Bifet, A., Holmes, G., Kirkby, R., and Pfahringer, B. (2010).
+\newblock {MOA:} massive online analysis.
+\newblock {\em Journal of Machine Learning Research}, 11:1601--1604.
+
+\bibitem[Bockermann and Blom, 2012]{bockermann2012processing}
+Bockermann, C. and Blom, H. (2012).
+\newblock Processing data streams with the rapidminer streams-plugin.
+\newblock In {\em Proceedings of the 3rd RapidMiner Community Meeting and
+  Conference}.
+
+\bibitem[Brzezi{\'n}ski, 2010]{brzezinski2010mining}
+Brzezi{\'n}ski, D. (2010).
+\newblock {\em Mining data streams with concept drift}.
+\newblock PhD thesis, Master’s thesis, Poznan University of Technology.
+
+\bibitem[Cimerman and Ševcech, 2015]{cimerman2015prudy}
+Cimerman, M. and Ševcech, J. (2015).
+\newblock {\em Analýza prúdu údajov}.
+
+\bibitem[Dem{\v{s}}ar and Bosni, 2014]{Demsar2014}
+Dem{\v{s}}ar, J. and Bosni, Z. (2014).
+\newblock {Visualization and Concept Drift Detection Using Explanations of
+  Incremental Models Related work}.
+\newblock 38:321--327.
+
+\bibitem[Dobra et~al., 2002]{dobra2002processing}
+Dobra, A., Garofalakis, M., Gehrke, J., and Rastogi, R. (2002).
+\newblock Processing complex aggregate queries over data streams.
+\newblock In {\em Proceedings of the 2002 ACM SIGMOD international conference
+  on Management of data}, pages 61--72. ACM.
+
+\bibitem[Domingos and Hulten, 2000]{domingos2000mining}
+Domingos, P. and Hulten, G. (2000).
+\newblock Mining high-speed data streams.
+\newblock In {\em Proceedings of the sixth ACM SIGKDD international conference
+  on Knowledge discovery and data mining}, pages 71--80. ACM.
+
+\bibitem[Gaber et~al., 2005]{gaber2005mining}
+Gaber, M.~M., Zaslavsky, A., and Krishnaswamy, S. (2005).
+\newblock Mining data streams: a review.
+\newblock {\em ACM Sigmod Record}, 34(2):18--26.
+
+\bibitem[Gama et~al., 2004]{gama2004learning}
+Gama, J., Medas, P., Castillo, G., and Rodrigues, P. (2004).
+\newblock Learning with drift detection.
+\newblock In {\em Brazilian Symposium on Artificial Intelligence}, pages
+  286--295. Springer.
+
+\bibitem[Hall et~al., 2009]{hall2009weka}
+Hall, M., Frank, E., Holmes, G., Pfahringer, B., Reutemann, P., and Witten,
+  I.~H. (2009).
+\newblock The weka data mining software: an update.
+\newblock {\em ACM SIGKDD explorations newsletter}, 11(1):10--18.
+
+\bibitem[Han et~al., 2011]{han2011data}
+Han, J., Pei, J., and Kamber, M. (2011).
+\newblock {\em Data mining: concepts and techniques}.
+\newblock Elsevier.
+
+\bibitem[Hill and Minsker, 2010]{hill2010anomaly}
+Hill, D.~J. and Minsker, B.~S. (2010).
+\newblock Anomaly detection in streaming environmental sensor data: A
+  data-driven modeling approach.
+\newblock {\em Environmental Modelling \& Software}, 25(9):1014--1022.
+
+\bibitem[Hill et~al., 2007]{hill2007real}
+Hill, D.~J., Minsker, B.~S., and Amir, E. (2007).
+\newblock Real-time bayesian anomaly detection for environmental sensor data.
+\newblock In {\em Proceedings of the Congress-International Association for
+  Hydraulic Research}, volume~32, page 503. Citeseer.
+
+\bibitem[Hodge and Austin, 2004]{hodge2004survey}
+Hodge, V.~J. and Austin, J. (2004).
+\newblock A survey of outlier detection methodologies.
+\newblock {\em Artificial Intelligence Review}, 22(2):85--126.
+
+\bibitem[Hulten et~al., 2001]{hulten2001mining}
+Hulten, G., Spencer, L., and Domingos, P. (2001).
+\newblock Mining time-changing data streams.
+\newblock In {\em Proceedings of the seventh ACM SIGKDD international
+  conference on Knowledge discovery and data mining}, pages 97--106. ACM.
+
+\bibitem[Hutchison and Mitchell, 2009]{Hutchison2009}
+Hutchison, D. and Mitchell, J.~C. (2009).
+\newblock {\em {Advances in Intelligent Data Analysis VIII}}.
+
+\bibitem[Ikonomovska and Zelke, 2013]{ikonomovska2013algorithmic}
+Ikonomovska, E. and Zelke, M. (2013).
+\newblock Algorithmic techniques for processing data streams.
+\newblock {\em Dagstuhl Follow-Ups}, 5.
+
+\bibitem[Jin and Agrawal, 2003]{jin2003efficient}
+Jin, R. and Agrawal, G. (2003).
+\newblock Efficient decision tree construction on streaming data.
+\newblock In {\em Proceedings of the ninth ACM SIGKDD international conference
+  on Knowledge discovery and data mining}, pages 571--576. ACM.
+
+\bibitem[Krempl et~al., 2014]{krempl2014open}
+Krempl, G., {\v{Z}}liobaite, I., Brzezi{\'n}ski, D., H{\"u}llermeier, E., Last,
+  M., Lemaire, V., Noack, T., Shaker, A., Sievi, S., Spiliopoulou, M., et~al.
+  (2014).
+\newblock Open challenges for data stream mining research.
+\newblock {\em ACM SIGKDD Explorations Newsletter}, 16(1):1--10.
+
+\bibitem[Liu et~al., 2010]{liu2010mining}
+Liu, X., Wu, X., Wang, H., Zhang, R., Bailey, J., and Ramamohanarao, K. (2010).
+\newblock Mining distribution change in stock order streams.
+
+\bibitem[Madden et~al., 2002]{madden2002continuously}
+Madden, S., Shah, M., Hellerstein, J.~M., and Raman, V. (2002).
+\newblock Continuously adaptive continuous queries over streams.
+\newblock In {\em Proceedings of the 2002 ACM SIGMOD international conference
+  on Management of data}, pages 49--60. ACM.
+
+\bibitem[Muthukrishnan, 2005]{muthukrishnan2005data}
+Muthukrishnan, S. (2005).
+\newblock {\em Data streams: Algorithms and applications}.
+\newblock Now Publishers Inc.
+
+\bibitem[Nguyen et~al., 2015]{nguyen2015survey}
+Nguyen, H.-L., Woon, Y.-K., and Ng, W.-K. (2015).
+\newblock A survey on data stream clustering and classification.
+\newblock {\em Knowledge and information systems}, 45(3):535--569.
+
+\bibitem[Olston et~al., 2003]{olston2003adaptive}
+Olston, C., Jiang, J., and Widom, J. (2003).
+\newblock Adaptive filters for continuous queries over distributed data
+  streams.
+\newblock In {\em Proceedings of the 2003 ACM SIGMOD international conference
+  on Management of data}, pages 563--574. ACM.
+
+\bibitem[Rai et~al., 2009]{rai2009streamed}
+Rai, P., Daum{\'e}~III, H., and Venkatasubramanian, S. (2009).
+\newblock Streamed learning: one-pass svms.
+\newblock {\em arXiv preprint arXiv:0908.0572}.
+
+\bibitem[Ross et~al., 2009]{ross2009online}
+Ross, G.~J., Tasoulis, D.~K., and Adams, N.~M. (2009).
+\newblock Online annotation and prediction for regime switching data streams.
+\newblock In {\em Proceedings of the 2009 ACM symposium on applied computing},
+  pages 1501--1505. ACM.
+
+\bibitem[Rutkowski et~al., 2013]{rutkowski2013decision}
+Rutkowski, L., Pietruczuk, L., Duda, P., and Jaworski, M. (2013).
+\newblock Decision trees for mining data streams based on the mcdiarmid's
+  bound.
+\newblock {\em IEEE Transactions on Knowledge and Data Engineering},
+  25(6):1272--1279.
+
+\bibitem[Sevcech and Bielikova, 2015]{sevcech2015symbolic}
+Sevcech, J. and Bielikova, M. (2015).
+\newblock Symbolic time series representation for stream data processing.
+\newblock In {\em Trustcom/BigDataSE/ISPA, 2015 IEEE}, volume~2, pages
+  217--222. IEEE.
+
+\bibitem[Stankovic and Zhao, 1988]{stankovic1988real}
+Stankovic, J.~A. and Zhao, W. (1988).
+\newblock On real-time transactions.
+\newblock {\em ACM Sigmod Record}, 17(1):4--18.
+
+\bibitem[Tran et~al., 2014]{tran2014change}
+Tran, D.-H., Gaber, M.~M., and Sattler, K.-U. (2014).
+\newblock Change detection in streaming data in the era of big data: models and
+  issues.
+\newblock {\em ACM SIGKDD Explorations Newsletter}, 16(1):30--38.
+
+\bibitem[Wadewale and Desai, 2015]{wadewale2015survey}
+Wadewale, K. and Desai, S. (2015).
+\newblock Survey on method of drift detection and classification for time
+  varying data set.
+
+\bibitem[Yao, 2013]{Yao2013}
+Yao, Y. (2013).
+\newblock {Concept Drift Visualization}.
+\newblock {\em Journal of Information and Computational Science},
+  10(10):3021--3029.
+
+\bibitem[Zliobaite and Gabrys, 2014]{zliobaite2014adaptive}
+Zliobaite, I. and Gabrys, B. (2014).
+\newblock Adaptive preprocessing for streaming data.
+\newblock {\em IEEE transactions on knowledge and data Engineering},
+  26(2):309--321.
+
+\end{thebibliography}

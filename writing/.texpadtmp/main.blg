@@ -1,0 +1,63 @@
+This is BibTeX, Version 0.99d (TeX Live 2016)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: /Users/mcimerman/Documents/master-thesis/writing/.texpadtmp/main.aux
+The style file: apalike.bst
+A level-1 auxiliary file: indexAddOn.aux
+A level-1 auxiliary file: abstract.aux
+A level-1 auxiliary file: acknowledgements.aux
+A level-1 auxiliary file: introduction.aux
+A level-1 auxiliary file: methods.aux
+A level-1 auxiliary file: solutions.aux
+A level-1 auxiliary file: method.aux
+A level-1 auxiliary file: my-method.aux
+A level-1 auxiliary file: summaryandfuturework.aux
+A level-1 auxiliary file: appendix_01.aux
+Database file #1: ../thesis.bib
+Warning--empty publisher in cimerman2015prudy
+Warning--empty journal in Demsar2014
+Warning--can't use both volume and number fields in hill2007real
+Warning--empty publisher in Hutchison2009
+Warning--empty journal in liu2010mining
+Warning--empty journal in wadewale2015survey
+You've used 42 entries,
+            1935 wiz_defined-function locations,
+            715 strings with 11232 characters,
+and the built_in function-call counts, 18536 in all, are:
+= -- 1871
+> -- 742
+< -- 38
++ -- 256
+- -- 248
+* -- 1517
+:= -- 3077
+add.period$ -- 136
+call.type$ -- 42
+change.case$ -- 328
+chr.to.int$ -- 42
+cite$ -- 48
+duplicate$ -- 759
+empty$ -- 1304
+format.name$ -- 324
+if$ -- 3754
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 44
+newline$ -- 208
+num.names$ -- 126
+pop$ -- 344
+preamble$ -- 1
+purify$ -- 333
+quote$ -- 0
+skip$ -- 574
+stack$ -- 0
+substring$ -- 1290
+swap$ -- 158
+text.length$ -- 17
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 244
+warning$ -- 6
+while$ -- 159
+width$ -- 0
+write$ -- 545
+(There were 6 warnings)
