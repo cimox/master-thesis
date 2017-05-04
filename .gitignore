@@ -233,6 +233,8 @@ ENV/
 # .idea/misc.xml
 # *.ipr
 
+/writing/.texpadtmp/*
+
 # End of https://www.gitignore.io/api/java,python,pycharm,jetbrains,webstorm
 #
 .DS_Store

@@ -13,51 +13,56 @@ A level-1 auxiliary file: my-method.aux
 A level-1 auxiliary file: summaryandfuturework.aux
 A level-1 auxiliary file: appendix_01.aux
 Database file #1: ../thesis.bib
+Repeated entry---line 470 of file ../thesis.bib
+ : @article{abdulsalam2011classification
+ :                                      ,
+I'm skipping whatever remains of this entry
+Warning--can't use both volume and number fields in ankerst1999optics
 Warning--empty publisher in cimerman2015prudy
 Warning--empty journal in Demsar2014
 Warning--can't use both volume and number fields in hill2007real
 Warning--empty publisher in Hutchison2009
 Warning--empty journal in liu2010mining
 Warning--empty journal in wadewale2015survey
-You've used 42 entries,
+You've used 47 entries,
             1935 wiz_defined-function locations,
-            715 strings with 11232 characters,
-and the built_in function-call counts, 18536 in all, are:
-= -- 1871
-> -- 742
-< -- 38
-+ -- 256
-- -- 248
-* -- 1517
-:= -- 3077
-add.period$ -- 136
-call.type$ -- 42
-change.case$ -- 328
-chr.to.int$ -- 42
-cite$ -- 48
-duplicate$ -- 759
-empty$ -- 1304
-format.name$ -- 324
-if$ -- 3754
+            740 strings with 12100 characters,
+and the built_in function-call counts, 21307 in all, are:
+= -- 2165
+> -- 837
+< -- 45
++ -- 290
+- -- 280
+* -- 1723
+:= -- 3494
+add.period$ -- 156
+call.type$ -- 47
+change.case$ -- 369
+chr.to.int$ -- 47
+cite$ -- 54
+duplicate$ -- 890
+empty$ -- 1510
+format.name$ -- 363
+if$ -- 4360
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 44
-newline$ -- 208
-num.names$ -- 126
-pop$ -- 344
+missing$ -- 49
+newline$ -- 233
+num.names$ -- 141
+pop$ -- 397
 preamble$ -- 1
-purify$ -- 333
+purify$ -- 374
 quote$ -- 0
-skip$ -- 574
+skip$ -- 675
 stack$ -- 0
-substring$ -- 1290
-swap$ -- 158
-text.length$ -- 17
+substring$ -- 1496
+swap$ -- 206
+text.length$ -- 23
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 244
-warning$ -- 6
-while$ -- 159
+type$ -- 274
+warning$ -- 7
+while$ -- 184
 width$ -- 0
-write$ -- 545
-(There were 6 warnings)
+write$ -- 616
+(There was 1 error message)

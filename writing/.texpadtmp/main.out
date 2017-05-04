@@ -1,28 +1,27 @@
 \BOOKMARK [0][-]{chapter.1}{\332vod}{}% 1
 \BOOKMARK [0][-]{chapter.2}{Analytick\351 \372lohy nad pr\372dom d\341t}{}% 2
-\BOOKMARK [1][-]{section.2.1}{Evalu\341cia}{chapter.2}% 3
-\BOOKMARK [1][-]{section.2.2}{Dopyty nad pr\372dom d\341t}{chapter.2}% 4
-\BOOKMARK [1][-]{section.2.3}{Detekcia zmien}{chapter.2}% 5
-\BOOKMARK [1][-]{section.2.4}{Detekcia anom\341li\355}{chapter.2}% 6
-\BOOKMARK [1][-]{section.2.5}{Zhlukovanie}{chapter.2}% 7
-\BOOKMARK [1][-]{section.2.6}{Klasifik\341cia}{chapter.2}% 8
-\BOOKMARK [1][-]{section.2.7}{Zhodnotenie}{chapter.2}% 9
-\BOOKMARK [0][-]{chapter.3}{Interpret\341cia a vysvetlenie v\375sledkov analytick\375ch \372loh}{}% 10
-\BOOKMARK [0][-]{chapter.4}{Existuj\372ce n\341stroje pre anal\375zu pr\372du udalost\355}{}% 11
-\BOOKMARK [1][-]{section.4.1}{MOA}{chapter.4}% 12
-\BOOKMARK [1][-]{section.4.2}{WEKA}{chapter.4}% 13
-\BOOKMARK [1][-]{section.4.3}{RapidMiner Streams-Plugin}{chapter.4}% 14
-\BOOKMARK [1][-]{section.4.4}{StreamBase}{chapter.4}% 15
-\BOOKMARK [1][-]{section.4.5}{Spark}{chapter.4}% 16
-\BOOKMARK [0][-]{chapter.5}{Klasifik\341cia pr\372du d\341t pou\236it\355m rozhodovac\355ch stromov}{}% 17
-\BOOKMARK [1][-]{section.5.1}{Spracovanie pr\372du d\341t}{chapter.5}% 18
-\BOOKMARK [1][-]{section.5.2}{Met\363da klasifik\341cie pr\372du d\341t}{chapter.5}% 19
-\BOOKMARK [1][-]{section.5.3}{Prezent\341cia v\375sledkov pou\236\355vatelovi}{chapter.5}% 20
-\BOOKMARK [1][-]{section.5.4}{Vyhodnotenie a experimenty}{chapter.5}% 21
-\BOOKMARK [0][-]{chapter.6}{Zhodnotenie a bud\372ca pr\341ca}{}% 22
-\BOOKMARK [0][-]{section*.24}{Literat\372ra}{}% 23
-\BOOKMARK [0][-]{appendix*.26}{Pr\355lohy}{}% 24
-\BOOKMARK [1][-]{section.Alph0.1}{Pl\341n na zimn\375 semester 2016/2017}{appendix*.26}% 25
-\BOOKMARK [1][-]{section.Alph0.2}{Vyjadrenie k plneniu pl\341nu zimn\351ho semestra}{appendix*.26}% 26
-\BOOKMARK [1][-]{section.Alph0.3}{Pl\341n na letn\375 semester 2016/2017}{appendix*.26}% 27
-\BOOKMARK [1][-]{section.Alph0.4}{Technick\341 dokument\341cia}{appendix*.26}% 28
+\BOOKMARK [1][-]{section.2.1}{Dopyty nad pr\372dom d\341t}{chapter.2}% 3
+\BOOKMARK [1][-]{section.2.2}{Detekcia zmien}{chapter.2}% 4
+\BOOKMARK [1][-]{section.2.3}{Detekcia anom\341li\355}{chapter.2}% 5
+\BOOKMARK [1][-]{section.2.4}{Zhlukovanie}{chapter.2}% 6
+\BOOKMARK [1][-]{section.2.5}{Klasifik\341cia}{chapter.2}% 7
+\BOOKMARK [1][-]{section.2.6}{Zhodnotenie}{chapter.2}% 8
+\BOOKMARK [0][-]{chapter.3}{Interpret\341cia a vysvetlenie modelu}{}% 9
+\BOOKMARK [0][-]{chapter.4}{Existuj\372ce vizualizacn\351 a analytick\351 n\341stroje}{}% 10
+\BOOKMARK [1][-]{section.4.1}{Massive online analysis}{chapter.4}% 11
+\BOOKMARK [1][-]{section.4.2}{WEKA}{chapter.4}% 12
+\BOOKMARK [1][-]{section.4.3}{RapidMiner a Streams-Plugin}{chapter.4}% 13
+\BOOKMARK [1][-]{section.4.4}{StreamBase}{chapter.4}% 14
+\BOOKMARK [1][-]{section.4.5}{Spark}{chapter.4}% 15
+\BOOKMARK [0][-]{chapter.5}{Klasifik\341cia pr\372du d\341t pou\236it\355m rozhodovac\355ch stromov}{}% 16
+\BOOKMARK [1][-]{section.5.1}{Spracovanie pr\372du d\341t}{chapter.5}% 17
+\BOOKMARK [1][-]{section.5.2}{Met\363da klasifik\341cie pr\372du d\341t}{chapter.5}% 18
+\BOOKMARK [1][-]{section.5.3}{Prezent\341cia v\375sledkov pou\236\355vatelovi}{chapter.5}% 19
+\BOOKMARK [1][-]{section.5.4}{Vyhodnotenie a experimenty}{chapter.5}% 20
+\BOOKMARK [0][-]{chapter.6}{Zhodnotenie a bud\372ca pr\341ca}{}% 21
+\BOOKMARK [0][-]{section*.27}{Literat\372ra}{}% 22
+\BOOKMARK [0][-]{appendix*.29}{Pr\355lohy}{}% 23
+\BOOKMARK [1][-]{section.Alph0.1}{Pl\341n na zimn\375 semester 2016/2017}{appendix*.29}% 24
+\BOOKMARK [1][-]{section.Alph0.2}{Vyjadrenie k plneniu pl\341nu zimn\351ho semestra}{appendix*.29}% 25
+\BOOKMARK [1][-]{section.Alph0.3}{Pl\341n na letn\375 semester 2016/2017}{appendix*.29}% 26
+\BOOKMARK [1][-]{section.Alph0.4}{Technick\341 dokument\341cia}{appendix*.29}% 27
