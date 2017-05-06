@@ -77,7 +77,8 @@ Spark Streaming\footnote{http://spark.apache.org/streaming/} alebo tiež, prúdo
 %\subsection{Storm}
 %Storm\footnote{http://storm.apache.org/} je podobne ako Spark klastrový výpočtový systém. Rozdieľom je, že bol navrhnutý primárne na prúdové spracovanie dát \citep{liu2014survey}. Tok dát je v Storme reprezentovaný topologiou vo forme acyklickým orientovaným grafu (z angl. directed acyclic graph, ďalej len DAG) skrutiek a hrdiel. Hrdlo (angl. spout) slúži konzumer dát z externého systému a vstup dát do topológie. Skrutky (angl. bolt) predstavujú uzly, v ktorých je implementovaná logika topológie, napríklad extrakcia kľúčových slov z vety. Nástroj umožňuje paralelné distribuované počítanie, ktoré riadi hlavný server Nimbus. Tento server tiež dohliada na životný stav pracovníkov (angl. worker), ktoré spracúvajú časti dát na rozných fyzických strojoch. V prípade, že nejaký pracovník zlyhá, Nimbus ho ihneď nahradí iným pracovníkom a snaží sa pôvodného reštartovať. Správy medzi uzlami pracovníkov sú potvrdzované (angl. acknowledged) správami ACK, tento princíp je podobný ACK správam z TCP protokolu.
 
-
+\section{Ďalšie nástroje}
+Tableu\footnote{https://www.tableau.com/} je proprietárny analytický nástroj. Tento nástroj poskytuje vynikajúce prostredie pre interaktívnu analýzu statickej kolekcie údajov. Opäť je jediným nedostatkom tohto nástroja nemožnosť pripojenia na prúd údajov a možnosť vizualizácie vývoja modelu alebo dát. Graphviz\footnote{http://www.graphviz.org/} je program pomocou ktorého je možné opísať rôzne grafy textovou formou. Napriek bohatým možnostiam, ktoré Graphviz poskytuje, nástroj nebol vytvorený s cieľom vizualizácie grafov nad prúdmi dát.
 
 
 

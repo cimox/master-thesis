@@ -10,7 +10,15 @@ Kde každý element je pár $(X_j,T_j)$ kde $X_j$ je d-dimenzionálny vektor $X_
 \end{definition}
 
 % Vseobecny popis toho preco je potrebne prudove spracovanie dat
-Takmer každé odvetvie, napríklad telekomunikačné siete alebo predajné reťazce, je dnes zdrojo, masívnych objemov dát. Vzhľadom na ich veľký objem analytyci a doménový experti často strácajú možnosť dolovať v celej sade dát. Zvykom preto býva použiť distribuované paradigmy a umožniť tak dolovanie v celej kolekcii dát, čo je ale náročné na vývoj a čas spracovania. Stáva sa preto častým zvykom, že sa vyberie reprezentatívna vzorka, ktorej spracovanie predstavuje menšiu časovú a pamäťovú výzvu. Pri pamäťovej a výpočtovej náročnosti hovoríme o hardvérových limitoch počítača, pričom ak hovoríme o časovej náročnosti hovoríme o limitovanom čase doménového experta (čakanie na výsledok analýzy) \citep{hulten2001mining}. Predpokladajme, že bude pre doménoveho experta vysokým prínosom možnosť vykonávať analýzy nad prúdom v reálnom čase. Výstupy z takejto analýzy sú na rôznej granularite a úrovni, pričom môžu byť neskôr použité na ďalšie spracovanie alebo na priame prezentovanie výsledkov. \par
+Takmer každé odvetvie, napríklad telekomunikačné siete alebo predajné reťazce, je dnes zdrojo, masívnych objemov dát. Vzhľadom na ich veľký objem analytyci a doménový experti často strácajú možnosť dolovať v celej sade dát. Zvykom preto býva použiť distribuované paradigmy a umožniť tak dolovanie v celej kolekcii dát, čo je ale náročné na vývoj a čas spracovania. Stáva sa preto častým zvykom, že sa vyberie reprezentatívna vzorka, ktorej spracovanie predstavuje menšiu časovú a pamäťovú výzvu. Pri pamäťovej a výpočtovej náročnosti hovoríme o hardvérových limitoch počítača, pričom ak hovoríme o časovej náročnosti hovoríme o limitovanom čase doménového experta (čakanie na výsledok analýzy) \citep{hulten2001mining}. Predpokladajme, že bude pre doménoveho experta vysokým prínosom možnosť vykonávať analýzy nad prúdom v reálnom čase. Výstupy z takejto analýzy sú na rôznej granularite a úrovni, pričom môžu byť neskôr použité na ďalšie spracovanie alebo na priame prezentovanie výsledkov.
+\par
+Problém analýzy dát bol veľmi dobre a podrobne študovaný pri spracovaní statickej kolekcie údajov. Pri tomto prístupe sú všetky dáta v pamäti počítača. Vybraný algoritmus potom môže pomerne "lacno" prečítať celú množinu niekoľko krát s cieľom zvýšenia presnosti a kvality výsledného modelu. Tento prístup nie je aplikovateľný v doméne prúdov dát z nasledujúcich dôvodov:
+\begin{itemize}
+	\item \textit{Prúd dát je potenciálne nekonečná sekvencia udalostí}, ktoré môžu byť správne alebo chybne usporiadané v závislosti od spoľahlivosti zdroja dát. Hlavný problém tu predstavuje to, že prúd je nekonečná sekvencia udalostí. Závažnosť problému usporiadania daných udalostí, či vozriek závisí od konkrétnej úlohy analýzy prúdu dát.
+	\item \textit{Obmedzená pamäť}, nieje možné všetky dáta zbierať a ukladať do pamäti. Toto obmedzenie vyplýva z prvej vlastnosti prúdov dát.
+	\item \textit{Model pre klasifikácii prúdov musí byť ihneď pripravený k použitiu.} Znamená to, že hneď po tom ako sú spracované prvé dáta z prúdu, model je pripravený na použitie, napríklad klasifikovať iný prúd dát.
+	\item \textit{Prúdy dát takmer vždy v sebe nesú zmeny} (angl. concept drift), na ktoré sa musí vedieť klasifikátor adaptovať. Vlasnosť klasifikačných modelov vysporiadať sa so zmenami považujeme za rozhodujúcu pri hodnotení ich kvality a použiteľnosti v praxi. Preto sa aj nami navrhovaná metóda sústreďuje na vytvorenie metódy, ktorá je schopná adaptácie na zmeny a ich adekvátne interpretovanie používateľovi. Zmeny v dátach môžu byť náhle, postupné ale môžu predstavovať aj očakávané sezónne vplyvy (napr. obdobie Vianoc z pohľadu počtu nákupov internetového obchodu).
+\end{itemize}
 
 % Vyskumne vyzvy v prudoch dat vseobecne
 Analýza a spracovanie prúdov dát pridáva viaceré otvorené výzvy a možnosti pre výskum \citep{krempl2014open}:
@@ -62,6 +70,7 @@ Model turniketu je veľmi podobný pokladničnému modelu. Rozdiel je v tom, že
 	\item \textit{Rozdeľovanie množiny dát} do trénovacej a testovacej množiny vedie k nemožnosti rozoznať rýchlosť učenia rôznych klasifikátorov. Je to z dôvodu, že v dátach sa môžu objavovať napríklad zmeny, ktoré budu skreslené rozdeľovaním alebo vzorkovaním dát.
 	\item \textit{Väčšina tried v posuvnom okne} môže spôsobiť pozitívne $k$ štatistiky a tiež pozitívne výsledky harmonického priemeru pre niektoré periódy prúdu dát.
 \end{itemize}
+
 \citet{bifet2015efficient} odporúčajú použitie nasledujúcich metód pre evaluáciu v kontexte prúdov dát: \textit{Najprv testuj-potom-trénuj} (angl. Test-Then-Train alebo tiež Prequential) spočíva v myšlienke, že každá vzorka z prúdu dát je použitá najprv na testovanie a potom na trénovanie modelu. Keďže modely vytvorené nad prúdmi dát by mali byť schopné poskytnúť predikcie okamžite a v reálnom čase, tento prístup by nemal výrazne ovplyvniť výkon metódy. Obmenou tohto prístupu môže byť evaluácia na nejakom posuvnom okne, ktoré môže byť vyberané napríklad algoritmom $ADWIN$.
 %TODO: pridat nejaky test, neviem aky... -- veduci to chcel
 
@@ -202,6 +211,29 @@ Pre každú z kategórii metód používaných pri úlohe zhlukovania existuje n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Klasifikácia}
 \label{ulohy-klasifikacia}
+Klasifikácia dát je dobre známa úloha a problém dolovania, analýzy a spracovania dát. 
+
+\par
+Klasifikácia prúdov dát má zmysel často pre doménových expertov, ktorí potrebujú vytvárať detailné analýzy, či predikčné a klasifikačné modely. Pod pojmom doménový expert rozumieme človeka, ktorý rozumie analyzovaným dátam a pracuje s bežnými analytickými nástrojmi ako napríklad Google Analytics\footnote{https://www.google.com/analytics/
+} alebo IBM SPSS\footnote{https://www-01.ibm.com/software/sk/analytics/spss/}. Použitie klasifikácie prúdov dát má zmysel v mnohých oblastiach a prípadoch použitia:
+\begin{itemize}
+	\item \textit{Detekcia podvodov pri finačných prevodoch}. Je dôležité detekovať falošnú, či podvodnú platbu platobnou kartou takmer v reálnom čase pre minimalizáciu nákladov vzniknutých s jej neskorím riešením. Vytvorenie klasifikátora nad prúdmi dát ma zmysel práve preto, že transakcie predstavujú prúd dát, ktorý v sebe často nesie sezónne vzory a zmeny, na ktoré sa nevedia dobre adaptovať tradičné metódy.
+	\item \textit{Klasifikácia zákaznika na webe}. Toto má zmysel napríklad pre obchody ako Amazon.com. Pre takéto stránky je prínosné vedieť klasifikovať, či je navštevník webu potenciálny zakazník alebo má tendenciu odísť. Na základe týchto zistení môže majiteľ stránky vytvoriť ponuku pre zákazníka s cieľom udržať ho na stránke.
+	\item \textit{Klasifikácia sieťovej prevádzky} s cieľom klasifikovať potenciálne pokusy o útoky na sieť. Cieľom takejto úlohy je eliminácia útoku a stým spojená minimalizácia prestoja (angl. downtime) siete a nákladov spôsobených škodami z úspešného útoku.
+\end{itemize}
+Pre všetky vyššie opísané prípady použitia má zmysel zohľadniť zmeny v prúde dát v modeli. Pretože, ak sa napríklad mení správanie používateľa na webe v závislosti od zmien na stránke, napríklad v podobe zmeny dizajnu, chceme tieto zmeny odzrkadliť aj vo výslednom modeli. Rovnako ma zmysel tieto zmeny aj interpretovať prostredníctvom vizualizácie používateľovi.
+
+\par
+Existuje niekoľko dobre známych a používaných metód, niektoré z nich sú podrobne opísané v \ref{ulohy-klasifikacia}, pre klasifikáciu prúdov dát:
+\begin{itemize}
+	\item \textit{Hoeffdingove stromy} a ich rozšírenia, ktoré schopné adaptovať sa na zmeny (angl. concept drift) v dátach \citep{hulten2001mining, bifet2009adaptive}.
+	\item \textit{Bayesová klasifikácia} a jej rozšírenia v podobe Bayesových stromov ukázali použitie najmä pri detekcii anomálií v dátach \citep{hill2007real}.
+	\item \textit{Neurónové siete a evolučné metódy}. Evolučné programovanie našlo uplatnenie v stochastických optimalizačných problémoch, vlastnosti evolučných algoritmov môžu byť tiež aplikované na spracovanie prúdu dát s cieľom vysporiadať sa so zmenami v dátach. Experimentálne použitie neurónových sietí ukázalo porovnateľné výsledky s rozhodovacími stromami.
+	\item \textit{Súborové metódy} (angl. ensemble), ktoré aplikujú vrecovanie (angl. bagging) a zvyšovanie (angl. boosting) s cieľom zvýšenia presnosti modelu pomocou nájdenia optimálneho nastavenia a kombinácie viacerých klasifikátorov. Náhodné lesy sú typickým príkladom súborových metód, dokážú sa vysporiadať so zmeny v dátach, pričom časová náročnosť spracovania vzorky je $O(1)$ \citep{abdulsalam2011classification}.
+	\item Ďalšie metódy sú napríklad: \textit{k-najbližších susedov} a \textit{metóda podporných strojov}. Niektoré z týchto metód podrobnejšie opisujeme v tejto podkapitole.
+\end{itemize}
+
+\par
 Klasifikácia je proces hľadania všeobecného modelu, ktorý je vytvorený na základe predchádzajúcich pozorovaní. Tieto pozorovania resp. prúd dát musí obsahovať označkované dáta, klasifikácia predstavuje teda úlohu učenia s učiteľom. Vytvorený model je potom použitý na klasifikovanie nových dát. Proces klasifikácie pozostáva tradične z dvoch krokov: \textit{učenie} a \textit{trénovanie}. V kontexte klasifikácie prúdu dát je avšak učenie kontinuálne. Testovanie môže byť tiež kontinuálne, avšak to závisí od zvolenej metódy pre evaluáciu klasifikátora. Počas učenia sa snažíme podľa algoritmu vytvoriť klasifikačný model z trénovacích dát (trénovacia množina). Počas testovania je vytvorený model použitý na klasifikovanie neoznačkovaných dát z testovacej množiny. Existujú viac dobre známych metód pre klasifikáciu: rozhodovacie stromy, naivný Bayes, neurónové siete alebo k-najbližších susedov \citep{nguyen2015survey}. Niektoré z týchto metód sú v upravenej podobe vhodné na klasifikáciu prúdov dát, vybrané z nich sú detailnejšie popísané v tejto podkapitole. Základné podmienky použiteľnosti algoritmov pre klasifikáciu prúdu dát sú limitované: \textit{ohraničený čas spracovania dát}, \textit{ohraničená veľkosť použitej pamäte} a \textit{okamžité použitie modelu}.
 \par
 Problém klasifikácie je zvyčajne formálne definovaný nasledovne: nech $A$ je trénovacia množina o $N$ prvkoch vo forme $(x,y)$ kde $y$ predstavuje skutočnú triedu vzorky a $x$ je vektor s $d$ atribútmi. Každý atribút môže nadobúdať numerické alebo kategorické hodnoty. Cieľom je vytvoriť na základe trénovacej množiny model resp. funkciu $y=f(x)$, ktorá bude predikovať triedu $y$ pre nové vzorky $x$ \citep{domingos2000mining}. Jednou z metrík, ktoré sa snažíme optimalizovať pri vybraný klasifikátor môže byť napríklad presnosť alebo druhá odmocnina priemernej chyby.
@@ -254,7 +286,7 @@ Pre lepšie pochopenie a interpretáciu modelu analytik, alebo doménový expert
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                									Kapitola 3 - vysvetlenie modelov									                    %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Interpretácia a vysvetlenie modelu}
+\chapter{Prístupy vizualizácie modelov}
 Vysvetlenie a prezentacia analytických modelov je kritickým komponentom pri procese analýzy dát. Je dôležité aby používateľ nevidel výsledný model len ako čiernu skrinku, ale aby bol schopný pochopiť čo viedlo k vzniku modelu. Lepšie povedané, cieľom je čo možno najjednoduchšie vysvetlenie fungovania modelu bez nutnosti znalosti všetkých detailov o fungovaní algoritmu, ktorý tvorí model. Dobrým príkladom môže byť model rozhodovacích stromov. Tento model je jednoducho a intuitívne interpretovateľný, zatiaľ čo nie je potrebná detailná znalosť rôznych algoritmov rozhodovacích stromov.
 \par
 Ďalšia neoddeliteľná súčasť prezentácie modelu je jeho vizuálna reprezentácia relevantná pre pochopenie používateľom. Cieľom podobných vizualizácií je nájsť rovnováhu medzi vnímaním a poznávaním a vyžiť tak všetky možnosti ľudského mozgu. Správne vysvetlenie modelu tiež zvyšuje používateľovú dôveryhodnosť vo vytvorený model \citep{Demsar2014, Barlow2001}. Vizualizácia zmeny modelu je dôležitá pre lepšie pochopenie vývoja, resp. vzniku, daného modelu. Ale tiež na prípadné spätné ladenie modelu a teda pochopenie toho, čo viedlo k zmene.

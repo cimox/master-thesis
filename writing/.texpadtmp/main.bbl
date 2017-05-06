@@ -90,6 +90,11 @@ Brzezi{\'n}ski, D. (2010).
 Cimerman, M. and Ševcech, J. (2015).
 \newblock {\em Analýza prúdu údajov}.
 
+\bibitem[Datar et~al., 2002]{datar2002maintaining}
+Datar, M., Gionis, A., Indyk, P., and Motwani, R. (2002).
+\newblock Maintaining stream statistics over sliding windows.
+\newblock {\em SIAM journal on computing}, 31(6):1794--1813.
+
 \bibitem[Dem{\v{s}}ar and Bosni, 2014]{Demsar2014}
 Dem{\v{s}}ar, J. and Bosni, Z. (2014).
 \newblock {Visualization and Concept Drift Detection Using Explanations of
