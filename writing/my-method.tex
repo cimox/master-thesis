@@ -23,8 +23,21 @@ S cieľom splniť tieto požiadavky navrhujeme použiť nasledujúce programovac
 
 Nasledujúci obrázok schematicky popisuje architektúru spracovania prúdu dát potrebnú pre správne fungovanie metódy pre klasifikáciu prúdu dát s použitím rozhodovacích stromov.
 \myFigure{images/architecture}{Architektúra potrebná pre klasifikáciu prúdu dát v takmer reálnom čase. Architektúra pozostáva z troch úrovní. V časti predspracovania dát sú dáta zbierané zo zdroja prúdu dát a transformované do potrebnej podoby vhodnej pre ďalší krok. V kroku učenia modelu pre klasifikáciu prúdu dát je semi-automaticky vybraný vhodný algoritmus a atribúty a vytvorený klasifikačný model. Posledný krok obsahuje webovú službu, ktorá poskytuje Web API pre dotazovanie modelu. V tomto kroku tiež prezentujeme výsledky modelu v podobe vizualizácie používateľovi. Kafka je použitá na prenos správ medzi jednotlivými časťami aplikácie, správy sú rozdelené do rôznych tém podľa typu správy.}{architecture}{0.45}{h!}\label{fig:architecture}
+\par
+Web API rozhranie implementujeme ako asynchrónny web server. Volania Web API servera sú popísané v tabuľke \ref{tab-web-api}. Hlavným cieľom Web API rozhrania je možnosť klienta požiadať o posielanie aktualizácií modelu. Tieto aktualizácie sú odovzdávané v jednosmernej prevádzke vo forme Server-Sent Events (SSE) kde klient počúva a server môže posielať aktualizácie. Pri tejto forme komunikácie nieje potrebné pri každej správe otvárať nové TCP spojenie čo je vhodné práve pre prúdové aplikácie. Pre každého nového klienta server vytvára nového Kafka konzumera. Nový konzumer je vždy vytváraný, pretože každý klient môže mať rôznu rýchlosť spracovania správ a teda nastavený iné posunutie (angl. offset) kafka konzumera.
 
-Web API rozhranie implementujeme ako asynchrónny web server. Klient môže požiadať o aktualizácie modelu. Tieto aktualizácie sú odovzdávané v jednosmernej prevádzke vo forme Server-Sent Events kde klient počúva a server môže posielať aktualizácie. Pri tejto forme komunikácie nieje potrebné pri každej správe otvárať nové TCP spojenie čo je vhodné práve pre prúdové aplikácie. Pre každého nového klienta server vytvára nového Kafka konzumera. Nový konzumer je vždy vytváraný, pretože každý klient môže mať rôznu rýchlosť spracovania správ a teda nastavený iné posunutie (angl. offset) kafka konzumera.
+\begin{table}[!htp]
+\centering
+\begin{tabular}{|r|l|}
+\hline
+\textbf{Cesta API volania} & \textbf{Popis} \\ \hline
+/status/ & Vráti status web servera \\ \hline
+/tree/ & Otvorí SSE spojenie a začne posielať aktualizácie \\ \hline
+/node/\textit{node id}/ & Vráti informácie o danom uzle stromu \\ \hline
+\end{tabular}
+\caption{Popis Web API rozhrania webservera.}
+\label{tab-web-api}
+\end{table}
 
 \section{Metóda klasifikácie prúdu dát}
 \label{method-klasifikacia-prudu-dat}
@@ -45,15 +58,95 @@ Metódu implementujeme ako rozšírenie nad API, ktoré poskytuje nástroj Massi
 % Prezentacia vysledkov pouzivatelovi %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Vizualizácia a interpretácia modelu rozhodovacích stromov}
+\chapter{Vizualizácia modelu rozhodovacích stromov}
 \label{my-method-prezentacia-vysledkov}
 V situácii keď potrebuje doménovy expert vytvoriť klasifikačný model s použitím dát reálneho sveta, je často potrebná najprv detailná znalosť dát, ktorú doménový expert, predpokladáme má.  Následne preto, aby vedel vytvoriť správny model potrebuje mať detailné znalosti o fungovaní klasifikačných metód a algoritmov. Cieľom našej metódy je odbremeniť experta od nutnosti mať detailné znalosti o fungovaní modelu a algoritmov. Zameriavame sa teda na prezentáciu dôležitých informácií, ktoré potrebuje pre správne pochopenie modelu a následné rozhodnutia. Výber atribútov a algoritmov, ktoré budú použité na trénovanie modelu je bez nutnosti interakcie používateľa v zmysle nastavovania parametrov a výberu metódy. 
 \par
-Pretože používateľ nemusí mať detailné znalosti o fungovaní algoritmov a klasifikačných metód, je dôležité vysvetlenie výsledného modelu. Znamená to, že je dôležité aby pre používateľa nebol vzniknutý model len čierna skrinka (angl. black-box), ktorá s nejakou úspešnosťou dokáže klasifikovať prúdy dát. Navrhujeme preto vizualizáciu výsledného modelu. Vizualizácia je vo forme rozhodovacieho stromu, ktorý je jednoduchý na pochopenie aj bez predchádzajúcich znalostí o rozhodovacích stromov \citep{nguyen2015survey}. Sústreďujeme sa tiež na zobrazenie zmien (angl. concept drift) v dátach resp. zmenách, ktoré sa odzrkadlia aj v modely. Zmeny samotného modelu vizualizujeme ako animáciu, ktorú je možné spustiť a pozorovať vývoj stromu. Ďalej poskytujeme náhľad vo forme čiarového grafu na kvalitu alternujúcich podstromov, ktoré boli vytvorené pri detekovaní zmeny. Na nasledujúcom obrázku je zobrazený prvý prototyp vizualizácie modelu rozhodovacieho stromu, zmeny sú vizualizované pomocou animácie.
-\myFigure{images/exp-vis-prototype}{Prototyp vizualizácie modelu rozhodovacieho stromu s použitím Hoeffdingovej miery. Veľkosť rozhodovacích uzlov znázorňuje počet potrebných vzoriek na výber najlepšieho atribútu, čím väčší je kruh, tým viac vzoriek bolo potrebných pre splnenie Hoeffdingovej miery. S vizualizáciou je možné interagovať myšou.}{exp-vis-prototype}{0.35}{h!}\label{fig:exp-vis-prototype}
-Pomocou týchto vizualizácií chceme prezentovať výsedky našej klasifikačnej metódy používateľovi. Prezentované výsledky by mali byť jednoduché na pochopenie aj bez detailných znalostí o fungovaní metódy a algoritmov. Overenie použiteľnosti a miery pochopenia prezentovaných výsledkov overujeme detailnými používateľskými štúdiami a vyhodnotením tromi doménovými expertami (majú znalosti o fungovaní metódy a algoritmov). 
+Keďže náš predpoklad je, že používateľ nemusí mať detailné znalosti o fungovaní algoritmov a klasifikačných metód, je dôležité vysvetlenie výsledného modelu. Znamená to, že je dôležité aby pre používateľa nebol vzniknutý model len čierna skrinka (angl. black-box), ktorá s nejakou úspešnosťou dokáže klasifikovať prúdy dát. Navrhujeme preto vizualizáciu výsledného modelu. Vizualizácia je vo forme rozhodovacieho stromu, ktorý je jednoduchý na pochopenie aj bez predchádzajúcich znalostí o rozhodovacích stromov \citep{nguyen2015survey}. Sústreďujeme sa najmä na zobrazenie zmien (angl. concept drift) v dátach, ktoré sa odzrkadlia zmenou modelu.
+\par
+Hlavným prípadom použitia používateľom - doménovým expertom je nasledovný:
+\begin{enumerate}
+	\item Vytvorenie modelu rozhodovacieho stromu.
+	\item Používateľ používa vytvorený model na strategické rozhodovanie v podniku.
+	\item Používateľ siahne po vizualizácií, ak sa výrazne zníži kvalita modelu alebo potrebuje použévateľ lepšie pochopiť čo viedlo k vzniku aktuálneho modelu.
+	\item Vizualizáciu je možné pozastaviť, pretože model sa inak neustále meni vyvíja v závislosti od frekvencie a distribúcie prúdiacich dát.
+\end{enumerate}
+
+\section{Návrh vizualizácie}
+\label{navrh-vizualizacie}
+Vizualizáciu navrhujeme implementovať ako webovú aplikáciu. Zameriavane sa pritom na to, aby vizualizácia bola online a teda zobrazovala vždy aktuálny stav modelu. Zobrazenie online meniacej sa vizualizácie modelu je pri modeloch prúdu dát dôležité pre lepšie pochopenie modelu. Táto vizualizácia má slúžiť najmä na zobrazenie priebehu učenia modelu v ktoromkoľvek momente s dôrazom na zobrazenie zmien, ktoré model ovpyvnili. V našej práci sme sa rozhodli vizualizovať model rozhodovacích stromov. Tieto rozhodovacie stromy, známy aj ako Hoeffdingove stromy, používajú Hoeffdingovu mieru ako mieru istoty pre výber ideálneho atribútu rozdeľovacieho uzla. Táto metrika nám napovedá to, či a ako sa model zmení. Vo vizualizácií využívame túto metriku na zobrazenie kvality listov alebo rozhodovacích uzlov stromu. Pomocou animácie zobrazujeme zmeny modelu, takže to prirodzene predstavuje evolúciu stromu. Na obrázku \ref{fig:vis-navrh} je zobrazený záber z vizualizácie.
+\myFigure{images/6_navrh}{Vizualizácia dvoch iterácií modelu rozhodovacieho stromu. Modrá šípka zobrazuje prechod z pôvodného stavu do nového. Každý nový uzol v tejto vizualizácií vznikol samostatne a bol zobrazený animáciou. Model na obrázku bol vytvorený na syntetickom datasete.}{vis-navrh}{0.34}{h!}\label{fig:vis-navrh}
+\par
+Hodnota Hoeffdingovej miery je použitá na zafarbenie listov a rozhodovacích uzlov stromu. Listy stromu sú zafarbované na škále bielej a čiernej farby. Čím je nižšia Hoeffdingova miera v danom liste tým je farba listu tmavšia. V ideálnom prípade sa teda každý čierny list zmení na rozdeľovací uzol. Niekedy môže nastať prípad kedy sa aj menej tmavý list rozdelí. Je to z dôvodu, že Hoeffdingova miera je porovnávaná voči rozdieľu chybovosti s rozostupom pozorovaní. Ak je tento rozostup nastavený napríklad na 200 vzoriek a práve v tomto krátkom okne sa Hoeffdingova miera zmení natoľko, že sa list rozdelí, potom sa nestihne prefarbiť na čierno. Tento jav sme pozorovali zriedka na reálnych dátach a aj na syntetických dátach. Pri rozdeľovaní listu je pôvodný list aj s vetvou vyfarbený na červeno a postupne vymizne. Na obrázku \ref{fig:vis-hb-color} je zobrazený prechod rozdeľovania listu na rozdeľovací uzol. V prípade, že v strome nenastala zmena strom sa neprekreslí a aktualizujú sa iba farby uzlov. Animácia, ktorá zobrazuje rozdeľovanie listu zámerne ponecháva zobrazený aj pôvodný list práve preto aby mohol používateľ dobre pozorovať zmenu, ktorá nastala.
+\myFigure{images/6_hb-color}{Na obrázku je pre jednoduchosť zobrazený strom po spracovaní prvých vzoriek, preto na začiatku nie je vytvorený žiadny rozhodovací uzol. Šípka zobrazuje rozdeľenie listu na rozhodovací uzol.}{vis-hb-color}{0.34}{h!}\label{fig:vis-hb-color}
+\par
+Keď nastane v dátach zmena, ktorá ovplyvní model, začne v danom rozhodujúcom uzle narastať alternatívny podstrom. Tento alternatívny podstrom začne narastať v rozhodovacom uzle, ktorého kvalita sa v čase začala znižovať. Ako detektor zmeny používame algoritmus ADWIN, ktorý je implementovaný v nástroji MOA. Pre samotnú vizualizáciu je tento detektor skrytý. Vizualizácia, ktorá slúži len ako front-end pre používateľa je informovaná o zmene z prúdu dát modelu stromov. Uzol, z ktorého začal narastať alternujúci podstrom, je označený červenou farbou. Červená farba zobrazuje vysokú pravdepodobnosť, že bude podstrom od daného uzla vymenený za jeho alternujúci podstrom. Okrem červenej farby v rozhodovacích uzloch je zobrazené aj explicitné upozornenie, že nastala zmena. Na obrázku \ref{fig:vis-change} je zobrazený model stromu s nastávajúcou zmenou. Výmena pôvodného postromu za jeho alternatívny podstrom je zobrazená rovnakou animáciou ako pri rozdeľovaní listu na rozhodovací uzol.
+\myFigure{images/6_change}{Vizualizácia kde existujú tri alternujúce podstromy (nie sú zobrazené). Upozornenie hovorí len o jednej zmene, pretože predchádzajúce dve zmeny, ktoré viedli k vzniku alternatívnych podstromov nastali skôr a nestihli zmeniť model stromu. Niektoré vetvy stromu nie sú úplne dokreslené kvôli lepšej čitateľnosti obrázku. Nečitateľnosť niektorých rozhodovacích pravidiel je v reálnej webovej aplikácií vyriešená posunutím pravidla do popredia po nájdením myšou na pravidlo.}{vis-change}{0.34}{h!}\label{fig:vis-change}
+
+\section{Implementácia vizualizácie}
+\label{Implementácia vizualizácie}
+Vizualizácia bola implementovaná ako webová aplikácia pomocou knižnice D3.js\footnote{https://d3js.org/} v jazyku JavaScript. Knižnica D3.js umožňuje naviazať dáta na objektový model dokumentu (angl. Document Object Model, DOM) a jednoducho aplikovať dátovo riadené transformácie na dokument. D3 nie je monolitický programovací rámec vytvorený s cieľom poskytnúť každú funkciu, ktorú by mohol programátor potrebovať. Naopak, D3 rieši problém manipulácie a zmien DOM na základe dát. Pomocou tejto knižnice je jednoduché vytvoriť animované vizualizácie s rôznymi prechodmi, ktoré budú riadené dátovým modelom. Hlavným dôvodom prečo sme sa rozhodli pre túto knižnicu je možnosť funkcionálneho programovania, dátovo riadené vizualizácia a abstrakcia od vytvávarania SVG grafiky.
+\par
+Webová aplikácia získáva potrebné dáta vo formáte JSON z Web API. Toto web API je implementované pomocou, už spomenutej, architektúry Server-Sent Events (SSE). Z pohľadu vizualizácie to znamená, že prijíma prúd dát bez nutnosti otvárať TCP, resp. HTTP, spojenie vždy keď je potrebné prečítať novú vzorku. Znamená to, že server je schopný posielať aktualizácie webovej aplikácií bez toho aby o tieto aktualizácie musela žiadať samotná webová aplikácia, napríklad periodicky. Toto je veľkou výhodou, pretože otvárať spojenie pri každej novej vzorke predstavuje veľké nepotrebné zaťaženie naviac. Okrem toho, webové prehliadače efektívne implementujú tento štandard a bez problémov je možné prijímať prúdy, ktoré generujú dáta s vysokou frekvenciou. Ukážka otvorenia SSE a asynchrónne spracovanie správy:
+\begin{lstlisting}[language=JavaScript]
+let eventStream = new EventSource(API_STREAM);
+eventStream.addEventListener('tree', function (response) {
+    let responseData = JSON.parse(response.data);
+
+        BFT(responseData, addTreeIncrement).then((complete)=>{
+            if (_.isEqual(complete, "success")) {
+                log.info('Tree successfully processed');
+            }
+        removeAndFadeOutOldNodes(responseData, root);
+    });
+});
+\end{lstlisting}
+Dôležitou časťou spracovania údajov z tohto prúdu dát je práve asynchrónne spracovanie. Je to preto, že vizualizácia nežiada o aktualizácie manuálne alebo periodicky z dôvodu šetrenia prostriedkov a zaťaženia výpočtového výkonu sieťovej prevádazky. Aktualizácie sú posielané vo vysokej frekvencii serverom. Keďže vizualizácia obsahuje animácie, pričom každá trva približne 500ms, nový model stromu je potrebné spracovať nezávisle od nových vzoriek z prúdu dát. Keby sme každú novú vzorku spracovali v čase jej príchodu vizualizácia by sa stala nečitateľná a nepoužiteľná. Po otvorení SSE spojenia a prijatí prvej aktualizácie vo forme modelu rozhodovacieho stromu vo formáte JSON je model vykreslený. Po prijatí ďalšej aktualizácie je model vykreslený, ak boli ukončené všeky animácie z predchádzajúceho vykresľovania. Vykreslovanie modelu stromu prebieha prehľadávaním do šírky kde každý uzol je vykreslený samostatne s vlastnou animáciou. Je to z dôvodu aby bola celý animácia plynulá. Algoritmus vykresľovania stromu je popísaný pseudokódom v algoritme \ref{alg:visualization}. Výpočtová zložitosť pridania uzlu je $O(|V| + |E|)$ kde $|V|$ je počet uzlov a $|E|$ je počet hrán. Skutočná časová zložitosť je znásobená časom každej animácie pri pridaní uzla, pri aktualizácií uzla je to len niekoľko milisekúnd pretože netreba prekresliť žiadnu časť SVG.
+\par
+Navrhnutá metóda pre vizualizáciu rozhodovacích stromov, ktoré sa učia online, poskytuje online animovanú vizualizáciu procesu tvorby modelu. Dôraz je kladený na zobrazenie zmeny modelu. Túto zmenu zvýrazňujeme červeným zafarbením rozhodovacích uzlov, ktorých sa zmena v dátach dotkla. Pre správne zobrazenie vizualizácie sme čelili viacerým technickým výzvam a to najmä správnemu vykresľovaniu modelu stromu pri prijímaní prúdu s vysokou frekvenciou aktualizácií. Pri prezeraní vizualizácie môžep používateľ zastaviť vizualizáciu alebo opäť spustiť. Okrem toho nie je možné inak ovládať vizualizáciu, pretože bola navrh Túto hypotézu overujeme kvalitatívnym experimentom s niekoľkými doménovými expertami.
+\par
+% ====== ALGORITMUS visualization ====== %
+\begin{algorithm}[H]
+	\label{alg:visualization}
+	\SetAlgoLined
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+    \SetKwFunction{visualize}{visualize}
+    \SetKwFunction{breadthFirstSearch}{breadthFirstSearch}
+    \SetKwProg{vis}{function}{}{}
+    \SetKwProg{bfs}{function}{}{}
+    
+    \bfs{\breadthFirstSearch{$tree data$}}{
+    	\Input{parsed tree JSON data}
+    	
+    	\For{\textbf{each} $node$ \textbf{in} $tree data$} {
+			\eIf{node doesn't exists}{
+				\textit{await} add new node to tree
+			}{
+				\textit{await} update node information
+			}
+		}
+    }
+
+    \vis{\visualize{$stream$}}{
+    	\Input{Opened SSE stream}
+    	\Output{Decision tree model SVG in DOM}
+    	
+    	\While{message received}{
+			treeData $\leftarrow$ parse message data JSON\;
+			\eIf{animation is not running}{
+				\breadthFirstSearch{treeData}\\
+				remove old and inactive nodes
+				}{
+				wait until all animations are finished
+			}
+		}
+    }
+  \caption{Inkrementálne vykreslovanie modelu rozhodovacieho stromu..}
+\end{algorithm}
 
 
+%%%% Results %%%%%
 \chapter{Vyhodnotenie a experimenty}
 Pre kvantifikovanie správneho fungovania nami navrhovanej metódy navrhujeme viaceré experimenty. Prvým z experimentov je vyhodnotenie integrácie časti spracovania prúdu dát s našou metódou. Pri tomto vyhodnocovaní sa budeme pozerať na výkonnostné metriky, ktoré hovoria o priepustnosti a výkone tejto časti aplikácie. Zaujíma nás hlavne odolnosť voči chýbam, spracovanie v reálnom čase a zaťaženie procesoru a pamäte v závislosti na objeme dát.
 \par

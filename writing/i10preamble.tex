@@ -58,6 +58,48 @@
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 \renewcommand{\lstlistingname}{Algoritmus}
 
+\lstdefinelanguage{JavaScript}{
+keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, let, then},
+keywordstyle=\color{blue}\bfseries,
+ndkeywords={class, export, boolean, throw, implements, import, this},
+ndkeywordstyle=\color{darkgray}\bfseries,
+identifierstyle=\color{black},
+sensitive=false,
+comment=[l]{//},
+morecomment=[s]{/*}{*/},
+commentstyle=\color{purple}\ttfamily,
+stringstyle=\color{red}\ttfamily,
+morestring=[b]',
+morestring=[b]",
+frame=single
+}
+
+\lstset{
+language=JavaScript,
+extendedchars=true,
+basicstyle=\footnotesize\ttfamily,
+showstringspaces=false,
+showspaces=false,
+numbers=left,
+numberstyle=\footnotesize,
+numbersep=9pt,
+tabsize=2,
+breaklines=true,
+showtabs=false,
+captionpos=b
+}
+
+\lstdefinelanguage{JSON}{
+}
+
+\lstset{
+	language=JSON,
+    string=[s]{"}{"},
+    stringstyle=\color{blue},
+    comment=[l]{:},
+    commentstyle=\color{black},
+}
+
 %highlits
 \usepackage{framed}
 \definecolor{shadecolor}{rgb}{0.75,0.75,0.75}
@@ -70,7 +112,7 @@
 %\doublespacing
 \onehalfspacing
 
-\usepackage[]{algorithm2e}
+\usepackage[linesnumbered,ruled]{algorithm2e}
 
 % change images numbering to per subsection
 %\usepackage{chngcntr}
