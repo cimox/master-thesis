@@ -17,12 +17,12 @@ import java.io.PrintWriter;
 
 
 public class ExperimentRunner {
-    private final static int NUM_INSTANCES = 150000;
+    private final static int NUM_INSTANCES = 7000;
     private final static boolean IS_TESTING = true;
 
     public static void main(String[] args) {
-        ExperimentConceptDetection exp = new ExperimentConceptDetection();
-//        ExperimentTelcoChurn exp = new ExperimentTelcoChurn();
+//        ExperimentConceptDetection exp = new ExperimentConceptDetection();
+        ExperimentTelcoChurn exp = new ExperimentTelcoChurn();
 //        ExperimentRandomTree exp = new ExperimentRandomTree();
 //        ExperimentRBFND exp = new ExperimentRBFND();
 //        ExperimentMyHyperPlane exp = new ExperimentMyHyperPlane();

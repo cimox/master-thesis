@@ -70,10 +70,15 @@ Bifet, A. and Gavald{\`a}, R. (2009).
 \newblock In {\em International Symposium on Intelligent Data Analysis}, pages
   249--260. Springer.
 
-\bibitem[Bifet et~al., 2010]{DBLP:journals/jmlr/BifetHKP10}
-Bifet, A., Holmes, G., Kirkby, R., and Pfahringer, B. (2010).
+\bibitem[Bifet et~al., 2010a]{DBLP:journals/jmlr/BifetHKP10}
+Bifet, A., Holmes, G., Kirkby, R., and Pfahringer, B. (2010a).
 \newblock {MOA:} massive online analysis.
 \newblock {\em Journal of Machine Learning Research}, 11:1601--1604.
+
+\bibitem[Bifet et~al., 2010b]{bifet2010moa}
+Bifet, A., Holmes, G., Kirkby, R., and Pfahringer, B. (2010b).
+\newblock Moa: Massive online analysis.
+\newblock {\em Journal of Machine Learning Research}, 11(May):1601--1604.
 
 \bibitem[Bockermann and Blom, 2012]{bockermann2012processing}
 Bockermann, C. and Blom, H. (2012).
@@ -85,6 +90,13 @@ Bockermann, C. and Blom, H. (2012).
 Brzezi{\'n}ski, D. (2010).
 \newblock {\em Mining data streams with concept drift}.
 \newblock PhD thesis, Master’s thesis, Poznan University of Technology.
+
+\bibitem[Brzezinski and Stefanowski, 2014]{brzezinski2014prequential}
+Brzezinski, D. and Stefanowski, J. (2014).
+\newblock Prequential auc for classifier evaluation and drift detection in
+  evolving data streams.
+\newblock In {\em International Workshop on New Frontiers in Mining Complex
+  Patterns}, pages 87--101. Springer.
 
 \bibitem[Cimerman and Ševcech, 2015]{cimerman2015prudy}
 Cimerman, M. and Ševcech, J. (2015).
@@ -172,6 +184,12 @@ Jin, R. and Agrawal, G. (2003).
 \newblock Efficient decision tree construction on streaming data.
 \newblock In {\em Proceedings of the ninth ACM SIGKDD international conference
   on Knowledge discovery and data mining}, pages 571--576. ACM.
+
+\bibitem[Krawczyk and Wo{\'z}niak, 2015]{krawczyk2015one}
+Krawczyk, B. and Wo{\'z}niak, M. (2015).
+\newblock One-class classifiers with incremental learning and forgetting for
+  data streams with concept drift.
+\newblock {\em Soft Computing}, 19(12):3387--3400.
 
 \bibitem[Krempl et~al., 2014]{krempl2014open}
 Krempl, G., {\v{Z}}liobaite, I., Brzezi{\'n}ski, D., H{\"u}llermeier, E., Last,

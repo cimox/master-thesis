@@ -121,11 +121,14 @@ Navrhnutá metóda pre vizualizáciu rozhodovacích stromov, ktoré sa učia onl
     	
     	\For{\textbf{each} $node$ \textbf{in} $tree data$} {
 			\eIf{node doesn't exists}{
-				\textit{await} add new node to tree
+				add new $node$ to model \\
+				\textbf{\textit{await}} transition of $node$ is finished
 			}{
-				\textit{await} update node information
+				\textbf{\textit{await}} update node information
 			}
 		}
+		
+		\Return \textit{Promise(success)}
     }
 
     \vis{\visualize{$stream$}}{
@@ -133,10 +136,10 @@ Navrhnutá metóda pre vizualizáciu rozhodovacích stromov, ktoré sa učia onl
     	\Output{Decision tree model SVG in DOM}
     	
     	\While{message received}{
-			treeData $\leftarrow$ parse message data JSON\;
+			treeData $\leftarrow$ parse message data\\
 			\eIf{animation is not running}{
-				\breadthFirstSearch{treeData}\\
-				remove old and inactive nodes
+				\textbf{\textit{await}} \breadthFirstSearch{treeData}\\
+				\textbf{\textit{on success}} remove old and inactive nodes
 				}{
 				wait until all animations are finished
 			}
@@ -147,29 +150,63 @@ Navrhnutá metóda pre vizualizáciu rozhodovacích stromov, ktoré sa učia onl
 
 
 %%%% Results %%%%%
-\chapter{Vyhodnotenie a experimenty}
-Pre kvantifikovanie správneho fungovania nami navrhovanej metódy navrhujeme viaceré experimenty. Prvým z experimentov je vyhodnotenie integrácie časti spracovania prúdu dát s našou metódou. Pri tomto vyhodnocovaní sa budeme pozerať na výkonnostné metriky, ktoré hovoria o priepustnosti a výkone tejto časti aplikácie. Zaujíma nás hlavne odolnosť voči chýbam, spracovanie v reálnom čase a zaťaženie procesoru a pamäte v závislosti na objeme dát.
+\chapter{Vyhodnotenie}
+V našej práci sme navrhli a implementovali online inkrementálnu vizualizáciu modelu rozhodovacích stromov, ktoré sa učia online nad prúdom dát. Pomocou nástroja MOA sme aplikovali algoritmus Hoeffdingových stromov s detektorom zmien ADWIN. Overenie pozostávala z dvoch častí. V prvej časti sme overovali samotnú metódu klasifikácie a jej vybrané metriky. Overali sme tým to, či je táto metóda vôbec použiteľná na klasifikáciu rôznych prúdov dát. V druhe časti sme overovali samotnú vizualizáciu. Pri tomto overovaní sme sa sústredili na kvantitatívne vyhodnotenie s vybranou vzorkou doménových expertov. Návrh a implementácia vizualizácie je detailne popísaný v kapitole \ref{my-method-prezentacia-vysledkov}.
+
+%%%% Kvantitativne vyhodnotenie %%%%
+\section{Kvantitatívne vyhodnotenie klasifikácie}
+Pre overenie použiteľnosti nami vybranej a aplikovanej metódy klasifikácie sme sa rozhodli overiť výkon tejto metódy. Motivácia za týmto overením je vyhodnotenie použiteľnosti metódy aj v aplikáciách reálneho sveta a to, že vybraná metóda neslúži len ako podpora pre vizualizáciu. Pri evaluácií výkonnu klasifikátora nad prúdmi dát, ktoré obsahujú zmeny, sú dôležité dve metriky: \textit{presnosť} a \textit{schopnosť adaptácie}.
 \par
-Vyhodnotenie samotnej metódy pre klasifikáciu prúdu dát nás zaujímajú bežné metriky používané pri vyhodnocovaní modelov strojové učenie, ako napríklad presnosť (angl. precision) a pokrytie (angl. recall). Keďže ide o klasifikovanie prúdu dát, zameriavame sa tiež na nasledujúce metriky:
+Prvá metrika by mohľa byť meraná jednoduchou mierou chybovosti. Čo znamená počet nesprávne klasifikovaných vzoriek alebo komplement tejto metriky, počet správne klasifikovaných vzoriek. Táto metrika je často používaná pri meraní výkonnosti klasifikátorov prúdov dát. Problém tejto metriky nastane vtedy, ak je distribúcia tried v prúde nevyvážená. Potom môže počet správne klasifikovaných vzoriek jednej triedy úplne prevážiť druhú triedu. Pričom presnosť nad minoritnou triedou môže byť pokojne nízka. Riešením tohto problému by bola metrika ROC, známa tiež ako AUC. Problémom tejto metriky je, že ju nie je možné počítať inkrementálne nad prúdom dát, aj keď bola navrhnutá varianta pre prúdy dát \citep{brzezinski2014prequential}. Napriek tomu, že je táto metrika vhodná pre nevyvážené zdroje dát, jej použíteľnosť nad prúdmi dát, ktoré obsahujú zmeny stále ostáva otvorený problém \citep{brzezinski2014prequential}.
+\par
+Vyhodnotenie druhej metriky, schopnosť adaptácie, si vyžaduje samostné merania. Niektorí výskumníci navrhujú merať schopnosť adaptácie reakčným časom adaptácie klasifikátora. Problém tohto prístupu je nutnosť expertnej evaluácie reakčného času.
+\par
+Z kvantitatívneho vyhodnotenia nás najviac zaujíma celková prenosť klasifikátora s odhliadnutím na vyššie spomenuté problémy. Je to z dôvodu, že sa sústreďujeme hlavne na kvalitatívne vyhodnotenie vizualizácie a výkonnosť klasifikátora berieme ako podporu pre vyhodnotenie našej práce. Túto presnosť počítame procedúru testuj-potom-trénuj (angl. test-then-train) kde pre každé nové pozorovanie najprv vygenerovaná predikcia následne je použitá na trénovanie.
+
+\subsection{Testovacie dáta}
+Pre overenie prenosti klasifikátora sme použili jednu dátovu kolekciu dát z reálneho sveta. Presnejšie ide o výváženú statickú kolekciu dát s názvom \textit{Airlines (Air)}, ktorá obsahuje letové informácie letov v USA. Dáta sú zozbierané medzi rokmi 1987 a 2008. Presný výskyt a charatker zmien nie je známy. Napriek tomu tvrdíme \citep{brzezinski2014prequential, krawczyk2015one}, že sa zmeny v dátach nachádzajú. Jedna zmena nastala minimálne po 11.9.2001 kedy sa zmenilo mnoho pravidiel leteckej verejnej prepravy v USA. Úlohou nad týmito dátami je predikovať, či bude let omeškaný. Druhým datasetom, ktorý obsahoval len 7000 vzoriek, obsahoval dáta telekomunikačného operátora a cieľom bolo klasifikovať, či používateľ prestane používať služby operátora. Tieto statická kolekcie boli následne inkrementálne čítané a prúd tak bol simulovaný.
+\par
+Problém overovania algoritmov strojového učenia v doméne prúdov dát je nedostatok verejne dostupných datasetov pre vyhodnotenie výkonnosti. Zvlášť problém predstavuje snaha o vyhodnotenie algoritmov, ktoré sa adaptujú na zmeny. Preto používame nástroj MOA na generovanie prúdov dát kde kontrolovane zavádzame rôzne zmeny do prúdu dát. Použitie syntetických generátorov nám umožňuje lepšiu kontrolu nad experimentom. Používame existujúce syntetické generátory s nastavením, ktoré boli použité na evaluáciu podobných algoritmov. Takto vieme nami aplikovanú metódu klasifikácie porovnať s inými riešeniami \citep{krawczyk2015one, brzezinski2014prequential}. Presný popis nastavenia týchto generátorov je v prílohe YY. Používame nasledujúce dva generátory \citep{bifet2010moa}:
+%TODO priloha s nastavenim generatorov
 \begin{itemize}
-	\item \textit{Kappa štatistiky}, ktoré dobre vyjadrujú presnosť klasifikátora nestabilné prúdy dát.
-	\item \textit{Najprv test-potom-trénovanie} (angl. Test-Then-Train alebo Prequential) je metrika používaná pre meranie výkonnosti klasifikátorov, ktoré sa vyvíjajú v čase.
+	\item \textit{Hyp}, Hyperplane generátor bol použítý v troch variantoch s cieľom generovať prúd dát s inkrementálnymi zmenami. Tri varianty rôzneho pomery rozdelenia tried v prúde boli použité, 1:1 $Hyp_1$, 1:10 $Hyp_10$, 1:100 $Hyp_100$.
+	\item \textit{RBF} generátor bol použitý na prúdu dát s náhlymi zmenami.
+	\item \textit{$SEA_{ND}$} generátor bol použitý na vytvorenie prúdu dát bez zmien.
 \end{itemize}
-Pri vyhodnocovaní klasifikačnej metódy sa tiež pozeráme na vhodnosť výberu rôznych algoritmov pre výber atribútov, detekcie zmien (angl. concept drift) a samotného klasifikačného algoritmu.
-\par
-Vysokú pozornosť venujeme vyhodnoteniu prezentovaných výsledkov používateľovi. Najprv robíme vyhodnotenie fungovania celej aplikácie ako celku s tromi expertami, ktorí majú detailné znalosti o fungovaní metód a algoritmov strojového učenia. Ďalej navrhujeme experiment vo forme používateľskej štúdie. Používateľská štúdia môže prebiehať v kontrolovanom, ale aj v "domácom" prostredí. Počas tejto štúdie budú účastnici vykonávať definované úlohy s cieľom zmerať a kvantifikovať ich výkonnosť a vôbec schopnosť splniť stanovené úlohy. Tieto úlohy môžu byť od jednoduchých ako odčítanie hodnotu z grafu, až po komplexné ako zistiť počet signifikantných zmien modelu a ich čas kedy nastali, či krátke slovná reprezentácia fungovania modelu. Prvé výsledky nami navrhovanej metódy sú na nasledujúcich dvoch grafoch. Zaiaľ sme nerealizovali experiment používateľskej štúdie.
-\myFigure{images/exp-vis-concepts}{Na grafe je znázornený vývoj zmien v synteticky generovanom prúde dát. Každá zmena reprezentuje vznik alternujúceho podstromu.}{exp-vis-concepts}{0.5}{h!}\label{fig:exp-vis-concepts}
-\myFigure{images/exp-vis-errors}{Graf zobrazuje vývoj chyby modelu a alternujúceho podstromu. Je možné pozorovať, že síce nastane moment, kedy je alternujúci podstrom kvalitnejší ako pôvodný, nikdy nesplní Hoeffdingovu mieru a teda nenahradí starý podstrom. Tento jav je spôsobený generovaním syntetického prúdu dát. Preto bude nutné v ďalších experimentoch použiť dáta reálneho sveta.}{exp-vis-errors}{0.5}{h!}\label{fig:exp-vis-errors}
 
-V tejto kapitole navrhujeme metódu pre klasifikáciu prúdu dát. Metóda poskytuje iba jeden voliteľný parameter, ktorý musí nastaviť používateľ, hodnotu istoty $\delta$. Parameter reprezentuje istotu $1-\delta$, že bude výsledný model identický stým, ktorý by vznikol použitím tradičnej metódy. Cieľom metódy je, že používateľ nemusí mať znalosti o fungovaní klasifikačných algoritmov, ale je schopný použíť v praxi nami navrhovanú metódu. Naviac, výsledná model reprezentujeme vo forme vizualizácie, ktorý má pomôcť vysvetliť fungovanie modelu.
+\subsection{Výsledky}
+Nami aplikovaná metóda Hoeffdingových stromov s použitím ADWIN algoritmu ako detektoru zien dosahuje porovnateľné výsledky ako iné algoritmy pre klasifikáciu meniacich sa prúdov dát. Nami použitú metódu označujeme v tabuľke \ref{tab-method-results} ako \textit{VFDT-ADWIN}. Algoritmus Online Accuracy Updated Ensemble (OAUE) \citep{brzezinski2014prequential} si udržuje množinu komponentov klasifikátora s cieľom predikovať triedu novej vzorky váhovaným agregovaním súboru predikcií.
+\begin{table}[!htp]
+\centering
+\begin{tabular}{| c || c | c |}
+\hline
+\textbf{Zdroj dát} & \textbf{OAUE} & \textbf{VFDT-ADWIN} \\ \hline
 
-Kladieme si teda nasledujúce hypotézy:
-\begin{hypothesis}{Naša metóda je schopná so stanovenou istotou klasifikovať prúdy dát a zároveň poskytuje výsledky v reálnom čase.}
-\end{hypothesis}
-\begin{hypothesis}{Metóda je ľahká na použitie a interpretované výsledky sú jednoduché na pochopenie pre doménového experta bez detailnej znalosti o fungovaní modelu.}
-\end{hypothesis}
-\begin{hypothesis}{Dokážeme zmysluplne a pochopiteľne, pre doménového experta, interpretovať blížiacu sa zmenu v uzle stromu a tiež zobraziť históriu zmien modelu.}
-\end{hypothesis}
+$SEA_{ND}$ & 0.89 & 0.87 \\ \hline
+$Hyp_1$ & 0.88 & 0.89 \\ \hline
+$Hyp_{10}$ & 0.91 & 0.85 \\ \hline
+$Hyp_{100}$ & 0.94 & 0.82 \\ \hline
+$Air$ & 0.67 & 0.64 \\ \hline
+$Telco$ & - & 0.77 \\ \hline
+
+\end{tabular}
+\caption{Výsledky kvantitatívnych experimentov a porovnanie voči podobnému algoritmu.}
+\label{tab-method-results}
+\end{table}
+
+
+
+%%%% Kvalitativne vyhodnotenie %%%%
+\section{Kvalitatívne vyhodnotenie vizualizácie}
+Hlavným prínosom našej práci je navrhnutá a implementovaná vizualizácia. Vizualizácia je navrhnutá s cieľom uľahciť pochopenie tvorby modelu rozhodovacích stromov a vizualizácia zmien, ktoré model ovplyvnili. Jadrom vyhodnotenia je preto kvalitatívne vyhodnotenie vizualizácie. To realizujeme ako riadenú používateľskú štúdiu s niekoľkými vybranými doménovými expertami. Doménový expert je osoba, ktorá je expertom v danej oblasti expertízi, napríklad doména internetových obchodov. Z nášho pohľadu doménový expert ale nemusí detailne poznať algoritmy strojového učenia.
+
+\subsection{Používateľská stúdia}
+Cieľom používateľskej štúdie je overiť použiteľnosť a zrozumiteľnosť vizualizácie pre používateľa (doménový expert).
+
+
+
+
+
 
 
 

@@ -27,10 +27,15 @@
 \contentsline {chapter}{\numberline {6}Vizualiz\IeC {\'a}cia modelu rozhodovac\IeC {\'\i }ch stromov}{49}{chapter.6}
 \contentsline {section}{\numberline {6.1}N\IeC {\'a}vrh vizualiz\IeC {\'a}cie}{50}{section.6.1}
 \contentsline {section}{\numberline {6.2}Implement\IeC {\'a}cia vizualiz\IeC {\'a}cie}{53}{section.6.2}
-\contentsline {chapter}{\numberline {7}Vyhodnotenie a experimenty}{57}{chapter.7}
+\contentsline {chapter}{\numberline {7}Vyhodnotenie}{57}{chapter.7}
+\contentsline {section}{\numberline {7.1}Kvantitat\IeC {\'\i }vne vyhodnotenie klasifik\IeC {\'a}cie}{57}{section.7.1}
+\contentsline {subsection}{\numberline {7.1.1}Testovacie d\IeC {\'a}ta}{58}{subsection.7.1.1}
+\contentsline {subsection}{\numberline {7.1.2}V\IeC {\'y}sledky}{59}{subsection.7.1.2}
+\contentsline {section}{\numberline {7.2}Kvalitat\IeC {\'\i }vne vyhodnotenie vizualiz\IeC {\'a}cie}{59}{section.7.2}
+\contentsline {subsection}{\numberline {7.2.1}Pou\IeC {\v z}\IeC {\'\i }vate\IeC {\v l}sk\IeC {\'a} st\IeC {\'u}dia}{60}{subsection.7.2.1}
 \contentsline {chapter}{\numberline {8}Zhodnotenie a bud\IeC {\'u}ca pr\IeC {\'a}ca}{61}{chapter.8}
-\contentsline {chapter}{\numberline {}Literat\IeC {\'u}ra}{63}{section*.30}
-\contentsline {chapter}{Pr\IeC {\'\i }lohy}{69}{appendix*.32}
+\contentsline {chapter}{\numberline {}Literat\IeC {\'u}ra}{63}{section*.29}
+\contentsline {chapter}{Pr\IeC {\'\i }lohy}{69}{appendix*.31}
 \contentsline {section}{\numberline {A}Pl\IeC {\'a}n na zimn\IeC {\'y} semester 2016/2017}{69}{section.Alph0.1}
 \contentsline {section}{\numberline {B}Vyjadrenie k plneniu pl\IeC {\'a}nu zimn\IeC {\'e}ho semestra}{69}{section.Alph0.2}
 \contentsline {section}{\numberline {C}Pl\IeC {\'a}n na letn\IeC {\'y} semester 2016/2017}{70}{section.Alph0.3}
