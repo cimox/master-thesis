@@ -174,7 +174,7 @@ Problém overovania algoritmov strojového učenia v doméne prúdov dát je ned
 	\item \textit{$SEA_{ND}$} generátor bol použitý na vytvorenie prúdu dát bez zmien.
 \end{itemize}
 
-\subsection{Výsledky}
+\subsection{Výsledky kvantitatívnych experimentov}
 Nami aplikovaná metóda Hoeffdingových stromov s použitím ADWIN algoritmu ako detektoru zien dosahuje porovnateľné výsledky ako iné algoritmy pre klasifikáciu meniacich sa prúdov dát. Nami použitú metódu označujeme v tabuľke \ref{tab-method-results} ako \textit{VFDT-ADWIN}. Algoritmus Online Accuracy Updated Ensemble (OAUE) \citep{brzezinski2014prequential} si udržuje množinu komponentov klasifikátora s cieľom predikovať triedu novej vzorky váhovaným agregovaním súboru predikcií.
 \begin{table}[!htp]
 \centering
@@ -182,15 +182,16 @@ Nami aplikovaná metóda Hoeffdingových stromov s použitím ADWIN algoritmu ak
 \hline
 \textbf{Zdroj dát} & \textbf{OAUE} & \textbf{VFDT-ADWIN} \\ \hline
 
-$SEA_{ND}$ & 0.89 & 0.87 \\ \hline
-$Hyp_1$ & 0.88 & 0.89 \\ \hline
+$SEA_{ND}$ & 0.89 & 0.89 \\ \hline
+$Hyp_1$ & 0.88 & 0.87 \\ \hline
 $Hyp_{10}$ & 0.91 & 0.85 \\ \hline
 $Hyp_{100}$ & 0.94 & 0.82 \\ \hline
+$RBF$ & 0.99 & 0.89 \\ \hline
 $Air$ & 0.67 & 0.64 \\ \hline
 $Telco$ & - & 0.77 \\ \hline
 
 \end{tabular}
-\caption{Výsledky kvantitatívnych experimentov a porovnanie voči podobnému algoritmu.}
+\caption{Výsledky kvantitatívnych experimentov a porovnanie voči podobnému algoritmu. Meraná metrika je priebežná presnosť predikcie vypočítaná metódou testuj-potom-trénuj.}
 \label{tab-method-results}
 \end{table}
 
@@ -198,10 +199,58 @@ $Telco$ & - & 0.77 \\ \hline
 
 %%%% Kvalitativne vyhodnotenie %%%%
 \section{Kvalitatívne vyhodnotenie vizualizácie}
-Hlavným prínosom našej práci je navrhnutá a implementovaná vizualizácia. Vizualizácia je navrhnutá s cieľom uľahciť pochopenie tvorby modelu rozhodovacích stromov a vizualizácia zmien, ktoré model ovplyvnili. Jadrom vyhodnotenia je preto kvalitatívne vyhodnotenie vizualizácie. To realizujeme ako riadenú používateľskú štúdiu s niekoľkými vybranými doménovými expertami. Doménový expert je osoba, ktorá je expertom v danej oblasti expertízi, napríklad doména internetových obchodov. Z nášho pohľadu doménový expert ale nemusí detailne poznať algoritmy strojového učenia.
+Hlavným prínosom našej práci je navrhnutá a implementovaná vizualizácia. Vizualizácia je navrhnutá s cieľom uľahčiť pochopenie tvorby modelu rozhodovacích stromov a vizualizácia zmien, ktoré model ovplyvnili. Jadrom vyhodnotenia je preto kvalitatívne vyhodnotenie vizualizácie. To realizujeme ako riadenú používateľskú štúdiu s niekoľkými vybranými doménovými expertami. Doménový expert je osoba, ktorá je expertom v danej oblasti expertízi, napríklad doména internetových obchodov. Z nášho pohľadu doménový expert ale nemusí detailne poznať algoritmy strojového učenia.
 
-\subsection{Používateľská stúdia}
-Cieľom používateľskej štúdie je overiť použiteľnosť a zrozumiteľnosť vizualizácie pre používateľa (doménový expert).
+\subsection{Používateľská štúdia}
+Cieľom používateľskej štúdie bolo overiť, či vizualizácia napomáha pochopeniu modelu a zmeny, ktorá model významne ovplyvnila. Týmto kvalitatívnym experimentom sme tiež chceli zistiť, či používatelia správne chápu význam zafarbovania uzlov stromu. Experimentu sa zúčastnilo osem participantov, každý dobrovoľne. Dáta, na ktorých bol model vytvorený pre tento experiment boli vytvorené syntetickým generátorom MOA, pričom atribúty a triedy pripomínali dáta návštevníkov internetového obchodu. Synteticky generované dáta sme sa rozhodli použiť z dôvodu lepšej kontroly nad zmenami v dátach a teda aj celého experimentu. Pre experiment sme predpripravili tri videá, ktoré obsahujú záznam z priebehu učenia modelu. Každé video reprezentuje fázu experimentu:
+\begin{enumerate}
+	\item \textit{Fáza 0} je iniciálna fáza v ktorej účastníka oboznamujeme s priebehom experimentu.
+	\item \textit{Fáza 1} pozostáva z počiatočného učenia modelu. Toto video je najdlhšie a má necelých šesť minút. V tejto fáze pozorujme hlavne, či dokážu fázu správne slovne popísať a označiť čas vo videu od kedy sa začal model učiť.
+	\item \textit{Fáza 2} obsahuje minútové video so stabilným modelom. Na začiatku videa nastanú ešte drobné zmeny v podobe rozdeľovania niektorých listov. Pozorujeme schopnosť popísať fázu a označiť moment od kedy je model v stabilnom stave.
+	\item \textit{Fáza 3} zobrazuje učenie modelu s výraznou zmenou. Zmena je najprv detekovaná a vizualizovaná červeným zafarbením daných rozhodovacích uzlov, neskôr je uzol nahradný alternatívnym podstromom čo predstavuje výraznú zmenu modelu.
+\end{enumerate}
+Každý participant spĺňa definíciu doménového experta. Všetci pracujú s dátami na dennej báze, vytvárajú základné analýzy ako napríklad lieviková analýza, či kontigenčné tabuľky a znalosti získané z týchto analýz používajú na strategické rozhodnutia v podnikoch. Nikto z participantov nemal detailné znalosti o fungovaní algoritmov strojového učenia a nikdy podobné modely nevytvárali. Traja z ôsmich participantov podobný model použili v minulosti pre strategické rozhodnutia v podniku.
+\par
+Experiment prebiehal v kontrolovanom, ale pre účastníkov experimentu známom prostredí. Na začiatku experimentu sme účastníkov oboznámili s cieľom a snažili sme sa ich viesť k tomu aby nám celý priebeh komentovali. Všetky ich komentáre sme si zapisovali čo nám umožnilo získať náhľad na ich názor ešte predtým ako videli a odpovedali na otázky, ktorými mohli byť ich odpovede čiastočne ovplyvnené. Počas experimentu sme účastníkom neodpovedali na žiadne otázky týkajúce sa samotnej vizualizácie alebo jej fungovania. Sumarizované výsledky používateľskej štúdie a sumár zápiskov z experimentu sú v nasledujúcej podkapitole. Odpovede v pôvodnom znení sú v prílohe X2. Znenie otázok používateľskej štúdie bolo nasledovné je v prílohe XY.
+%TODO priloha vysledky pouz. studie
+%TODO priloha so znenim otazok
+
+
+\subsection{Výsledky používateľskej štúdie}
+Piati z ôsmych účatníkov mali menej ako dva roky skúseností v danom odbore, zvyšní traja mali 2-5 rokov skúseností v odbore. Účastník, ktorý použil v minulosti rozhodovacie stromy na strategické rozhodnutie mal práve 2-5 rokov skúseností. Treba povedať, že napriek použitiu modelu v minulosti daný model nevytvoril.
+\par
+V prvej fáze siedmy účastníci správne vyjadrili slovný popis. Jeden účastník nevedel nijak popísať túto fázu. Popis bielej až čiernej farby listov bol správny pri štyroch účastníkoch, ktorý farbe priradili štatistickú významnosť. Ďalší dvaja opisovali farbu ako početnosť pozorovaní v danom liste alebo priradili bielej význam \textit{správny} a čiernej naopak \textit{nesprávny}. Tieto tvrdenia sa dajú považovať za čiastočne správne. Poslední dvaja účastníci nevedeli popísať farbu. Čas od kedy sa model učí označili všetci účastníci správne. Jeden z nich označil namiesto úplneho začiatku video desiatu sekundu, čo považujeme pri viac ako päť minútovom videu za správnu odpoveď.
+\par
+Druhá fáza zobrazovala model v stabilnom stave. Štyria z ôsmich účastníkov popísalo správne fázu modelu. Znenie odpovedí sa síce líšilo. Traja odpovedali čiastočne správne odpoveďami ako napríklad: \textit{učiaca fáza} alebo \textit{testovanie predpokladov na výsledkoch}. Jeden odpovedal nesprávne odpoveďou, že sa model nachádza v prvej fáze predtým než sa začne prvý krát učiť. Opäť sme sa pýtali na význam bielej až čiernej farby v listoch uzlov, odpovede boli rovnaké ako v prvej fáze. Model na videu sa dostal do stabilného stavu v 27 sekunde, prvých 26 sekúnd sa ešte rozdeľujú niektoré listy a model sa stabilizuje. Šesť účastníkov odpovedalo správne a identifikovali čas od kedy je model v stabilnom stave. Jeden účastník označil model za stabilný od začiatku videa. Ten istý účastník, ktorý nesprávne popísal túto fázu rovnako označil model za stabilný od začiatku.
+\par
+V tretej fáze sme overovali schopnosť pozorovať zmenu modelu. Popis tejto fázy bol najviac problematický. Len traja účastníci dokázali správne, tak ako sme očákavali, popísať túto fázu zmeny modelu. Jeden účastník túto fázu nazval ako \textit{fáza reštartu}, čo sa do istej miery dá považovať za správnu odpoveď. Zvyšní účastníci nazvali túto fázu ako učenie modelu. Okrem jedného účastníka všetci správne pripísali význam červenej farby rozhodovacích uzlov. Označenie častu kedy nastala zmena a momentu kedy sa výrazne zmenil model rozhodovacieho stromu označili siedmy účastníci správne. Jeden označil nesprávne moment kedy nastala zmena, pretože si nevšimol upozornenie o zmene, ktoré mal prekryté inou aplikácou a červenú farbu ihneď nepriradil zmene v dátach. Moment kedy sa model výrazne zmenil tiež označil nesprávne a to v momente kedy sa rozhodovacie uzly zafarbili červenou farbou. Na obrázku \ref{fig:graph-times} je možné vidieť označenie sledovaných časov vo všetkých fázach každým účastníkom experimentu.
+\myFigure{images/graph-times}{Graf zobrazuje označený čas vo videu pre jednotlivé body záujmu. Vodorovné čierne čiary zobrazujú správnu odpoveď.}{graph-times}{0.45}{h!}\label{fig:graph-times}
+Okrem otázok, na ktoré účastníci priamo odpovedali sme sa snažili s nimi komunikovať a viesť ich k tomu aby komentovali svoje myšlienky. Zo zápiskov vytvárame niekoľko tvrdení.
+\par
+Z počiatku boli všetci účastníci zmätení zmenou farby listu. Mnohí farbe najprv pripisovali počet pozorovaní v liste stromu, čo je čiastočne pravda. Približne od polovice experimentu začali všetci začali hovoriť o významnosti alebo dokonca o štatistickej významnosti uzla. Okrem jedného účastníka, všetci správne popísali význam farby uzlov aj keď to neskôr v dotazníku nevedeli správne vyjadriť alebo si neboli istí a napísali nerozhodnú odpoveď. Niektorí účastníci z počiatku priraďovali farbu triede, ktorú klasifikuje list. Neskôr, ale správne pochopili, že farba nevyjadruje príslušnosť do danej triedy.
+\par
+Fáza kedy bol model v stabilnom stave bola prekvapivo najviac mätúca. Najprv účastníci popisovali túto fázu ako stav kedy sa model účí, pričom si na chvíľu prestali byť istí farbami listov, pretože sa prefarbovali aj bez toho aby sa ihneď rozdelili. Viacerí účastníci boli zmätení najmä od polovice vizualizácie, kedy bol model v stabilnom stave. Bolo to z dôvodu, že sa nemenil a neboli si istí, či sa nieco deje alebo experiment skončil. Viacerí sa preto pozreli na časomieru videa, či nezastalo.
+\par
+V tretej fáze správne popisovali významnosť červenej farby uzlov a výmenu pôvodného postromu alternatívnym. Viacerí popisujú červenú farbu ako nestabilitu alebo nekvalitu stromu, či rozhodovacieho pravidla daného rozhodovacieho uzla. Jeden účastník najprv vyjadril nepochopenie k výmene stromu, ale neskôr túto výmenu správne popísal aj keď do dotazníku dal odpoveď \textit{neviem}. Ďalší účastník si prestal byť z počiatku istý významom farieb, po výmene alternatívneho podstromu správne popísal červenú farbu a výmenu ako nestabilitu modelu. Viacerí účastníci si nevšimli upozornenia o zmene v pravom hornom rohu vizualizácie.
+\par
+Po ukončení experimente sme kládli ešte otvorené otázky smerujúce k tomu čo by zlepšili alebo im chýblo vo vizualizácii. Štyria účastníci vyjadrili potrebu zobrazovať aj samotný prúd dát, ideálne aj so znázornením distribúcie tried. Tvrdia, že by im to pomohlo v lepšom pochopení zmien a momentu keď je model v stabilnom stave. Viacerí poukazovali na nepostrehnuté upozornenia. Účastník, ktorý nesprávne popísal takmer všetky fázy experimentu, po experimente tvrdil, že z počiatku nerozumel inkrementálnej a animovanej vizualizácii. Tiež nechápal tomu prečo sa uzly rozdeľujú, ale po experimente hovorí že je to kvôli hľadaniu lepšieho rozdeľovacieho pravidla. Jeden účastník vyjadril nedôveru v tradičné dávkové metódy rozhodovacích stromov. Neverí tomu, že sa dá predikovať budúcnosť z minulosti a väčšiu dôveru v ňom vzbudzoval práve model, ktorý sa neustále mení a adaptuje na zmeny. Vo všeobecnosti každý účastník konštatoval, že takáto vizualizácia zvyšuje jeho dôveru v samotný model. Veľmi pozitívne hodnotili práve zobrazenie červenej farby a vizualizáciu zmenu, pretože to považovali za dôležitý moment v životnom cykle modelu. Rovnako kladne hodnotili samotnú schopnosť adaptácie na zmeny.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -6,12 +6,15 @@ import moa.core.TimingUtils;
 import moa.streams.InstanceStream;
 import weka.classifiers.evaluation.output.prediction.Null;
 
+import java.io.PrintWriter;
+
 /**
  * This is a base class for running Experiments.
  */
 public class Experiment {
     private InstanceStream stream;
     private Classifier learner;
+    protected PrintWriter conceptFileWriter, accuracyFileWriter;
 
     protected Experiment() {
         TimingUtils.enablePreciseTiming();
@@ -35,8 +38,7 @@ public class Experiment {
         if (this.learner == null || this.stream.hasMoreInstances()) {
             try {
                 this.stream.nextInstance().getData();
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 throw new ExperimentException("[ERROR] Learner or stream is null!");
             }
         }
@@ -46,12 +48,18 @@ public class Experiment {
         this.learner.setModelContext(this.stream.getHeader());
         this.learner.prepareForUse();
 
+        this.accuracyFileWriter.write("instance,accuracy\n");
+
         while (this.stream.hasMoreInstances() && instancesSeen < trainingInstancesCount) {
             Instance trainInstance = this.stream.nextInstance().getData();
             instancesCorrect = testInstance(trainInstance, instancesCorrect, isTesting);
             instancesSeen = printProgressTraining(instancesSeen, trainingInstancesCount);
             this.learner.trainOnInstance(trainInstance);
 
+            // Print prequential accuracy
+            this.accuracyFileWriter.write(instancesSeen + ","
+                    + 100.0 * (double) (instancesCorrect-1) / (double) instancesSeen + "\n"
+            );
         }
         double accuracy = 100.0 * (double) instancesCorrect / (double) instancesSeen;
         double totalTime = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread() - startTime);

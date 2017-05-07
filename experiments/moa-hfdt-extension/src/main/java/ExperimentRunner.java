@@ -17,12 +17,12 @@ import java.io.PrintWriter;
 
 
 public class ExperimentRunner {
-    private final static int NUM_INSTANCES = 7000;
+    private final static int NUM_INSTANCES = 500000;
     private final static boolean IS_TESTING = true;
 
     public static void main(String[] args) {
-//        ExperimentConceptDetection exp = new ExperimentConceptDetection();
-        ExperimentTelcoChurn exp = new ExperimentTelcoChurn();
+        ExperimentConceptDetection exp = new ExperimentConceptDetection();
+//        ExperimentTelcoChurn exp = new ExperimentTelcoChurn();
 //        ExperimentRandomTree exp = new ExperimentRandomTree();
 //        ExperimentRBFND exp = new ExperimentRBFND();
 //        ExperimentMyHyperPlane exp = new ExperimentMyHyperPlane();
@@ -71,7 +71,6 @@ public class ExperimentRunner {
     private static class ExperimentConceptDetection extends Experiment {
         private FileWriter conceptsFile, accuracyFile;
         private BufferedWriter conceptsBufferedWriter, accuracyBufferedWriter;
-        private PrintWriter conceptFileWriter, accuracyFileWriter;
 
         private ExperimentConceptDetection() {
             try {
@@ -86,7 +85,8 @@ public class ExperimentRunner {
                 this.accuracyFileWriter = new PrintWriter(this.accuracyBufferedWriter);
 
                 // Create classifier and stream generator.
-                ConceptDetectionTree learner = new ConceptDetectionTree(true);
+//                ConceptDetectionTree learner = new ConceptDetectionTree(true);
+                ConceptDetectionTree learner = new ConceptDetectionTree(false);
                 learner.leafpredictionOption = new MultiChoiceOption(
                         "leafprediction", 'l', "Leaf prediction to use.", new String[]{
                         "MC", "NB", "NBAdaptive"}, new String[]{
@@ -97,15 +97,17 @@ public class ExperimentRunner {
                         "gracePeriod",
                         'g',
                         "The number of instances a leaf should observe between split attempts.",
-                        500, 0, Integer.MAX_VALUE);
+                        200, 0, Integer.MAX_VALUE);
 
-                HyperplaneGenerator stream = new HyperplaneGenerator();
-                stream.numClassesOption = new IntOption("numClasses", 'c',
-                        "The number of classes to generate.", 4, 2, Integer.MAX_VALUE);
-                stream.numDriftAttsOption = new IntOption("numDriftAtts", 'k',
-                        "The number of attributes with drift.", 5, 0, Integer.MAX_VALUE);
-                stream.magChangeOption = new FloatOption("magChange", 't',
-                        "Magnitude of the change for every example", 0.10, 0.0, 1.0);
+//                HyperplaneGenerator stream = new HyperplaneGenerator();
+//                stream.numClassesOption = new IntOption("numClasses", 'c',
+//                        "The number of classes to generate.", 2, 2, Integer.MAX_VALUE);
+//                stream.numDriftAttsOption = new IntOption("numDriftAtts", 'k',
+//                        "The number of attributes with drift.", 5, 0, Integer.MAX_VALUE);
+//                stream.magChangeOption = new FloatOption("magChange", 't',
+//                        "Magnitude of the change for every example", 0.001, 0.0, 1.0);
+                RandomRBFGenerator stream = new RandomRBFGenerator();
+
                 stream.prepareForUse();
 
                 // Prepare experiment.
