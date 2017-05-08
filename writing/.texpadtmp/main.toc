@@ -1,10 +1,10 @@
 \select@language {slovak}
 \contentsline {chapter}{\numberline {1}\IeC {\'U}vod}{1}{chapter.1}
 \contentsline {chapter}{\numberline {2}Analytick\IeC {\'e} \IeC {\'u}lohy nad pr\IeC {\'u}dom d\IeC {\'a}t}{5}{chapter.2}
-\contentsline {paragraph}{Model pr\IeC {\'u}du d\IeC {\'a}t}{8}{paragraph*.5}
+\contentsline {paragraph}{Model pr\IeC {\'u}du d\IeC {\'a}t}{7}{paragraph*.5}
 \contentsline {paragraph}{Predspracovanie pr\IeC {\'u}du}{8}{paragraph*.6}
 \contentsline {paragraph}{Ohrani\IeC {\v c}enia}{9}{paragraph*.7}
-\contentsline {paragraph}{Spracovanie, dolovanie a anal\IeC {\'y}za d\IeC {\'a}t}{10}{paragraph*.8}
+\contentsline {paragraph}{Spracovanie, dolovanie a anal\IeC {\'y}za d\IeC {\'a}t}{9}{paragraph*.8}
 \contentsline {paragraph}{Evalu\IeC {\'a}cia}{10}{paragraph*.9}
 \contentsline {section}{\numberline {2.1}Dopyty nad pr\IeC {\'u}dom d\IeC {\'a}t}{11}{section.2.1}
 \contentsline {section}{\numberline {2.2}Detekcia zmien}{12}{section.2.2}
