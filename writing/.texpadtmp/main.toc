@@ -9,8 +9,8 @@
 \contentsline {section}{\numberline {2.1}Dopyty nad pr\IeC {\'u}dom d\IeC {\'a}t}{11}{section.2.1}
 \contentsline {section}{\numberline {2.2}Detekcia zmien}{12}{section.2.2}
 \contentsline {section}{\numberline {2.3}Detekcia anom\IeC {\'a}li\IeC {\'\i }}{16}{section.2.3}
-\contentsline {paragraph}{Met\IeC {\'o}da dynamick\IeC {\'y}ch bayesov\IeC {\'y}ch siet\IeC {\'\i }}{18}{paragraph*.12}
-\contentsline {section}{\numberline {2.4}Zhlukovanie}{18}{section.2.4}
+\contentsline {paragraph}{Met\IeC {\'o}da dynamick\IeC {\'y}ch bayesov\IeC {\'y}ch siet\IeC {\'\i }}{17}{paragraph*.12}
+\contentsline {section}{\numberline {2.4}Zhlukovanie}{19}{section.2.4}
 \contentsline {section}{\numberline {2.5}Klasifik\IeC {\'a}cia}{22}{section.2.5}
 \contentsline {section}{\numberline {2.6}Zhodnotenie}{28}{section.2.6}
 \contentsline {chapter}{\numberline {3}Pr\IeC {\'\i }stupy vizualiz\IeC {\'a}cie modelov}{29}{chapter.3}
