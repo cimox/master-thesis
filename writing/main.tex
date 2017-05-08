@@ -49,7 +49,7 @@ udalostí
 {\Large Fakulta informatiky a informačných technológií} \\
 \vspace*{1\baselineskip}
 % cislo prace
-\large {}
+\large {FIIT-5208-8279}
 \vfill % vert. plnenie prazdnymi medzerami                                                                                                                                                                    
 
 %\newpage
@@ -68,7 +68,7 @@ udalostí
 {Vedúci práce: Ing. Jakub Ševcech, PhD.}\\
 \\
 %\vspace*{1\baselineskip}
-{december, 2016}
+{máj 2017}
 \end{titlepage}
 \emptydoublepage
 
@@ -79,7 +79,7 @@ udalostí
 {\Large Fakulta informatiky a informačných technológií} \\
 \vspace*{1\baselineskip}
 % cislo prace
-\large {}
+\large {FIIT-5208-8279}
 \vfill % vert. plnenie prazdnymi medzerami                                                                                                                                                                    
 
 
@@ -99,7 +99,7 @@ udalostí
 {Miesto vypracovania: Ústav informatiky, informačných systémov a softvérového inžinierstva, FIIT STU v Bratislave}\\
 {Vedúci práce: Ing. Jakub Ševcech, PhD.}\\
 \\
-{december, 2016}
+{máj 2017}
 
 \end{titlepage}
 \restoregeometry
@@ -110,14 +110,18 @@ udalostí
 %\emptydoublepage
 
 %pred abstrakt treba zadanie
-\includepdf[pages={1}]{navrh_1.pdf}
-\includepdf[pages={1}]{navrh_2.pdf}
+%\includepdf[pages={1}]{navrh_1.pdf}
+%\includepdf[pages={1}]{navrh_2.pdf}
 
-\includepdf[pages={1}]{zadanie.pdf}
+%\includepdf[pages={1}]{zadanie.pdf}
 
 
 %the abstract should include an english and a slovak version
 \include{abstract}
+\emptydoublepage
+
+% vyhlasenie o vypracovani prace
+\include{vyhlasenie}
 \emptydoublepage
 
 %acknowledgements
@@ -167,36 +171,34 @@ udalostí
 \include{summaryandfuturework}
 \emptydoublepage
 
-%--------------------------------------------------------------
-% prilohy, index
-%--------------------------------------------------------------
+%bibliography
 \backmatter
 
-%bibliography
 \clearpage
 \phantomsection
-\addcontentsline{toc}{chapter}{\protect\numberline{}Literatúra}
+\addcontentsline{toc}{chapter}{Literatúra}
 \renewcommand{\bibname}{Literatúra}
 \bibliography{thesis}
 \emptydoublepage
 
+%--------------------------------------------------------------
+% prilohy, index
+%--------------------------------------------------------------
+%\clearpage
+%\pagenumbering{arabic}% resets `page` counter to 1
+%\renewcommand*{\thepage}{A\arabic{page}}
+
 \begin{appendix}
+\pretocmd{\chapter}{%
+  \clearpage
+  \pagenumbering{arabic}%
+  \renewcommand*{\thepage}{\thesection-\arabic{page}}%
+}{}{}
 \include{appendix_01}
 %\include{appendix_02}
-%\include{appendix_03}
-%\include{appendix_04}
+
 \emptydoublepage
-%\include{appendix_02}
-%\emptydoublepage
 \end{appendix}
-
-
-%index
-%\markboth{Index}{Index}
-%\thispagestyle{plain}
-%\phantomsection
-%\addcontentsline{toc}{chapter}{\protect\numberline{}Index}
-%\printindex
 
 %date of typesetting
 \newpage

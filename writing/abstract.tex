@@ -11,12 +11,12 @@ Meno: & Bc. Matúš Cimerman\\
 Vedúci diplomovej práce: & Ing. Jakub Ševcech, PhD.\\
 Diplomová práca: & Analýza prúdu prichádzajúcich udalostí použitím rôznych metód pre analýzu údajov\\
 Študijný program: & Informačné systémy\\
-Máj 2016
+máj 2017
 \end{tabular}
 
 %here (slovak version)
-V súčasnosti pozorujeme narastajúcu záujem a potrebu analyzovať dáta v čase ich vzniku. Spracovanie a analýza prúdov dát predstavuje komplexnú úlohu, pričom je dôležité poskytnúť riešenie s nízkou odozvou. Použitie a interpretácia analytických metód v doméne spracovania údajov uvádza známy problém. Jedným z problémov je použitie tradičných dávkových metód pre prúdy dát a je teda potrebné hľadať iné alternatívy. Ďalšou výzvou je interpretovanie výsledného modelu a výsledkov. V oblasti prúdov dát je avšak tomuto fenoménu venovaná len nepatrná pozornosť. Sústreďujeme sa najmä na problém interpretácie výsledkov doménovému expertovi, pričom predpokladáme, že doménový expert nepotrebuje mať detailné znalosti o fungovaní modelu.
-\parNavrhujeme použitie rozhodovacieho stromu v kontexte klasifikácie prúdu dát, ktorý používa Hoeffdingovu mieru pre výber najlepšieho rozhodovacieho atribútu so stanovenou istotou. Pre sa vysporiadanie so zmenami aplikujeme algoritmus ADWIN, ktorý adaptívne detekuje zmeny v prúde dát. Zameriavame sa pritom na jednoduchosť vybranej metódy a interpretovateľnosť výsledkov. Pre doménových expertov je nevyhnutné aby boli tieto požiadavky splnené, pretože nebudú potrebovať detailné znalosti z domén ako strojové učenie alebo štatistika. Avšak, znalosti dát, ich kontextu a významu jednotlivých atribútov sú nevyhnutné. Naše riešenie overujeme implementovaním vizualizácie a overením kvalitatívnym experimentom.
+V súčasnosti pozorujeme narastajúci záujem a potrebu analyzovať dáta v čase ich vzniku. Spracovanie a analýza prúdov dát predstavuje komplexnú úlohu, pričom je dôležité poskytnúť riešenie s nízkou odozvou. Použitie a interpretácia analytických metód v doméne spracovania údajov uvádza známy problém. Jedným z nich je použitie tradičných dávkových metód pre prúdy dát, ku ktorým je potrebné hľadať iné alternatívy a druhou úlohou je interpretácia výsledného modelu a výsledkov. V oblasti prúdov dát je avšak fenoménu interpretácie modelu analytických metód venovaná len nepatrná pozornosť. Sústreďujeme sa najmä na problém interpretácie modelu doménovému expertovi, pričom predpokladáme, že tento doménový expert nepotrebuje detailne ovládať znalosti o fungovaní modelu.
+\parNavrhujeme použitie rozhodovacieho stromu v úlohe klasifikácie prúdu dát, ktorý používa Hoeffdingovu mieru pre výber najlepšieho rozhodovacieho atribútu so stanovenou istotou. Pre vysporiadanie sa so zmenami aplikujeme algoritmus ADWIN, ktorý adaptívne detekuje zmeny v prúde dát. Zameriavame sa pritom na jednoduchosť vybranej metódy a interpretovateľnosť výsledkov. Pre doménových expertov je nevyhnutné, aby boli tieto požiadavky splnené, pretože nebudú potrebovať detailné znalosti z domén ako strojové učenie alebo štatistika. Avšak, znalosti dát, ich kontext a významu jednotlivých atribútov sú nevyhnutné. Naše riešenie overujeme implementovaním vizualizácie a kvalitatívnym experimentom.
 
 
 %=== ENGLISH VERSION===% 
@@ -33,12 +33,12 @@ Name: & Bc. Matúš Cimerman\\
 Supervisor: & Ing. Jakub Ševcech, PhD.\\
 Diploma thesis: & Stream analysis of incoming events using different data analysis methods\\
 Course: & Information systems\\
-2016, May
+2017, May
 \end{tabular}
 
 %here (english version)
-%TODO: prelozit aktualny abstrakt do angl.
-TODO: prelozit aktualny abstrakt
-
+Nowadays we are observing increasing demand in analyzing data as they arrive. Analysis and processing streaming data is complex task whereas it's important that implemented solution has low latency response time. Application and interpretation of analytical methods in data processing domain is well known issue. One of the problems is applicability traditional batch methods for streaming data. Model interpretation is separate challenge, however only tiny attention is paid to this phenomena. Therefore we particularly focus on model interpretation for domain expert. We assume domain expert does not have knowledge of machine learning algorithms.
+\par
+We propose application of decision tree in streaming data context. This decision tree is using Hoeffding bound to select best split attribute with a given confidence. To deal with concept drift we apply algorithm ADWIN as a black-box, which is suitable to adaptively detect changes in streaming data. The main focus and asset of this work is aimed to simplicity and interpretability results of given method. This is essential for domain experts since they do not need to have machine learning knowledge. However, understanding of data and its context is necessity. We implement visualization and evaluate it qualitatively with several domain experts.
 \emptydoublepage
 \loadgeometry{myText}

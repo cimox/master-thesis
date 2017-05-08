@@ -4,6 +4,7 @@ The top-level auxiliary file: /Users/mcimerman/Documents/master-thesis/writing/.
 The style file: apalike.bst
 A level-1 auxiliary file: indexAddOn.aux
 A level-1 auxiliary file: abstract.aux
+A level-1 auxiliary file: vyhlasenie.aux
 A level-1 auxiliary file: acknowledgements.aux
 A level-1 auxiliary file: introduction.aux
 A level-1 auxiliary file: methods.aux
@@ -26,7 +27,7 @@ Warning--empty journal in liu2010mining
 Warning--empty journal in wadewale2015survey
 You've used 51 entries,
             1935 wiz_defined-function locations,
-            762 strings with 12809 characters,
+            763 strings with 12823 characters,
 and the built_in function-call counts, 23188 in all, are:
 = -- 2358
 > -- 909

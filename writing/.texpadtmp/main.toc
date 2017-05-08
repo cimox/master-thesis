@@ -35,9 +35,10 @@
 \contentsline {subsection}{\numberline {7.2.1}Pou\IeC {\v z}\IeC {\'\i }vate\IeC {\v l}sk\IeC {\'a} \IeC {\v s}t\IeC {\'u}dia}{60}{subsection.7.2.1}
 \contentsline {subsection}{\numberline {7.2.2}V\IeC {\'y}sledky pou\IeC {\v z}\IeC {\'\i }vate\IeC {\v l}skej \IeC {\v s}t\IeC {\'u}die}{61}{subsection.7.2.2}
 \contentsline {chapter}{\numberline {8}Zhodnotenie a bud\IeC {\'u}ca pr\IeC {\'a}ca}{65}{chapter.8}
-\contentsline {chapter}{\numberline {}Literat\IeC {\'u}ra}{67}{section*.30}
-\contentsline {chapter}{Pr\IeC {\'\i }lohy}{73}{appendix*.32}
-\contentsline {section}{\numberline {A}Pl\IeC {\'a}n na zimn\IeC {\'y} semester 2016/2017}{73}{section.Alph0.1}
-\contentsline {section}{\numberline {B}Vyjadrenie k plneniu pl\IeC {\'a}nu zimn\IeC {\'e}ho semestra}{73}{section.Alph0.2}
-\contentsline {section}{\numberline {C}Pl\IeC {\'a}n na letn\IeC {\'y} semester 2016/2017}{74}{section.Alph0.3}
-\contentsline {section}{\numberline {D}Technick\IeC {\'a} dokument\IeC {\'a}cia}{75}{section.Alph0.4}
+\contentsline {chapter}{Literat\IeC {\'u}ra}{67}{section*.30}
+\contentsline {chapter}{Pr\IeC {\'\i }lohy}{A-1}{appendix*.32}
+\contentsline {section}{\numberline {A}Technick\IeC {\'a} dokument\IeC {\'a}cia}{A-1}{section.Alph0.1}
+\contentsline {section}{\numberline {B}Pl\IeC {\'a}n zimn\IeC {\'e}ho semestra 2016/2017}{B-2}{section.Alph0.2}
+\contentsline {paragraph}{Vyjadrenie k plneniu pl\IeC {\'a}nu zimn\IeC {\'e}ho semestra}{B-2}{paragraph*.33}
+\contentsline {section}{\numberline {C}Pl\IeC {\'a}n letn\IeC {\'e}ho semestra 2016/2017}{C-3}{section.Alph0.3}
+\contentsline {paragraph}{Vyjadrenie k plneniu pl\IeC {\'a}nu letn\IeC {\'e}ho semestra}{C-4}{paragraph*.34}
