@@ -70,6 +70,8 @@ public class Experiment {
         StringBuilder sb = new StringBuilder();
         this.learner.getDescription(sb, 2);
         System.out.println(sb.toString());
+
+        this.accuracyFileWriter.close();
     }
 
     public void prepareExperiment(InstanceStream stream, Classifier learner) {

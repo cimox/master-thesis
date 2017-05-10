@@ -19,10 +19,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Stream generator for Hyperplane data stream.
- *
- * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- * @version $Revision: 7 $
+ * Stream generator for Telco churn dataset. Based on InstanceStream and HyperplaneGenerator
  */
 public class TelcoChurn extends AbstractOptionHandler implements InstanceStream {
 

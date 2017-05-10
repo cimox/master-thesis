@@ -90,6 +90,8 @@ import org.json.simple.JSONObject;
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
+ *
+ * Extension of original implementation
  */
 public class MyHoeffdingTree extends AbstractClassifier {
 

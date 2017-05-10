@@ -18,6 +18,11 @@ import org.json.simple.JSONObject;
 import redis.clients.jedis.Jedis;
 import utils.MyKafkaProducer;
 
+/*
+ * This is an extension of existing MOA implementation of HoeffdingTreeAdaptive
+ * Printing to file, redis, kafka and JSON tree model was introduced here to support visualization in d3.js
+ */
+
 public class ConceptDetectionTree extends MyHoeffdingTree {
 
     private static final long serialVersionUID = 1L;
