@@ -36,6 +36,7 @@ class NodeStats(BaseHandler):
 
 
 class StreamProcessor(BaseHandler):
+    """Partially adopted from: https://gist.github.com/mivade/d474e0540036d873047f"""
     """Tree increments server-sent events"""
 
     def data_received(self, chunk):

@@ -17,6 +17,7 @@ def deserialize_redis_msg(redis_msg):
 
 
 class DataSource(object):
+    """Source: https://gist.github.com/mivade/d474e0540036d873047f"""
     """Generic object for producing data to feed to clients."""
 
     def __init__(self, initial_data=None):
