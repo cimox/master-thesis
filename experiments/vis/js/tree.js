@@ -172,7 +172,7 @@ function updateTree() {
                 ((d.source.x + d.target.x) / 2) + "," +
                 ((d.source.y + d.target.y) / 2) + ")";
         })
-        .call(endall, function () {
+        .call(allTransitionFinished, function () {
             log.debug('Update animations finished.');
             animationsFinished = true;
         });
@@ -323,7 +323,7 @@ function renderLinks(link, svg) {
         .style("stroke-width", function (d) {
             return getLinkStrokeWidth(d);
         })
-        .call(endall, function () {
+        .call(allTransitionFinished, function () {
             renderSplitRules(link);
         });
 
@@ -349,7 +349,7 @@ function renderLinks(link, svg) {
                 ((d.source.x + d.target.x) / 2) + "," +
                 ((d.source.y + d.target.y) / 2) + ")";
         })
-        .call(endall, function () {
+        .call(allTransitionFinished, function () {
             log.debug('Enter animations finished.');
             animationsFinished = true;
         });

@@ -1,14 +1,3 @@
-function hasSameProperties(obj1, obj2) {
-    if (obj1 === undefined || obj2 === undefined) return false;
-    return Object.keys(obj1).every(function (property) {
-        if (typeof obj1[property] !== 'object') {
-            return obj2.hasOwnProperty(property);
-        } else {
-            return hasSameProperties(obj1[property], obj2[property]);
-        }
-    });
-}
-
 function addChildren(parentNode, element) {
     if (parentNode.children) {
         let newNode = _.cloneDeep(element);
@@ -25,7 +14,7 @@ function addChildren(parentNode, element) {
 
 function getTreeNode(tree, nodeID) {
     /*
-     * BFT search tree for a given node ID
+     * breadthFirstSearch search tree for a given node ID
      */
     let queue = [];
 
@@ -58,7 +47,7 @@ function resolveCallback(callback, element) {
     });
 }
 
-async function BFT(treeData, callback) {
+async function breadthFirstSearch(treeData, callback) {
     log.debug('Breadth-first search treeData');
     log.debug(treeData);
 
@@ -67,7 +56,7 @@ async function BFT(treeData, callback) {
     queue.push(treeData);
     while (queue.length !== 0) {
         let element = queue.shift();
-        log.debug('BFT processing ' + element.id);
+        log.debug('breadthFirstSearch processing ' + element.id);
 
         await resolveCallback(callback, element);
 
@@ -211,8 +200,8 @@ function removeAndFadeOutOldNodes(treeData, treeRoot) {
     fadeOutAndRemove(nodeIdsToRemove, treeData, treeRoot);
 }
 
-function endall(transition, callback) {
-    if (typeof callback !== "function") throw new Error("Wrong callback in endall");
+function allTransitionFinished(transition, callback) {
+    if (typeof callback !== "function") throw new Error("Wrong callback in allTransitionFinished");
     if (transition.size() === 0) { callback() }
     let n = 0;
     transition

@@ -55,7 +55,7 @@
 
             if (animationsFinished) {
                 log.info('Adding ' + filename + ', increment.');
-                BFT(treeData, addTreeIncrement).then((complete) => {
+                breadthFirstSearch(treeData, addTreeIncrement).then((complete) => {
                     log.info('Add increment result: ' + complete);
 
                     setTimeout(() => {
@@ -92,7 +92,7 @@
                 linkMaxWidth = responseData['maxInstancesSeen'];
                 linkMinWidth = responseData['minInstancesSeen'];
 
-                BFT(responseData, addTreeIncrement).then((complete) => {
+                breadthFirstSearch(responseData, addTreeIncrement).then((complete) => {
                     if (_.isEqual(complete, "success")) {
                         log.info('Tree successfully processed');
                         processNextMessage = true;
