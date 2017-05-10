@@ -2,21 +2,23 @@
 \chapter*{Anotácia\markboth{Abstrakt}{Abstrakt}}
 %\addcontentsline{toc}{chapter}{\protect\numberline{}Abstrakt}
 \label{abstrakt}
-\begin{center}
-\textbf{Fakulta Informatiky a Informačných Technológií}\\
-\textbf{Slovenská Technická Univerzita}\\
-\end{center}
-\begin{tabular}{ p{15em} p{15em} }
-Meno: & Bc. Matúš Cimerman\\
-Vedúci diplomovej práce: & Ing. Jakub Ševcech, PhD.\\
-Diplomová práca: & Analýza prúdu prichádzajúcich udalostí použitím rôznych metód pre analýzu údajov\\
+Slovenská technická univerzita v Bratislave\\
+\MakeUppercase{Fakulta Informatiky a Informačných Technológií}
+
+%\begin{tabular}{ p{15em} p{15em} }
+\begin{tabular}{@{}p{15em} p{17.5em}}
 Študijný program: & Informačné systémy\\
+\\
+Autor: & Bc. Matúš Cimerman\\
+Diplomová práca: & Analýza prúdu prichádzajúcich udalostí použitím rôznych metód pre analýzu údajov\\
+Vedúci diplomovej práce: & Ing. Jakub Ševcech, PhD.\\
 máj 2017
 \end{tabular}
 
+\vspace{10mm}
 %here (slovak version)
-V súčasnosti pozorujeme narastajúci záujem a potrebu analyzovať dáta v čase ich vzniku. Spracovanie a analýza prúdov dát predstavuje komplexnú úlohu, pričom je dôležité poskytnúť riešenie s nízkou odozvou. Použitie a interpretácia analytických metód v doméne spracovania údajov uvádza známy problém. Jedným z nich je použitie tradičných dávkových metód pre prúdy dát, ku ktorým je potrebné hľadať iné alternatívy a druhou úlohou je interpretácia výsledného modelu a výsledkov. V oblasti prúdov dát je avšak fenoménu interpretácie modelu analytických metód venovaná len nepatrná pozornosť. Sústreďujeme sa najmä na problém interpretácie modelu doménovému expertovi, pričom predpokladáme, že tento doménový expert nepotrebuje detailne ovládať znalosti o fungovaní modelu.
-\parNavrhujeme použitie rozhodovacieho stromu v úlohe klasifikácie prúdu dát, ktorý používa Hoeffdingovu mieru pre výber najlepšieho rozhodovacieho atribútu so stanovenou istotou. Pre vysporiadanie sa so zmenami aplikujeme algoritmus ADWIN, ktorý adaptívne detekuje zmeny v prúde dát. Zameriavame sa pritom na jednoduchosť vybranej metódy a interpretovateľnosť výsledkov. Pre doménových expertov je nevyhnutné, aby boli tieto požiadavky splnené, pretože nebudú potrebovať detailné znalosti z domén ako strojové učenie alebo štatistika. Avšak, znalosti dát, ich kontext a významu jednotlivých atribútov sú nevyhnutné. Naše riešenie overujeme implementovaním vizualizácie a kvalitatívnym experimentom.
+V súčasnosti pozorujeme narastajúci záujem a potrebu analyzovať dáta v čase ich vzniku. Použitie a interpretácia analytických metód v doméne spracovania údajov uvádza známy problém neviditeľnosti a porozumenia modelu. Jedným z nich je použitie tradičných dávkových metód pre prúdy dát, ku ktorým je potrebné hľadať iné alternatívy a druhou úlohou je interpretácia výsledného modelu a výsledkov. V oblasti prúdov dát je avšak fenoménu interpretácie modelu analytických metód venovaná len nepatrná pozornosť. Sústreďujeme sa najmä na problém interpretácie modelu za predpokladu, že doménový expert nedisponuje detailnými znalosťami o fungovaní modelu.
+\parNavrhujeme použitie rozhodovacieho stromu v úlohe klasifikácie prúdu dát, ktorý používa Hoeffdingovu mieru pre výber potrebného počtu pozorovaní pre každé rozhodnutie. Pre vysporiadanie sa so zmenami aplikujeme algoritmus ADWIN, ktorý adaptívne detekuje zmeny v prúde dát. Zameriavame sa na jednoduchosť vybranej metódy a interpretovateľnosť výsledkov. Pre doménových expertov je nevyhnutné, aby boli tieto požiadavky splnené, pretože nebudú potrebovať detailné znalosti z domén ako strojové učenie alebo štatistika. Avšak, znalosti dát, ich kontextu a významu jednotlivých atribútov sú nevyhnutné. Naše riešenie overujeme implementovaním vizualizácie a kvalitatívnym experimentom.
 
 
 %=== ENGLISH VERSION===% 
@@ -24,17 +26,21 @@ V súčasnosti pozorujeme narastajúci záujem a potrebu analyzovať dáta v č
 \chapter*{Annotation\markboth{Abstract}{Abstract}}
 %\addcontentsline{toc}{chapter}{\protect\numberline{}Abstract}
 \label{abstract}
-\begin{center}
-\textbf{Faculty of Informatics and Information Technologies}\\
-\textbf{Slovak University of Technology}\\
-\end{center}
-\begin{tabular}{ p{10em} p{15em} }
-Name: & Bc. Matúš Cimerman\\
-Supervisor: & Ing. Jakub Ševcech, PhD.\\
-Diploma thesis: & Stream analysis of incoming events using different data analysis methods\\
-Course: & Information systems\\
+
+Slovak University of Technology Bratislava\\
+\MakeUppercase{FACULTY OF INFORMATICS AND INFORMATION TECHNOLOGIES}
+
+%\begin{tabular}{ p{15em} p{15em} }
+\begin{tabular}{@{}p{15em} p{17.5em}}
+Degree course: & Information systems\\
+\\
+Author: & Bc. Matúš Cimerman\\
+Master’s Thesis: & Stream analysis of incoming events using different data analysis methods\\
+Supervisor: & Dr. Jakub Ševcech\\
 2017, May
 \end{tabular}
+
+\vspace{10mm}
 
 %here (english version)
 Nowadays we are observing increasing demand in analyzing data as they arrive. Analysis and processing streaming data is complex task whereas it's important that implemented solution has low latency response time. Application and interpretation of analytical methods in data processing domain is well known issue. One of the problems is applicability traditional batch methods for streaming data. Model interpretation is separate challenge, however only tiny attention is paid to this phenomena. Therefore we particularly focus on model interpretation for domain expert. We assume domain expert does not have knowledge of machine learning algorithms.

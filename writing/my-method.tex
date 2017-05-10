@@ -61,6 +61,8 @@ Metódu implementujeme ako rozšírenie nad API, ktoré poskytuje nástroj Massi
 
 \chapter{Vizualizácia modelu rozhodovacích stromov}
 \label{my-method-prezentacia-vysledkov}
+Vizualizáciou, ktorú navrhujeme adresujeme identifikované problémy existujúcich riešení v kapitole \ref{Existujúce vizualizačné a analytické nástroje}. Hlavným nedostatkom adresovaným nedostatkom je online vizualizácia modelu s dôrazom na zobrazenie zmeny modelu.
+\par
 V situácii, keď potrebuje doménovy expert vytvoriť klasifikačný model s použitím dát reálneho sveta, je často potrebná najprv detailná znalosť dát, ktorú doménový expert, predpokladáme má.  Následne preto, aby vedel vytvoriť správny model, potrebuje mať detailné znalosti o fungovaní klasifikačných metód a algoritmov. Cieľom našej metódy je odbremeniť experta od nutnosti disponovať podrobnými znalosťami o fungovaní modelu a algoritmov. Zameriavame sa teda na prezentáciu dôležitých informácií potrebných pre správne pochopenie modelu a následné rozhodnutia. Výber atribútov a algoritmov, ktoré budú použité na trénovanie modelu, je bez nutnosti interakcie používateľa v zmysle nastavovania parametrov a výberu metódy. 
 \par
 Keďže náš predpoklad je, že používateľ nemusí mať detailné znalosti o fungovaní algoritmov a klasifikačných metód, je dôležité vysvetlenie výsledného modelu. Znamená to, že je dôležité, aby pre používateľa nebol vzniknutý model len čierna skrinka (angl. black-box), ktorá s nejakou úspešnosťou dokáže klasifikovať prúdy dát. Navrhujeme preto vizualizáciu výsledného modelu. Vizualizácia je vo forme rozhodovacieho stromu, ktorý je jednoduchý na pochopenie aj bez predchádzajúcich znalostí rozhodovacích stromov \citep{nguyen2015survey}. Sústreďujeme sa najmä na zobrazenie zmien (angl. concept drift) v dátach, ktoré sa odzrkadlia zmenou modelu.
@@ -104,9 +106,7 @@ eventStream.addEventListener('tree', function (response) {
 \end{lstlisting}
 Dôležitou časťou spracovania údajov z tohto prúdu dát je práve asynchrónne spracovanie. Je to preto, že vizualizácia nežiada o aktualizácie manuálne alebo periodicky z dôvodu šetrenia prostriedkov a zaťaženia výpočtového výkonu a sieťovej prevádazky. Aktualizácie sú posielané vo vysokej frekvencii serverom. Keďže vizualizácia obsahuje animácie trvajúce približne 500ms, nový model stromu je potrebné spracovať nezávisle od nových vzoriek z prúdu dát. Keby sme každú novú vzorku spracovali v čase jej príchodu, vizualizácia by sa stala nečitateľná a nepoužiteľná. Po otvorení SSE spojenia a prijatí prvej aktualizácie vo forme modelu rozhodovacieho stromu vo formáte JSON je model vykreslený. Po prijatí ďalšej aktualizácie je model vykreslený, ak boli ukončené všeky animácie z predchádzajúceho vykresľovania. Vykresľovanie modelu stromu prebieha prehľadávaním do šírky, kde každý uzol je vykreslený samostatne s vlastnou animáciou. Je to z dôvodu, aby bola celý animácia plynulá. Algoritmus vykresľovania stromu je popísaný pseudokódom v algoritme \ref{alg:visualization}. Výpočtová zložitosť pridania uzlu je $O(|V| + |H|)$, kde $|V|$ je počet uzlov a $|H|$ je počet hrán. Skutočná časová zložitosť je znásobená časom každej animácie pri pridaní uzla, pri aktualizácií uzla je to len niekoľko milisekúnd, pretože netreba prekresliť žiadnu časť SVG.
 \par
-Navrhnutá metóda pre vizualizáciu rozhodovacích stromov učiacich sa online, poskytuje online animovanú vizualizáciu procesu tvorby modelu. Dôraz je kladený na zobrazenie zmeny modelu. Túto zmenu zvýrazňujeme červeným zafarbením rozhodovacích uzlov, ktorých sa zmena v dátach dotkla. Pre správne zobrazenie vizualizácie sme čelili viacerým technickým výzvam, a to najmä správnemu vykresľovaniu modelu stromu pri prijímaní prúdu s vysokou frekvenciou aktualizácií. Pri prezeraní vizualizácie môže používateľ zastaviť vizualizáciu alebo opäť ju spustiť. Okrem toho nie je možné inak ovládať vizualizáciu, pretože bola navrh
-%TODO doplnit chybajuci text
- Túto hypotézu overujeme kvalitatívnym experimentom s niekoľkými doménovými expertami.
+Navrhnutá metóda pre vizualizáciu rozhodovacích stromov učiacich sa online, poskytuje online animovanú vizualizáciu procesu tvorby modelu. Dôraz je kladený na zobrazenie zmeny modelu. Túto zmenu zvýrazňujeme červeným zafarbením rozhodovacích uzlov, ktorých sa zmena v dátach dotkla. Pre správne zobrazenie vizualizácie sme čelili viacerým technickým výzvam, a to najmä správnemu vykresľovaniu modelu stromu pri prijímaní prúdu s vysokou frekvenciou aktualizácií. Pri prezeraní vizualizácie môže používateľ zastaviť vizualizáciu alebo opäť ju spustiť. Okrem toho nie je možné inak ovládať vizualizáciu, pretože bola navrhnutá s cieľom jednoduchej interpretácie používateľom bez potreby nadbytočných vstupov z jeho strany. Túto hypotézu overujeme kvalitatívnym experimentom s niekoľkými doménovými expertami.
 \par
 % ====== ALGORITMUS visualization ====== %
 \begin{algorithm}[H]
@@ -148,7 +148,7 @@ Navrhnutá metóda pre vizualizáciu rozhodovacích stromov učiacich sa online,
 			}
 		}
     }
-  \caption{Inkrementálne vykreslovanie modelu rozhodovacieho stromu..}
+  \caption{Inkrementálne vykreslovanie modelu rozhodovacieho stromu}
 \end{algorithm}
 
 
@@ -160,16 +160,16 @@ V našej práci sme navrhli a implementovali online inkrementálnu vizualizáciu
 \section{Kvantitatívne vyhodnotenie klasifikácie}
 Pre overenie použiteľnosti nami vybranej a aplikovanej metódy klasifikácie sme sa rozhodli overiť výkon tejto metódy. Cieľom tohto vyhodnotenia je overenie použiteľnosti metódy v aplikáciách reálneho sveta a to, že vybraná metóda neslúži len ako podpora pre vizualizáciu. Pri evaluácií výkonu klasifikátora nad prúdmi dát, ktoré obsahujú zmeny, sú dôležité dve metriky: \textit{presnosť} (angl. accuracy) a \textit{schopnosť adaptácie} (angl. ability to adapt).
 \par
-Prvá metrika by mohla byť meraná jednoduchou mierou chybovosti, čo znamená počet nesprávne klasifikovaných vzoriek alebo komplement tejto metriky, počet správne klasifikovaných vzoriek. Táto metrika je často používaná pri meraní výkonnosti klasifikátorov prúdov dát. Problém tejto metriky nastane vtedy, ak je distribúcia tried v prúde nevyvážená. Potom môže počet správne klasifikovaných vzoriek jednej triedy úplne prevážiť druhú triedu. Pričom presnosť nad minoritnou triedou môže byť pokojne nízka. Riešením tohto problému by bola metrika ROC, známa tiež ako AUC. Problémom tejto metriky je, že ju nie je možné počítať inkrementálne nad prúdom dát, aj keď bola navrhnutá varianta pre prúdy dát \citep{brzezinski2014prequential}. Napriek tomu, že je táto metrika vhodná pre nevyvážené zdroje dát, jej použíteľnosť pre prúdy dát obsahujúce zmeny stále ostáva otvorený problém \citep{brzezinski2014prequential}.
+Prvá metrika by mohla byť meraná jednoduchou mierou chybovosti, čo znamená počet nesprávne klasifikovaných vzoriek alebo komplement tejto metriky, počet správne klasifikovaných vzoriek. Táto metrika je často používaná pri meraní výkonnosti klasifikátorov prúdov dát. Problém tejto metriky nastane vtedy, ak je distribúcia tried v prúde nevyvážená. Potom môže počet správne klasifikovaných vzoriek jednej triedy úplne prevážiť druhú triedu. Pričom presnosť nad minoritnou triedou môže byť pokojne nízka. Riešením tohto problému by bola metrika ROC alebo výpočet obsahu pod touto krivkou, známeho tiež pod názvom AUC. Problémom tejto metriky je, že ju nie je možné počítať inkrementálne nad prúdom dát, aj keď bola navrhnutá varianta pre prúdy dát \citep{brzezinski2014prequential}. Napriek tomu, že je táto metrika vhodná pre nevyvážené zdroje dát, jej použíteľnosť pre prúdy dát obsahujúce zmeny stále ostáva otvorený problém \citep{brzezinski2014prequential}.
 \par
-Vyhodnotenie druhej metriky, schopnosť adaptácie, si vyžaduje samostatné merania. Niektorí výskumníci navrhujú merať schopnosť adaptácie reakčným časom adaptácie klasifikátora. Problém tohto prístupu je nutnosť expertnej evaluácie reakčného času.
+Vyhodnotenie druhej metriky, schopnosti adaptácie na zmeny, si vyžaduje samostatné merania. Niektorí výskumníci navrhujú merať schopnosť adaptácie reakčným časom adaptácie klasifikátora. Problém tohto prístupu je nutnosť expertnej evaluácie reakčného času.
 \par
-Z kvantitatívneho vyhodnotenia nás najviac zaujíma celková prenosť klasifikátora s odhliadnutím na vyššie spomenuté problémy. Je to z dôvodu, že sa sústreďujeme hlavne na kvalitatívne vyhodnotenie vizualizácie a výkonnosť klasifikátora berieme ako podporu pre vyhodnotenie našej práce. Túto presnosť počítame procedúrou testuj-potom-trénuj (angl. test-then-train), kde je pre každé nové pozorovanie najprv vygenerovaná predikcia a následne je použitá na trénovanie.
+Z kvantitatívneho vyhodnotenia nás najviac zaujíma celková presnosť klasifikátora s odhliadnutím na niektoré vyššie spomenuté problémy. Je to z dôvodu, že sa sústreďujeme hlavne na kvalitatívne vyhodnotenie vizualizácie. Túto presnosť počítame procedúrou testuj-potom-trénuj (angl. test-then-train), kde je pre každé nové pozorovanie najprv vygenerovaná predikcia a následne je použitá na trénovanie. Zameriavame sa teda na metriku presnosti (angl. accuracy) a presnejšie jej priebežné počítanie. Priebežné počítanie je vykonané tak, že je pre každú novú vzorku najprv vypočítaná predikcia a porovnaná so skutočnou hodnotou vzorky. Podľa výsledku je vzorka zaradená medzi správne klasifikované vzorky, podľa ktorých je vypočítaná výsledná presnosť.
 
 \subsection{Testovacie dáta}
-Pre overenie presnosti klasifikátora sme použili dve dátové kolekcie dát z reálneho sveta. Presnejšie ide o výváženú statickú kolekciu dát s názvom \textit{Airlines (Air)}, ktorá obsahuje letové informácie v USA. Dáta sú zozbierané medzi rokmi 1987 a 2008. Presný výskyt a charatker zmien nie je známy. Napriek tomu tvrdíme, že sa zmeny v dátach nachádzajú. Jedna zmena nastala minimálne po 11.9.2001 kedy sa zmenilo mnoho pravidiel leteckej verejnej prepravy v USA \citep{brzezinski2014prequential, krawczyk2015one}. Úlohou nad týmito dátami je predikovať, či bude let omeškaný. Druhým datasetom, ktorý pozostavájúcim len 7000 vzoriek obsahoval dáta telekomunikačného operátora a cieľom bolo klasifikovať, či používateľ prestane používať služby operátora. Tieto statické kolekcie boli následne inkrementálne čítané a prúd dát bol simulovaný.
+Pre overenie presnosti klasifikátora sme použili dve dátové kolekcie dát z reálneho sveta. Presnejšie ide o výváženú statickú kolekciu dát s názvom \textit{Airlines (Air)}, ktorá obsahuje letové informácie v USA. Dáta sú zozbierané medzi rokmi 1987 a 2008. Presný výskyt a charatker zmien nie je známy. Napriek tomu tvrdíme, že sa zmeny v dátach nachádzajú. Jedna zmena nastala minimálne po 11.9.2001 kedy sa zmenilo mnoho pravidiel leteckej verejnej prepravy v USA \citep{brzezinski2014prequential, krawczyk2015one}. Úlohou nad týmito dátami je predikovať, či bude let omeškaný. Druhým datasetom, ktorý pozostavájúcim len 7000 vzoriek obsahoval dáta telekomunikačného operátora a cieľom bolo klasifikovať, či používateľ prestane používať služby operátora. Testovací prúd dát bol simulovaný inkrementálnym čítaním testovacích kolekcií.
 \par
-Problémom overovania algoritmov strojového učenia v doméne prúdov dát je nedostatok verejne dostupných datasetov pre vyhodnotenie výkonnosti. Mimoriadny problém predstavuje snaha o vyhodnotenie algoritmov, ktoré sa adaptujú na zmeny. Preto používame nástroj MOA na generovanie prúdov dát, kde kontrolovane zavádzame rôzne zmeny do prúdu dát. Použitie existujúcich syntetických generátorov s nastaveniami, ktoré boli použité na evaluáciu podobných algoritmov nám umožňuje lepšiu kontrolu nad experimentom. Takto vieme nami aplikovanú metódu klasifikácie porovnať s inými riešeniami \citep{krawczyk2015one, brzezinski2014prequential}. Presný popis nastavenia týchto generátorov je v prílohe YY. Používame nasledujúce dva generátory \citep{bifet2010moa}:
+Problémom overovania algoritmov strojového učenia v doméne prúdov dát je nedostatok verejne dostupných datasetov pre vyhodnotenie výkonnosti. Mimoriadny problém predstavuje snaha o vyhodnotenie algoritmov, ktoré sa adaptujú na zmeny. Preto používame nástroj MOA na generovanie prúdov dát, kde kontrolovane zavádzame rôzne zmeny do prúdu dát. Generovanie prúdov syntetických dát s nastaveniami, ktoré boli použité na evaluáciu podobných algoritmov nám umožňuje lepšiu kontrolu nad experimentom. Takto vieme nami aplikovanú metódu klasifikácie porovnať s inými riešeniami \citep{krawczyk2015one, brzezinski2014prequential}. Presný popis nastavenia týchto generátorov je v prílohe YY. Používame nasledujúce dva generátory \citep{bifet2010moa}:
 %TODO priloha s nastavenim generatorov
 \begin{itemize}
 	\item \textit{Hyp}, Hyperplane generátor bol použítý v troch variantoch s cieľom generovať prúd dát s inkrementálnymi zmenami. Tri varianty rôzneho pomery rozdelenia tried v prúde boli použité, 1:1 $Hyp_1$, 1:10 $Hyp_10$, 1:100 $Hyp_100$.
@@ -179,6 +179,20 @@ Problémom overovania algoritmov strojového učenia v doméne prúdov dát je n
 
 \subsection{Výsledky kvantitatívnych experimentov}
 Nami aplikovaná metóda Hoeffdingových stromov s použitím ADWIN algoritmu ako detektoru zien dosahuje porovnateľné výsledky ako iné algoritmy pre klasifikáciu meniacich sa prúdov dát. Nami použitú metódu označujeme v tabuľke \ref{tab-method-results} ako \textit{VFDT-ADWIN}. Algoritmus Online Accuracy Updated Ensemble (OAUE) \citep{brzezinski2014prequential} si udržuje množinu komponentov klasifikátora s cieľom predikovať triedu novej vzorky váhovaným agregovaním súboru predikcií.
+\par
+Najprv sme chceli overiť možnosť monitorovania Hoeffdingovej miery s cieľom ju následne použiť na zobrazenie zmien vo vizualizácií. Monitorovanie Hoeffdingovej miery sa ukázalo ako vhodný indikatívny atribút opisujúci zmeny v konkrétnych častiach stromu. Nasledujúce dva obrázky zobrazujú chybovosť podstromu a jeho vzniknutého alternatívneho podstromu. Prvý obrázok \ref{fig:hb_never_replaced} zobrazuje situáciu kedy tento alternatívny podstrom nenahradil pôvodný podstrom, pretože rozdiel chybovosti nesplnil Hoeffdingovu mieru. Na druhom obrázku \ref{fig:hb_replaced} je možné vidieť situáciu kedy alternatívny podstrom nahradí pôvodný postrom.
+\par
+Na obrázku \ref{fig:synthetic-7k} a \ref{fig:real_7k} je zobrazený priebeh presnosti počas online trénovania. Obrázky zobrazujú len prvých 7053 vzoriek kvôli konzistentnosti, pretože toľko obsahuje Telco dataset. V prílohe XY sú zobrazené 
+%TODO: priloha s grafmi
+zvyšné obrázky s priebehom celého učenia. V tabuľke \ref{tab-method-results} sú porovnané výsledky s metódou OAUE. Podľa výsledkov považujeme nami aplikovanú metódu výkonnostne, v zmysle metrík na meranie výkonu klasifikátorov, porovnateľnú s metódou OAUE, ktorá dosahuje porovnateľné alebo lepšie výsledky ako všetky známe metódy \citep{brzezinski2014prequential}.
+
+\myFigure{images/hb_never_replaced.pdf}{Priebeh chybovosti podstromu a jeho alternatívneho podstromu, ktorý vznikol pri detekovaní zmeny, resp. zvýšeniu chybovosti podstromu. Alternatívny podstrom nenahradil pôvodný podstrom.}{fig:hb_never_replaced}{0.9}{h!}\label{fig:hb_never_replaced}
+\myFigure{images/hb_replaced.pdf}{Aletrnatívny podstrom nahradil pôvodný podstrom v momente keď sa rozdiel chyby rovnal alebo bol menší ako Hoeffdingova miera.}{hb_replaced}{0.9}{h!}\label{fig:hb_replaced}
+
+\myFigure{images/synthetic_7k.pdf}{Priebeh presnosti pre jednotlivé synteticky generované dáta, zobrazených je prvých 7053 pozorovaní.}{synthetic-7k}{0.9}{h!}\label{fig:synthetic-7k}
+
+\myFigure{images/real_7k.pdf}{Priebeh presnosti pre datasety reálneho sveta. Zobrazených je experiment na prvých 7053 pozorovaniach, pretože Telco dataset obsahuje len 7053 záznamov.}{real_7k}{0.9}{h!}\label{fig:real_7k}
+
 \begin{table}[!htp]
 \centering
 \begin{tabular}{| c || c | c |}
@@ -186,20 +200,20 @@ Nami aplikovaná metóda Hoeffdingových stromov s použitím ADWIN algoritmu ak
 \textbf{Zdroj dát} & \textbf{OAUE} & \textbf{VFDT-ADWIN} \\ \hline
 
 $SEA_{ND}$ & 0.89 & 0.89 \\ \hline
-$Hyp_1$ & 0.88 & 0.87 \\ \hline
-$Hyp_{10}$ & 0.91 & 0.85 \\ \hline
-$Hyp_{100}$ & 0.94 & 0.82 \\ \hline
+$Hyp_1$ & 0.88 & 0.86 \\ \hline
+$Hyp_{10}$ & 0.91 & 0.90 \\ \hline
+$Hyp_{100}$ & 0.94 & 0.94 \\ \hline
 $RBF$ & 0.99 & 0.89 \\ \hline
-$Air$ & 0.67 & 0.64 \\ \hline
+$Air$ & 0.67 & 0.60 \\ \hline
 $Telco$ & - & 0.77 \\ \hline
 
 \end{tabular}
-\caption{Výsledky kvantitatívnych experimentov a porovnanie voči podobnému algoritmu. Meraná metrika je priebežná presnosť predikcie vypočítaná metódou testuj-potom-trénuj.}
+\caption{Výsledky kvantitatívnych experimentov a porovnanie voči podobnému algoritmu. Meraná metrika je presnosť (angl. accuracy) predikcie vypočítaná metódou testuj-potom-trénuj.}
 \label{tab-method-results}
 \end{table}
 
 
-
+\clearpage
 %%%% Kvalitativne vyhodnotenie %%%%
 \section{Kvalitatívne vyhodnotenie vizualizácie}
 Hlavným prínosom našej práce je navrhnutá a implementovaná vizualizácia navrhnutá s cieľom uľahčiť pochopenie tvorby modelu rozhodovacích stromov a vizualizácii zmien, ktoré model ovplyvnili. Jadrom vyhodnotenia je preto kvalitatívne vyhodnotenie vizualizácie. To realizujeme ako riadenú používateľskú štúdiu s niekoľkými vybranými doménovými expertami, osobami ktoré sú znalcami v danej oblasti expertízy, napríklad domény internetových obchodov. Z nášho pohľadu doménový expert ale nemusí detailne poznať algoritmy strojového učenia.
@@ -215,6 +229,8 @@ Cieľom používateľskej štúdie bolo overiť, či vizualizácia napomáha poc
 Každý participant spĺňal definíciu doménového experta. Všetci pracujú s dátami na dennej báze, vytvárajú základné analýzy ako napríklad lieviková analýza, či kontingenčné tabuľky a znalosti získané z týchto analýz používajú na strategické rozhodovania v podnikoch. Nikto z participantov nemal detailné znalosti o fungovaní algoritmov strojového učenia a nikdy podobné modely nevytvárali. Traja z ôsmich participantov podobný model použili v minulosti pre strategické rozhodnutia v podniku.
 \par
 Experiment prebiehal v známom prostredí a kontrolovanom. Na začiatku experimentu sme účastníkov oboznámili s jeho cieľom a snažili sme sa ich viesť k tomu, aby nám celý priebeh komentovali. Všetky ich komentáre sme si zapisovali, čo nám umožnilo získať náhľad na ich názor ešte predtým, ako videli a odpovedali na otázky, ktorými mohli byť ich odpovede čiastočne ovplyvnené. Počas experimentu sme účastníkom neodpovedali na žiadne otázky týkajúce sa samotnej vizualizácie alebo jej fungovania. Sumarizované výsledky používateľskej štúdie a sumár zápiskov z experimentu sú v nasledujúcej podkapitole. Odpovede v pôvodnom znení sú v prílohe X2. Znenie otázok používateľskej štúdie bolo nasledovné je v prílohe XY.
+\par
+Vyhodnocovacím kritériom používateľskej štúdie je správne označenie času záujmu vo videu podľa otázok a správne interpretovanie jednotlivých fáz. Správnu interpretáciu overujeme dvomi spôsobmi. Zápiskami ktoré vznikli z komentárov účastníkov počas experimentu pred odpovedaním na otázky. A druhým spôsobom je vyhodnotenie otázok, ktoré boli cielené na opis jednotlivých fáz experimentu, resp. vizualizácie.
 %TODO priloha vysledky pouz. studie
 %TODO priloha so znenim otazok
 
@@ -227,7 +243,7 @@ V prvej fáze siedmi účastníci správne vyjadrili slovný popis. Jeden účas
 Druhá fáza zobrazovala model v stabilnom stave. Štyria z ôsmich účastníkov popísali správne fázu modelu. Znenie odpovedí sa síce líšilo. Traja odpovedali čiastočne správne odpoveďami ako napríklad: \textit{učiaca fáza} alebo \textit{testovanie predpokladov na výsledkoch}. Jeden účastník uviedol nesprávnu odpoveď, že sa model nachádza v prvej fáze predtým než sa začne prvýkrát učiť. Opäť sme sa pýtali na význam bielej až čiernej farby v listoch uzlov, odpovede boli rovnaké ako v prvej fáze. Model na videu sa dostal do stabilného stavu v 27 sekunde, prvých 26 sekúnd sa ešte rozdeľujú niektoré listy. Šesť účastníkov správne identifikovalo čas od kedy je model v stabilnom stave. Jeden účastník označil model za stabilný od začiatku videa a rovnako nesprávne popísal túto fázu.
 \par
 V tretej fáze sme overovali schopnosť pozorovať zmenu modelu. Popis tejto fázy bol najviac problematický. Len traja účastníci dokázali správne, tak ako sme očákavali, popísať túto fázu zmeny modelu. Jeden účastník túto fázu nazval ako \textit{fáza reštartu}, čo sa do istej miery dá považovať za správnu odpoveď. Zvyšní účastníci nazvali túto fázu ako učenie modelu. Okrem jedného účastníka všetci správne pripísali význam červenej farby rozhodovacích uzlov. Označenie času, kedy nastala zmena a momentu, kedy sa výrazne zmenil model rozhodovacieho stromu, označili siedmi účastníci správne. Jeden účastník nesprávne označil čas zmeny, pretože si nevšimol upozornenie o zmene, ktoré mal prekryté inou aplikácou zatiaľ čo červenú farbu uzla ihneď nepriradil zmene v dátach. Moment zmeny modelu tiež označil nesprávne a to v čase, kedy sa rozhodovacie uzly zafarbili červenou farbou. Na obrázku \ref{fig:graph-times} je možné vidieť označenie sledovaných časov vo všetkých fázach každým účastníkom experimentu.
-\myFigure{images/graph-times}{Graf zobrazuje označený čas vo videu pre jednotlivé body záujmu. Vodorovné čierne čiary zobrazujú správnu odpoveď.}{graph-times}{0.45}{h!}\label{fig:graph-times}
+\myFigure{images/graph-times.pdf}{Graf zobrazuje označený čas vo videu pre jednotlivé body záujmu. Vodorovné čierne čiary zobrazujú správnu odpoveď.}{graph-times}{0.45}{h!}\label{fig:graph-times}
 Okrem otázok, na ktoré účastníci priamo odpovedali, sme sa snažili s nimi komunikovať a viesť ich k tomu, aby komentovali svoje myšlienky. Zo zápiskov vytvárame niekoľko tvrdení.
 \par
 Z počiatku boli všetci účastníci zmätení zmenou farby listu. Mnohí farbe najprv pripisovali počet pozorovaní v liste stromu, čo je čiastočne pravda. Približne od polovice experimentu začali všetci začali hovoriť o významnosti alebo dokonca o štatistickej významnosti uzla. Okrem jedného účastníka, všetci správne popísali význam farby uzlov, aj keď to neskôr v dotazníku nevedeli správne vyjadriť alebo si neboli istí a napísali nerozhodnú odpoveď. Niektorí účastníci z počiatku priraďovali farbu triede, ktorú klasifikuje list. Až neskôr správne pochopili, že farba nevyjadruje príslušnosť do danej triedy.

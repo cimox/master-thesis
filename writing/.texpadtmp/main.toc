@@ -1,16 +1,16 @@
 \select@language {slovak}
 \contentsline {chapter}{\numberline {1}\IeC {\'U}vod}{1}{chapter.1}
 \contentsline {chapter}{\numberline {2}Analytick\IeC {\'e} \IeC {\'u}lohy nad pr\IeC {\'u}dom d\IeC {\'a}t}{5}{chapter.2}
-\contentsline {paragraph}{Model pr\IeC {\'u}du d\IeC {\'a}t}{7}{paragraph*.5}
+\contentsline {paragraph}{Model pr\IeC {\'u}du d\IeC {\'a}t}{8}{paragraph*.5}
 \contentsline {paragraph}{Predspracovanie pr\IeC {\'u}du}{8}{paragraph*.6}
 \contentsline {paragraph}{Ohrani\IeC {\v c}enia}{9}{paragraph*.7}
-\contentsline {paragraph}{Spracovanie, dolovanie a anal\IeC {\'y}za d\IeC {\'a}t}{9}{paragraph*.8}
+\contentsline {paragraph}{Spracovanie, dolovanie a anal\IeC {\'y}za d\IeC {\'a}t}{10}{paragraph*.8}
 \contentsline {paragraph}{Evalu\IeC {\'a}cia}{10}{paragraph*.9}
 \contentsline {section}{\numberline {2.1}Dopyty nad pr\IeC {\'u}dom d\IeC {\'a}t}{11}{section.2.1}
 \contentsline {section}{\numberline {2.2}Detekcia zmien}{12}{section.2.2}
 \contentsline {section}{\numberline {2.3}Detekcia anom\IeC {\'a}li\IeC {\'\i }}{16}{section.2.3}
-\contentsline {paragraph}{Met\IeC {\'o}da dynamick\IeC {\'y}ch bayesov\IeC {\'y}ch siet\IeC {\'\i }}{17}{paragraph*.12}
-\contentsline {section}{\numberline {2.4}Zhlukovanie}{19}{section.2.4}
+\contentsline {paragraph}{Met\IeC {\'o}da dynamick\IeC {\'y}ch bayesov\IeC {\'y}ch siet\IeC {\'\i }}{18}{paragraph*.12}
+\contentsline {section}{\numberline {2.4}Zhlukovanie}{18}{section.2.4}
 \contentsline {section}{\numberline {2.5}Klasifik\IeC {\'a}cia}{22}{section.2.5}
 \contentsline {section}{\numberline {2.6}Zhodnotenie}{28}{section.2.6}
 \contentsline {chapter}{\numberline {3}Pr\IeC {\'\i }stupy vizualiz\IeC {\'a}cie modelov}{29}{chapter.3}
@@ -26,19 +26,20 @@
 \contentsline {section}{\numberline {5.2}Met\IeC {\'o}da klasifik\IeC {\'a}cie pr\IeC {\'u}du d\IeC {\'a}t}{46}{section.5.2}
 \contentsline {chapter}{\numberline {6}Vizualiz\IeC {\'a}cia modelu rozhodovac\IeC {\'\i }ch stromov}{49}{chapter.6}
 \contentsline {section}{\numberline {6.1}N\IeC {\'a}vrh vizualiz\IeC {\'a}cie}{50}{section.6.1}
-\contentsline {section}{\numberline {6.2}Implement\IeC {\'a}cia vizualiz\IeC {\'a}cie}{53}{section.6.2}
+\contentsline {section}{\numberline {6.2}Implement\IeC {\'a}cia vizualiz\IeC {\'a}cie}{52}{section.6.2}
 \contentsline {chapter}{\numberline {7}Vyhodnotenie}{57}{chapter.7}
 \contentsline {section}{\numberline {7.1}Kvantitat\IeC {\'\i }vne vyhodnotenie klasifik\IeC {\'a}cie}{57}{section.7.1}
 \contentsline {subsection}{\numberline {7.1.1}Testovacie d\IeC {\'a}ta}{58}{subsection.7.1.1}
 \contentsline {subsection}{\numberline {7.1.2}V\IeC {\'y}sledky kvantitat\IeC {\'\i }vnych experimentov}{59}{subsection.7.1.2}
-\contentsline {section}{\numberline {7.2}Kvalitat\IeC {\'\i }vne vyhodnotenie vizualiz\IeC {\'a}cie}{60}{section.7.2}
-\contentsline {subsection}{\numberline {7.2.1}Pou\IeC {\v z}\IeC {\'\i }vate\IeC {\v l}sk\IeC {\'a} \IeC {\v s}t\IeC {\'u}dia}{60}{subsection.7.2.1}
-\contentsline {subsection}{\numberline {7.2.2}V\IeC {\'y}sledky pou\IeC {\v z}\IeC {\'\i }vate\IeC {\v l}skej \IeC {\v s}t\IeC {\'u}die}{61}{subsection.7.2.2}
-\contentsline {chapter}{\numberline {8}Zhodnotenie a bud\IeC {\'u}ca pr\IeC {\'a}ca}{65}{chapter.8}
-\contentsline {chapter}{Literat\IeC {\'u}ra}{67}{section*.30}
-\contentsline {chapter}{Pr\IeC {\'\i }lohy}{A-1}{appendix*.32}
+\contentsline {section}{\numberline {7.2}Kvalitat\IeC {\'\i }vne vyhodnotenie vizualiz\IeC {\'a}cie}{63}{section.7.2}
+\contentsline {subsection}{\numberline {7.2.1}Pou\IeC {\v z}\IeC {\'\i }vate\IeC {\v l}sk\IeC {\'a} \IeC {\v s}t\IeC {\'u}dia}{63}{subsection.7.2.1}
+\contentsline {subsection}{\numberline {7.2.2}V\IeC {\'y}sledky pou\IeC {\v z}\IeC {\'\i }vate\IeC {\v l}skej \IeC {\v s}t\IeC {\'u}die}{64}{subsection.7.2.2}
+\contentsline {chapter}{\numberline {8}Zhodnotenie a bud\IeC {\'u}ca pr\IeC {\'a}ca}{69}{chapter.8}
+\contentsline {chapter}{Literat\IeC {\'u}ra}{71}{chapter.8}
+\contentsline {chapter}{Pr\IeC {\'\i }lohy}{A-1}{appendix*.35}
 \contentsline {section}{\numberline {A}Technick\IeC {\'a} dokument\IeC {\'a}cia}{A-1}{section.Alph0.1}
 \contentsline {section}{\numberline {B}Pl\IeC {\'a}n zimn\IeC {\'e}ho semestra 2016/2017}{B-2}{section.Alph0.2}
-\contentsline {paragraph}{Vyjadrenie k plneniu pl\IeC {\'a}nu zimn\IeC {\'e}ho semestra}{B-2}{paragraph*.33}
+\contentsline {paragraph}{Vyjadrenie k plneniu pl\IeC {\'a}nu zimn\IeC {\'e}ho semestra}{B-2}{paragraph*.36}
 \contentsline {section}{\numberline {C}Pl\IeC {\'a}n letn\IeC {\'e}ho semestra 2016/2017}{C-3}{section.Alph0.3}
-\contentsline {paragraph}{Vyjadrenie k plneniu pl\IeC {\'a}nu letn\IeC {\'e}ho semestra}{C-4}{paragraph*.34}
+\contentsline {paragraph}{Vyjadrenie k plneniu pl\IeC {\'a}nu letn\IeC {\'e}ho semestra}{C-4}{paragraph*.37}
+\contentsline {section}{\numberline {D}\IeC {\v C}l\IeC {\'a}nok prezentovan\IeC {\'y} na konferencii IIT.SRC 2017}{D-5}{section.Alph0.4}

@@ -115,17 +115,16 @@ udalostí
 
 %\includepdf[pages={1}]{zadanie.pdf}
 
-
-%the abstract should include an english and a slovak version
-\include{abstract}
-\emptydoublepage
-
 % vyhlasenie o vypracovani prace
 \include{vyhlasenie}
 \emptydoublepage
 
 %acknowledgements
 \include{acknowledgements}
+\emptydoublepage
+
+%the abstract should include an english and a slovak version
+\include{abstract}
 \emptydoublepage
 
 %conventions applied in the thesis
@@ -171,11 +170,11 @@ udalostí
 \include{summaryandfuturework}
 \emptydoublepage
 
-%bibliography
+%%%%% bibliography %%%%%
 \backmatter
 
-\clearpage
-\phantomsection
+%\clearpage
+%\phantomsection
 \addcontentsline{toc}{chapter}{Literatúra}
 \renewcommand{\bibname}{Literatúra}
 \bibliography{thesis}
@@ -184,9 +183,8 @@ udalostí
 %--------------------------------------------------------------
 % prilohy, index
 %--------------------------------------------------------------
-%\clearpage
-%\pagenumbering{arabic}% resets `page` counter to 1
-%\renewcommand*{\thepage}{A\arabic{page}}
+
+\mainmatter
 
 \begin{appendix}
 \pretocmd{\chapter}{%
@@ -195,10 +193,8 @@ udalostí
   \renewcommand*{\thepage}{\thesection-\arabic{page}}%
 }{}{}
 \include{appendix_01}
-%\include{appendix_02}
-
-\emptydoublepage
 \end{appendix}
+\emptydoublepage
 
 %date of typesetting
 \newpage
